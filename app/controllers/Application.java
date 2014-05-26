@@ -1,146 +1,132 @@
 package controllers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import play.*;
-import play.mvc.*;
-
-import views.html.*;
-import models.*;
-public class Application extends Controller {
-
-    public static Result index() {
-    	//ArrayList<Movie> movieList = new ArrayList<Movie>();
-    	ArrayList<String> titles = new ArrayList<String>();
-    	titles.add("Dragons");
-    	titles.add("Cloverfield");
-    	titles.add("Titanic");
-    	titles.add("Godzilla");
-    	titles.add("Eragon");
-    	titles.add("Spider");
-    	List<Movie> movieList = new ArrayList<Movie>();
-    	List<Movie> tMovieList = null;
-    	for (int i = 0; i < titles.size(); ++i) {
-    		tMovieList = MovieSearch.populateFromRemoteDB(key, titles.get(i));
-    		if ((tMovieList != null) && (tMovieList.size() > 0))
-    			movieList.add(tMovieList.get(0));
-    		else
-    			System.out.println("Could not find movie: " + titles.get(i));
-    	}
-    	
-        return ok(mlist.render(movieList));
-    }
-    public static Result admin() {
-    	// TODO test session
-    	return ok(admin.render());
-    }
-    
-    public static Result userlist(String filter) {
-    	// TODO test session
-    	return ok(userlist.render(filter));
-    }
-    
-    public static Result useredit(String id) {
-    	// TODO test session
-    	return ok(useredit.render(id));
-    }
-    
-    public static Result movieedit(String id) {
-    	// TODO test session
-    	return ok(movieedit.render(id));
-    }
-    /*
-    public static Result sessionWarning() {
-    	return ok()
-    }*/
-    
-    
-    public static String key = "c589965ca14962d100212f66a6a2b1c5";
-    
-    
-    
-    
-    
-/*
- * package controllers;
-
-import models.Project;
-import models.Task;
 import models.User;
-import play.*;
-import play.data.*;
+import models.Video;
 import play.mvc.*;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.config.ServerConfig;
+import com.avaje.ebean.config.dbplatform.H2Platform;
+import com.avaje.ebeaninternal.api.SpiEbeanServer;
+import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
-
+import play.data.Form;
+import play.libs.Yaml;
 import views.html.*;
+import views.html.helper.form;
 
+import java.util.Date;
+import play.data.*;
 public class Application extends Controller {
-
-    @Security.Authenticated(Secured.class)
-    public static Result index() {
-        return ok(index.render(
-                Project.findInvolving(request().username()),
-                Task.findTodoInvolving(request().username()),
-                User.find.byId(request().username())
-        ));
-    }
-
-    public static Result login(){
-        return ok(
-                login.render(Form.form(Login.class))
-        );
-    }
-
-    public static Result authenticate(){
-        Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
-        if(loginForm.hasErrors()){
-            return badRequest(login.render(loginForm));
-        }
-        else{
-            session().clear();
-            session("email", loginForm.get().email);
-            return redirect(controllers.routes.Application.index());
-        }
-    }
-
-
-    public static class Login{
-        public String email;
-        public String password;
-
-        public String validate(){
-            if (User.authenticate(email, password) == null){
-                return "Invalid user or password";
-            }
-            return null;
-        }
-    }
-
-    public static Result logout(){
-        session().clear();
-        flash("success", "You've been logged out");
-        return redirect(controllers.routes.Application.login());
-    }
-
-    public static Result javascriptRoutes() {
-        response().setContentType("text/javascript");
-        return ok(
-                Routes.javascriptRouter("jsRoutes",
-                        controllers.routes.javascript.Projects.add(),
-                        controllers.routes.javascript.Projects.delete(),
-                        controllers.routes.javascript.Projects.rename(),
-                        controllers.routes.javascript.Projects.addGroup()
-                )
-        );
-    }
-
-}    
- */
-    
-    
-    
-    
-    
-    
+	
+	/** 
+	 * Administration index
+	*/
+	public static Result index() {
+		return ok(index.render(""));
+	}
+	
+	
+	// HAVE A LOOK AT THE SECURE PACKAGE
+	public static Result login(){
+		System.out.println("Displaying login page");
+		return ok(login.render(Form.form(Login.class)));
+	}
+	public static Result authenticate() {
+		Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
+		if(loginForm.hasErrors()) {
+			//return badRequest(form.render(loginForm));
+			return badRequest();
+		} else {
+			System.out.println("authenticating");
+			User user = User.authenticate(loginForm.get().email, loginForm.get().password);
+			return ok(index.render("Your new application is ready."));
+		}
+	}
+	
+	
+	public static class Login{
+		public String email;
+		public String password;
+		public boolean rememberMe;
+		public String validate(){
+			if (User.authenticate(email, password) == null){
+				return "Invalid user or password";
+			}
+			return null;
+		}
+	}
 }
+/*	public static Result index() {
+
+		Video vid = new Video();
+		vid.setId(12L);
+		vid.setContentType(Video.VideoContentType.MOVIE);
+		vid.setSupportType(Video.VideoSupportType.BLURAY);
+		vid.setInputTitle("Elysium");
+		vid.setCreationDate(new Date());
+		vid.setUpdateDate(new Date());
+		//vid.save();
+		//Ebean.save(vid);
+		Video v = Ebean.find(Video.class, 34L);
+		if (v == null) {
+			System.out.println("Video 34 not found");
+		}
+		v = Ebean.find(Video.class, 12L);
+		if (v == null) {
+			System.out.println("Video 12 not found");
+		}
+		return ok(index.render("Your new application is ready."));
+	}
+	public static Result user(){
+		System.out.println("Displaying user");
+		return ok(
+				user.render(Form.form(User.class)) 
+		);
+	}
+
+	public static Result validateUser(){
+		Form<User> userForm = Form.form(User.class).bindFromRequest();
+		System.out.println("Validating user");
+
+		if(userForm.hasErrors()){
+			System.out.println("Baaaad");
+			return badRequest(user.render(userForm));
+		}
+		else{
+			System.out.println("Goooood");
+			session().clear();
+			session("email", userForm.get().getEmail());
+			System.out.println(userForm.get().getFirstName());
+			System.out.println(userForm.get().getName());
+			if (userForm.get().isAdmin())
+				System.out.println("is admin");
+			else
+				System.out.println("is not admin");
+			return redirect(controllers.routes.Application.index());
+		}
+	}
+
+	public static Result insertUser(){
+		System.out.println("Inserting user");
+		return ok(index.render("Your new application is ready."));
+	}
+}
+ */
+
+
+/*
+ * Controllers
+ * 		Application
+ * 			login
+ * 			admin page
+ * 		Users
+ * 			User edit
+ * 			User list
+ * 		Video
+ * 			Video list
+ * 			Video edit
+ * 			Video information populate
+ * Forms
+ * 	
+ */

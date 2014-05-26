@@ -2,16 +2,32 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page: movies list
-GET     /                           controllers.Application.index(filter ?= None)
-GET     /admin                      controllers.Application.admin()
-GET		/login						controllers.Application.login()
-POST	/login						controllers.Application.authenticate()
-GET     /userlist                   controllers.Application.userlist(filter ?= None)
-GET     /useredit                   controllers.Application.useredit(id ?= None)
-GET     /movieedit                  controllers.Application.movieedit(id ?= None)
-GET     /sessionwarning             controllers.Application.sessionWarning()
+
+GET 	/admin						controllers.Application.index()
+#POST 	/admin						controllers.Application.login()
+GET     /login                  	controllers.Application.login()
+POST    /login                  	controllers.Application.authenticate()
+
+# Home page for all users
+#GET     /                           controllers.Videos.index()
+
+# Where the menu for the admin is located
+#GET 	/admin						controllers.Application.admin()
+
+# Where the history is located
+#GET 	/history					controllers.Application.history()
+#GET	/borrow						controllers.Application.borrow()
+#POST	/borrow						controllers.Application.validateBorrow()
+
+# Video edition page
+GET		/videos						controllers.Videos.index()
+GET		/videoedit/:id				controllers.Videos.editVideo(id: Long)
+#POST	/videoedit					controllers.Videos.validateVideo()
+
+# User edition page
+#GET		/user						controllers.Users.user()
+#POST 	/user 						controllers.Users.validateUser()
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
-

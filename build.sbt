@@ -1,4 +1,4 @@
-name := "movielist"
+name := "VideoClub"
 
 version := "1.0-SNAPSHOT"
 

@@ -1,7 +1,24 @@
 @(message: String)
 
-@main("Welcome to Play") {
-
-    @play20.welcome(message, style = "Java")
-
-}
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+    </head>
+    <body>
+    	<!-- welcome header -->
+    	<!-- buttons --> 
+		<div style="height:400px;width:400px;float:left;">
+			<div style="height:400px;width:200px;float:left;">
+    			<form action=@routes.Videos.index><button class="btn btn-primary" style="height:200px;width:200px">Entrées/sorties de DVDs</button></form>
+    			<form action=@routes.Videos.index><button class="btn btn-warning" style="height:200px;width:200px">Utilisateur</button></form>
+    		</div>
+			<div style="height:400px;width:200px;float:right;">
+				<form action=@routes.Videos.index><button class="btn btn-info" type="submit" style="height:200px;width:200px">Vidéos</button></form>
+    			<form action=@routes.Videos.index><button class="btn btn-danger" style="height:200px;width:200px">Prêts en retard</button></form>
+    		</div>
+    	</div>
+    </body>
+</html>
