@@ -22,7 +22,7 @@ POST    /login                  	controllers.Application.authenticate()
 # Video edition page
 GET		/videos						controllers.Videos.index()
 GET		/videoedit/:id				controllers.Videos.editVideo(id: Long)
-#POST	/videoedit					controllers.Videos.validateVideo()
+POST	/videoedit					controllers.Videos.validateVideo()
 
 # User edition page
 #GET		/user						controllers.Users.user()
