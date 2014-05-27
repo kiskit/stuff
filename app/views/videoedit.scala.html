@@ -23,8 +23,8 @@
         		</p>
     		}
            
-           	@helper.inputText(videoForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true)
-           	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false)
+           	@helper.inputText(videoForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
+           	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false, 'class -> "form-control")
 
            	
 			@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")

@@ -6,6 +6,8 @@ import models.Video.StateType;
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.SqlQuery;
+import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
@@ -17,6 +19,7 @@ import play.data.Form;
 import play.libs.Yaml;
 import views.html.*;
 import java.util.Date;
+import java.util.List;
 
 public class Videos extends Controller {
 
@@ -58,11 +61,12 @@ public class Videos extends Controller {
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
 		}
-		
+
 		return ok(videolist.render(Video.find.findList(), new User()));
 		//return ok(videolist.render(Video.find.findList(), null));
-		
+
 	}
+
 	public static Result editVideo(Long id) {
 		System.out.println("Editing video " + id);
 		/**
@@ -75,11 +79,11 @@ public class Videos extends Controller {
 		if (v == null) {
 			// Video not found, creating
 			v = new Video();
-			v.setCreationDate(new Date());	
+			v.setCreationDate(new Date());
 		}
 		Form<Video> videoForm = Form.form(Video.class);
 		v.setUpdateDate(new Date());
-		
+
 		videoForm = videoForm.fill(v);
 		return ok(videoedit.render(videoForm));
 	}
@@ -89,14 +93,15 @@ public class Videos extends Controller {
 			System.out.println("Bad request Validating video");
 			return badRequest(videoedit.render(videoForm));
 		} else {
-			
+
 			System.out.println("Validating video " + videoForm.toString());
+			Ebean.update(videoForm.get());
 			return ok();
 		}
-		
+
 	}
 	//public static Result 
-	
+
 }
 
 /*
@@ -106,13 +111,13 @@ public class Videos extends Controller {
     		 	<option value="BLURAY">Blu-Ray</option>
     		</select> 
     	}
-    	
-    	
+
+
  	@helper.input(videoForm("inputTitle"), '_label -> "Titre vidéo", '_showConstraints -> false) { (id, name, value, args) =>
         		<input type="text" class="form-control" value="nimportequoi"  required autofocus>
         	}    	
-    	
-*/
+
+ */
 /*	public static Result index() {
 
 		Video vid = new Video();
@@ -168,7 +173,7 @@ public class Videos extends Controller {
 		return ok(index.render("Your new application is ready."));
 	}
 }
-*/
+ */
 
 
 /*
