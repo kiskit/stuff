@@ -89,7 +89,8 @@ public class Videos extends Controller {
 			System.out.println("Bad request Validating video");
 			return badRequest(videoedit.render(videoForm));
 		} else {
-			System.out.println("Validating video");
+			
+			System.out.println("Validating video " + videoForm.toString());
 			return ok();
 		}
 		

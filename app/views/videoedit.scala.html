@@ -17,15 +17,18 @@
     <div class="container">
 	@helper.form(action = routes.Videos.validateVideo()) {
 			<h2 >Edition Video</h2>
-             @if(videoForm.hasGlobalErrors){
+            @if(videoForm.hasGlobalErrors){
 				<p class="error">
             		@videoForm.globalError.message
         		</p>
     		}
            
+           	@helper.inputText(videoForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true)
            	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false)
-           	@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", '_showConstraints -> false, 'disabled -> true, 'class -> "date form-control")
-           	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", '_showConstraints -> false, 'disabled -> true, 'class -> "date form-control")
+
+           	
+			@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
+           	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
         	
         	@helper.select(field = videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
         	@helper.select(field = videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
