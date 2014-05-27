@@ -14,13 +14,14 @@ import play.data.validation.Constraints;
 import java.util.*;
 import javax.persistence.*;
 import play.db.ebean.*;
+import play.db.ebean.Model.Finder;
 
 @Entity
 public class User {
 	public enum StatusType {ACTIVE, INACTIVE};
 
 	@Id
-	private String id;
+	private Long id;
 	@Constraints.Required
 	private String name;
 	@Constraints.Required
@@ -32,15 +33,16 @@ public class User {
 	@Constraints.Required
 	private StatusType status;
 	@Constraints.Required
-	@Formats.DateTime(pattern = "MM/dd/yy:HH:MM:ss")
+	@Formats.DateTime(pattern = "MM/dd/yy")
 	private Date creationDate;
 	@Constraints.Required
-	@Formats.DateTime(pattern = "MM/dd/yy:HH:MM:ss")
+	@Formats.DateTime(pattern = "MM/dd/yy")
 	private Date updateDate;
 	@Constraints.Required
 	private boolean isAdmin;
 	
-	
+    public static Finder find = new Finder(Long.class, User.class);
+
 	
 	public User() {
 		
@@ -48,13 +50,13 @@ public class User {
 
 
 
-	public String getId() {
+	public Long getId() {
 		return id;
 	}
 
 
 
-	public void setId(String id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -155,6 +157,15 @@ public class User {
 	}
 
 
+	public boolean setIsAdmin() {
+		return isAdmin;
+	}
+
+
+
+	public void getIsAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
 
 	@Override
 	public String toString() {

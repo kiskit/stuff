@@ -80,6 +80,12 @@ public class Videos extends Controller {
 			// Video not found, creating
 			v = new Video();
 			v.setCreationDate(new Date());
+			String sql = "select max(id) from Video";
+			SqlRow bug = Ebean.createSqlQuery(sql).findUnique();
+			System.out.println("Bug :" + bug.toString());
+			String maxId = bug.getString("max(id)");
+			System.out.println("Max ID found : " + maxId);
+			v.setId(Long.decode(maxId) + 1L);
 		}
 		Form<Video> videoForm = Form.form(Video.class);
 		v.setUpdateDate(new Date());
@@ -93,10 +99,15 @@ public class Videos extends Controller {
 			System.out.println("Bad request Validating video");
 			return badRequest(videoedit.render(videoForm));
 		} else {
-
-			System.out.println("Validating video " + videoForm.toString());
-			Ebean.update(videoForm.get());
-			return ok();
+			if (Ebean.find(Video.class, videoForm.get().getId()) != null) {
+				System.out.println("Updating video " + videoForm.toString());
+				Ebean.update(videoForm.get());	
+			} else {
+				System.out.println("Inserting video" + videoForm.toString());
+				Ebean.save(videoForm.get());
+			}
+			
+			return ok(videolist.render(Video.find.findList(), new User()));
 		}
 
 	}

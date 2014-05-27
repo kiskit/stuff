@@ -30,9 +30,9 @@
 			@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
            	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
         	
-        	@helper.select(field = videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
-        	@helper.select(field = videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
-        	@helper.select(field = videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
+        	@helper.select(videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
+        	@helper.select(videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
+        	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
         	<button type="submit" class="btn btn-default">Terminé</button>
         	<button type="button" class="btn btn-default">Annuler</button>
         	<button type="button" class="btn btn-default">Remplir informations vidéo</button>

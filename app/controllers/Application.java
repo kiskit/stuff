@@ -43,7 +43,9 @@ public class Application extends Controller {
 			return ok(index.render("Your new application is ready."));
 		}
 	}
-	
+	public static Result logout() {
+		return ok(index.render("Your new application is ready."));
+	}
 	
 	public static class Login{
 		public String email;

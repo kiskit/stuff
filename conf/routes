@@ -7,6 +7,8 @@ GET 	/admin						controllers.Application.index()
 #POST 	/admin						controllers.Application.login()
 GET     /login                  	controllers.Application.login()
 POST    /login                  	controllers.Application.authenticate()
+GET     /logout                  	controllers.Application.logout()
+
 
 # Home page for all users
 #GET     /                           controllers.Videos.index()
@@ -24,9 +26,10 @@ GET		/videos						controllers.Videos.index()
 GET		/videoedit/:id				controllers.Videos.editVideo(id: Long)
 POST	/videoedit					controllers.Videos.validateVideo()
 
-# User edition page
-#GET		/user						controllers.Users.user()
-#POST 	/user 						controllers.Users.validateUser()
+# Video edition page
+GET		/users						controllers.Users.index()
+GET		/useredit/:id				controllers.Users.editUser(id: Long)
+POST	/useredit					controllers.Users.validateUser()
 
 
 # Map static resources from the /public folder to the /assets URL path

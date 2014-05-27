@@ -1,4 +1,6 @@
-@(videos: List[Video], admin: User)
+@(videoForm: Form[Video])
+@import helper.twitterBootstrap._
+
 <html>
     <head>
         <title>Login</title>
@@ -13,80 +15,31 @@
             <!-- display filters: most recent, available only-->
         </header>
     <div class="container">
-		
-	<table class="table table-striped table-bordered sortable">
-		<tr>
-			<th>ID</th>
-			<th>Titre</th>
-			<th>Date d'ajout</th>
-			<th>Support</th>
-			
-			@if(admin != null) {
-				<th>
-					Etat
-				</th>
-			}
-			<th>TV/Film</th>
-			<th>Disponibilité</th>
-        </tr>
-        @for(v <- videos) {
-        		
-                <tr>
-                	<!-- if we're logged in, we need to be able to edit the movie -->
-                	@if(admin == null) {
-					<td>
-                		@v.getId()
-                	</td>
-                	} else {
-                		<td>
-                			<a href="movieedit?@v.getId()">@v.getId()</a>
-                		</td>
-                	}
-					<td>
-						@v.getInputTitle()
-					</td> 
-					<td>
-						@v.getCreationDate()
-					</td>
-					<td>
-						@if(v.getSupportType() == Video.SupportType.BLURAY) {
-							BLURAY
-						} else {
-							DVD
-						}
-					</td>
-					@if(admin != null) {
-					<td>
-						@v.getState()
-					</td>
-					}
-					<td>
-						@if(v.getContentType() == Video.ContentType.TV) {
-							TV
-						} else {
-							Film
-						}
-					</td>
-					
-					<td>
-						@if(v.getRentedTo() == null) {
-							DISPONIBLE 
-						} else {
-							SORTI
-						} 
-					</td>
-					@if(admin !=null) {
-					<td>
-						<form action="movieedit" method="get">
-  							<button class="btn btn-primary" type="submit" value="@v.getId()">Edit</button>
-						</form> 
-						 						
-					</td>
-					}
-                </tr>
-        }
-        </table>
+	@helper.form(action = routes.Videos.validateVideo()) {
+			<h2 >Edition Video</h2>
+            @if(videoForm.hasGlobalErrors){
+				<p class="error">
+            		@videoForm.globalError.message
+        		</p>
+    		}
+           
+           	@helper.inputText(videoForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
+           	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false, 'class -> "form-control")
 
+           	
+			@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
+           	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
+        	
+        	@helper.select(videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
+        	@helper.select(videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
+        	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
+        	<button type="submit" class="btn btn-default">Terminé</button>
+        	<button type="button" class="btn btn-default">Annuler</button>
+        	<button type="button" class="btn btn-default">Remplir informations vidéo</button>
+        	        
+	}
     </div> <!-- /container -->
     </body>
 </html> 
+
+  
