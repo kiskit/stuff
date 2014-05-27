@@ -1,0 +1,42 @@
+@(videoForm: Form[Video])
+@import helper.twitterBootstrap._
+
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
+    </head>
+    <body>
+        <header>
+            <!-- If user connected, then display the admin header-->
+            <!-- display filters: most recent, available only-->
+        </header>
+    <div class="container">
+	@helper.form(action = routes.Videos.validateVideo()) {
+			<h2 >Edition Video</h2>
+             @if(videoForm.hasGlobalErrors){
+				<p class="error">
+            		@videoForm.globalError.message
+        		</p>
+    		}
+           
+           	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false)
+           	@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", '_showConstraints -> false, 'disabled -> true, 'class -> "date form-control")
+           	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", '_showConstraints -> false, 'disabled -> true, 'class -> "date form-control")
+        	
+        	@helper.select(field = videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
+        	@helper.select(field = videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
+        	@helper.select(field = videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
+        	<button type="submit" class="btn btn-default">Terminé</button>
+        	<button type="button" class="btn btn-default">Annuler</button>
+        	<button type="button" class="btn btn-default">Remplir informations vidéo</button>
+        	        
+	}
+    </div> <!-- /container -->
+    </body>
+</html> 
+
+  

@@ -1,0 +1,36 @@
+@(loginForm: Form[Application.Login])
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+    </head>
+    <body>
+        <header>
+            
+        </header>
+    <div class="container">
+	@helper.form(action = routes.Application.authenticate) {
+		<form class="form-signin" role="form">
+			<h2 class="form-signin-heading">Please sign in</h2>
+        
+        	@helper.input(loginForm("email")) { (id, name, value, args) =>
+        		<input type="email" class="form-control" placeholder="Email address" value="@loginForm("email").value"  required autofocus>
+	        }
+        
+			@helper.input(loginForm("password")) { (id, name, value, args) =>
+				<input type="password" class="form-control" placeholder="Password" required>
+			}
+			<label class="checkbox">
+  	        	<input type="checkbox" value="remember-me"> Remember me
+			</label>
+        
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		</form>
+	}
+		
+
+    </div> <!-- /container -->
+    </body>
+</html> 
