@@ -69,9 +69,21 @@ public class Users extends Controller {
 			admin.setName("Wayne");
 			return badRequest(useredit.render(userForm, admin));
 		} else {
-			if (Ebean.find(User.class, userForm.get().getId()) != null) {
+			System.out.println("Admin: " + userForm.get().isAdmin() + "-" + userForm.field("isAdmin").value() + "-");
+			// Set the checkbox field since form some reason it gets updated in the form but not in the object
+			if (userForm.field("isAdmin").value().equals("true")) {
+				System.out.println("setting to true");
+				userForm.get().setAdmin(true);
+			} else {
+				System.out.println("setting to false");
+				userForm.get().setAdmin(false);
+			}
+			System.out.println("Admin after correction: " + userForm.get().isAdmin());
+			// If user exists, update
+			if (Ebean.find(User.class, userForm.get().getId()) != null) {	
 				System.out.println("Updating user " + userForm.toString());
-				Ebean.update(userForm.get());	
+				Ebean.update(userForm.get());
+			// If it doesn't exist, insert
 			} else {
 				System.out.println("Inserting user" + userForm.toString());
 				Ebean.save(userForm.get());

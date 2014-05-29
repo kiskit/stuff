@@ -1,0 +1,68 @@
+@(users: List[User], admin: User)
+<html>
+    <head>
+        <title>Gestion des utilisateurs</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
+    </head>
+    <body>
+        <header>
+            <!-- If user connected, then display the admin header-->
+            <!-- display filters: most recent, available only-->
+        </header>
+    <div class="container">
+		
+	<table class="table table-striped table-bordered sortable">
+		<tr>
+			<th>ID</th>
+			<th>Nom</th>
+			<th>Email</th>
+			<th>Status</th>
+			<th>Date d'ajout</th>
+			<th>Date de dernière modification</th>
+			<th>Administrateur</th>
+			
+			
+		</tr>
+		@for(u <- users) {
+			<tr>
+               	<!-- if we're logged in, we need to be able to edit the movie -->
+				<td>
+               		@u.getId()
+               	</td>
+				<td>
+					@u.getFullName()
+				</td>
+				<td>
+					@u.getEmail()
+				</td>
+				<td>
+					@u.getStatus()
+				</td> 
+				<td>
+					@u.getCreationDate()
+				</td>
+				<td>
+					@u.getUpdateDate()
+				</td>
+				<td>
+					@if(u.isAdmin()) {
+						admin
+					}
+				</td>
+				<td>
+					<form action="useredit/@u.getId()" method="get" style="margin: 0px; padding: 0px;">  						
+  						<button class="btn btn-xs btn-primary" type="submit">Edit</button>
+					</form> 
+				</td>
+		    </tr>
+        }	
+        </table>
+        <form action="useredit/0" method="get" style="margin: 0px; padding: 0px;">
+			<button class="btn btn-primary" type="submit">Ajouter un utilisateur</button>
+		</form>
+    </div> <!-- /container -->
+    </body>
+</html> 

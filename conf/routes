@@ -18,8 +18,8 @@ GET     /logout                  	controllers.Application.logout()
 
 # Where the history is located
 #GET 	/history					controllers.Application.history()
-#GET	/borrow						controllers.Application.borrow()
-#POST	/borrow						controllers.Application.validateBorrow()
+GET		/borrow						controllers.Videos.borrow()
+POST	/borrow						controllers.Videos.validateBorrow()
 
 # Video edition page
 GET		/videos						controllers.Videos.index()

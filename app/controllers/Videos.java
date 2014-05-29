@@ -1,5 +1,6 @@
 package controllers;
 
+import models.Borrowing;
 import models.User;
 import models.Video;
 import models.Video.StateType;
@@ -111,7 +112,38 @@ public class Videos extends Controller {
 		}
 
 	}
-	//public static Result 
+	
+	public static Result borrow() {
+		Form<Borrowing> bForm = Form.form(Borrowing.class);
+		return ok(borrowing.render(bForm, new User()));
+	}
+
+	public static Result validateBorrow() {
+		Form<Borrowing> bForm = Form.form(Borrowing.class).bindFromRequest();
+		if(videoForm.hasErrors()) {
+			System.out.println("Bad request Validating video");
+			return badRequest(videoedit.render(videoForm));
+		} else {
+			User u = null;
+			
+			if (bForm.get().userId != null) {
+				u = Ebean.find(User.class, bForm.get().userId); 
+			}
+			List <User> lUser = null;
+			if ((u == null) && (bForm.get().userName != null)) {
+				lUser = Ebean.find(User.class).where().ilike("userName", "%" + bForm.get().userName + "%").findList();
+			}
+			if (lUser != null) {
+				if (lUser.size() == 1) {
+					u = lUser.get(0);
+				} 
+			}
+			if (u != null) {
+				
+			}
+			return ok(borrowing.render(bForm, new User()));
+		}
+	}
 
 }
 
