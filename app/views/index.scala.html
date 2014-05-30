@@ -13,13 +13,15 @@
     	<!-- TODO rewrite with only one form -->
     	<form action=@routes.Application.admin method="POST" style="margin: 0px; padding: 0px;"> 
 		<div style="height:400px;width:400px;float:left;">
-			<div style="height:400px;width:200px;float:left;">
-    			<button class="btn btn-primary" type="submit" name="action" value="Checkin" style="height:200px;width:200px">Entrées/sorties de DVDs</button></form>
-    			<button class="btn btn-warning" type="submit" name="action" value="Users" style="height:200px;width:200px">Utilisateur</button></form>
+			<div style="height:600px;width:200px;float:left;">
+    			<button class="btn btn-primary" type="submit" name="action" value="Checkin" style="height:200px;width:200px">Rendre un DVD</button></form>
+    			<button class="btn btn-primary" type="submit" name="action" value="Checkout" style="height:200px;width:200px">Sortir un DVD</button></form>
+    			<button class="btn btn-warning" type="submit" name="action" value="Users" style="height:200px;width:200px">Gestion des utilisateur</button></form>
     		</div>
-			<div style="height:400px;width:200px;float:right;">
-				<button class="btn btn-info" type="submit" name="action" value="Videos" style="height:200px;width:200px">Vidéos</button></form>
+			<div style="height:600px;width:200px;float:right;">
+				<button class="btn btn-info" type="submit" name="action" value="Videos" style="height:200px;width:200px">Gestion des vidéos</button></form>
     			<button class="btn btn-danger" type="submit" name="action" value="Late" style="height:200px;width:200px">Prêts en retard</button></form>
+    			<button class="btn btn-info" type="submit" name="action" value="Historique" style="height:200px;width:200px">Historique</button></form>
     		</div>
     	</div>
     	</form>

@@ -1,9 +1,11 @@
 package controllers;
 
 import models.Borrowing;
+import models.MovieInfo;
 import models.User;
 import models.Video;
 import models.Video.StateType;
+import models.VideoInfo;
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -51,6 +53,7 @@ public class Videos extends Controller {
 			vid.setContentType(Video.ContentType.MOVIE);
 			vid.setSupportType(Video.SupportType.BLURAY);
 			vid.setInputTitle("Elysium");
+			vid.setMovieId("68724");
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(null);
@@ -62,6 +65,7 @@ public class Videos extends Controller {
 			vid.setContentType(Video.ContentType.MOVIE);
 			vid.setSupportType(Video.SupportType.DVD);
 			vid.setInputTitle("Dragons");
+			vid.setMovieId("10191");
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
@@ -166,7 +170,15 @@ public class Videos extends Controller {
 		}
 
 	}
-
+	public static Result videoInfo(Long id) {
+		Video v = Ebean.find(Video.class, id);
+		String idVideo = v.getMovieId();
+		MovieInfo info = Video.getInfo(idVideo);
+		return ok(videoinfo.render(v, info, new User()));
+	}
+	public static Result validateVideoInfo() {
+		return ok(videolist.render(Video.find.findList(), new User()));
+	}
 	public static Result borrow() {
 		Form<UserChoice> bForm = Form.form(UserChoice.class);
 		//Form<UserChoice> longForm =  Form.form(UserChoice.class);

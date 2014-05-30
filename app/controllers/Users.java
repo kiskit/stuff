@@ -31,16 +31,6 @@ public class Users extends Controller {
 		 * We will populate all the fields with it
 		 * If it does't exist, we are creating a new one
 		 */
-		String getAction = request().getQueryString("action");
-		//String[] getAction = request().body().asFormUrlEncoded().get("action");
-
-		/*if (postAction == null || postAction.length == 0) {
-			return badRequest("You must provide a valid action");
-		} else {
-			String action = postAction[0];
-		 */
-		if ("Cancel".equals(getAction))
-			return Application.index();
 		User u = Ebean.find(User.class, id);
 		if (u == null) {
 			// User not found, creating
