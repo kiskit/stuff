@@ -4,7 +4,7 @@
 
 
 GET 	/admin						controllers.Application.index()
-#POST 	/admin						controllers.Application.login()
+POST 	/admin						controllers.Application.admin()
 GET     /login                  	controllers.Application.login()
 POST    /login                  	controllers.Application.authenticate()
 GET     /logout                  	controllers.Application.logout()

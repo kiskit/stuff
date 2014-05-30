@@ -23,7 +23,7 @@ public class Application extends Controller {
 	 * Administration index
 	*/
 	public static Result index() {
-		return ok(index.render(""));
+		return ok(index.render("Your new application is ready."));
 	}
 	
 	
@@ -46,6 +46,40 @@ public class Application extends Controller {
 	public static Result logout() {
 		return ok(index.render("Your new application is ready."));
 	}
+	
+	public static Result admin() {
+
+		String[] postAction = request().body().asFormUrlEncoded().get("action");
+		if (postAction == null || postAction.length == 0) {
+			return badRequest("You must provide a valid action");
+		} else {
+			String action = postAction[0];
+
+			if ("Users".equals(action)) {
+				// Returns to main videolist page
+				return Users.index();
+
+			} else if ("Videos".equals(action)) {
+				return Videos.index();
+
+			} else if ("Late".equals(action)) {
+				return ok(index.render("Your new application is ready."));
+				
+			} else if ("Checkin".equals(action)) {
+				return ok(index.render("Your new application is ready."));
+				
+			} else if ("Checkout".equals(action)) {
+				return ok(index.render("Your new application is ready."));
+				
+			} else {
+				// TODO: major problem, someone clicked on a non existent button
+				return ok(index.render("Your new application is ready."));
+
+			}
+		}
+		//return ok(index.render("Your new application is ready."));
+	}
+	
 	
 	public static class Login{
 		public String email;

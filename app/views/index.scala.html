@@ -9,16 +9,19 @@
     </head>
     <body>
     	<!-- welcome header -->
-    	<!-- buttons --> 
+    	<!-- buttons -->
+    	<!-- TODO rewrite with only one form -->
+    	<form action=@routes.Application.admin method="POST" style="margin: 0px; padding: 0px;"> 
 		<div style="height:400px;width:400px;float:left;">
 			<div style="height:400px;width:200px;float:left;">
-    			<form action=@routes.Videos.borrow style="margin: 0px; padding: 0px;"><button class="btn btn-primary" style="height:200px;width:200px">Entrées/sorties de DVDs</button></form>
-    			<form action=@routes.Users.index style="margin: 0px; padding: 0px;"><button class="btn btn-warning" style="height:200px;width:200px">Utilisateur</button></form>
+    			<button class="btn btn-primary" type="submit" name="action" value="Checkin" style="height:200px;width:200px">Entrées/sorties de DVDs</button></form>
+    			<button class="btn btn-warning" type="submit" name="action" value="Users" style="height:200px;width:200px">Utilisateur</button></form>
     		</div>
 			<div style="height:400px;width:200px;float:right;">
-				<form action=@routes.Videos.index style="margin: 0px; padding: 0px;"><button class="btn btn-info" type="submit" style="height:200px;width:200px">Vidéos</button></form>
-    			<form action=@routes.Videos.index style="margin: 0px; padding: 0px;"><button class="btn btn-danger" style="height:200px;width:200px">Prêts en retard</button></form>
+				<button class="btn btn-info" type="submit" name="action" value="Videos" style="height:200px;width:200px">Vidéos</button></form>
+    			<button class="btn btn-danger" type="submit" name="action" value="Late" style="height:200px;width:200px">Prêts en retard</button></form>
     		</div>
     	</div>
+    	</form>
     </body>
 </html>

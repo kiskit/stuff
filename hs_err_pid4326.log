@@ -1,0 +1,64 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 12288 bytes for committing reserved memory.
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (os_linux.cpp:2769), pid=4326, tid=2765065024
+#
+# JRE version: OpenJDK Runtime Environment (7.0_55-b14) (build 1.7.0_55-b14)
+# Java VM: OpenJDK Client VM (24.51-b03 mixed mode, sharing linux-x86 )
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0xa405dc00):  JavaThread "pool-146-thread-2" [_thread_new, id=6254, stack(0xa4bf8000,0xa4cf9000)]
+
+Stack: [0xa4bf8000,0xa4cf9000]
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+=>0xa405dc00 JavaThread "pool-146-thread-2" [_thread_new, id=6254, stack(0xa4bf8000,0xa4cf9000)]
+  0xa430e400 JavaThread "pool-146-thread-1" [_thread_in_native, id=6253, stack(0xa68fb000,0xa69fc000)]
+  0xa2f12000 JavaThread "play-akka.actor.default-dispatcher-122" [_thread_blocked, id=6243, stack(0xa49f6000,0xa4af7000)]
+  0xa3a3d800 JavaThread "play-akka.actor.default-dispatcher-121" [_thread_blocked, id=6240, stack(0xa48f5000,0xa49f6000)]
+  0xa4396800 JavaThread "play-akka.actor.default-dispatcher-120" [_thread_blocked, id=6239, stack(0xa4dfa000,0xa4efb000)]
+  0xa3a4e800 JavaThread "net.sf.ehcache.CacheManager@14b19b4" daemon [_thread_blocked, id=6231, stack(0xa58ff000,0xa5a00000)]
+  0xa430dc00 JavaThread "BoneCP-pool-watch-thread" daemon [_thread_blocked, id=6229, stack(0xa4cf9000,0xa4dfa000)]
+  0xa2f0c400 JavaThread "BoneCP-max-alive-scheduler" daemon [_thread_blocked, id=6228, stack(0xa7afb000,0xa7bfc000)]
+  0xa32d2c00 JavaThread "BoneCP-keep-alive-scheduler" daemon [_thread_blocked, id=6227, stack(0xa4ffc000,0xa50fd000)]
+  0xa4396400 JavaThread "Ebean-default.0" daemon [_thread_blocked, id=5990, stack(0xa7dfe000,0xa7eff000)]
+  0xa36d4000 JavaThread "play-internal-execution-context-7" daemon [_thread_blocked, id=5661, stack(0xa64f7000,0xa65f8000)]
+  0xa6081000 JavaThread "Ebean-default.0" daemon [_thread_blocked, id=4499, stack(0xa50fd000,0xa51fe000)]
+  0xa5c4f000 JavaThread "Timer-0" [_thread_blocked, id=4487, stack(0xa51fe000,0xa52ff000)]
+  0xa821a800 JavaThread "play-scheduler-1" [_thread_blocked, id=4425, stack(0xa66f9000,0xa67fa000)]
+  0xa5e82400 JavaThread "Scala Presentation Compiler []" daemon [_thread_blocked, id=4417, stack(0xa7eff000,0xa8000000)]
+  0xa71ef800 JavaThread "New I/O server boss #5" [_thread_in_native, id=4368, stack(0xa69fc000,0xa6afd000)]
+  0xa71f5800 JavaThread "New I/O worker #4" [_thread_in_native, id=4367, stack(0xa6afd000,0xa6bfe000)]
+  0xa71fb400 JavaThread "New I/O worker #3" [_thread_blocked, id=4366, stack(0xa6bfe000,0xa6cff000)]
+  0xa71f2800 JavaThread "New I/O worker #2" [_thread_in_native, id=4365, stack(0xa6cff000,0xa6e00000)]
+  0xa71ee800 JavaThread "New I/O worker #1" [_thread_in_native, id=4364, stack(0xa7bfc000,0xa7cfd000)]
+  0xa713a400 JavaThread "INotify thread" daemon [_thread_in_native, id=4363, stack(0xa776b000,0xa786c000)]
+  0xa9666400 JavaThread "pool-4-thread-4" [_thread_in_native, id=4359, stack(0xa7cfd000,0xa7dfe000)]
+  0xb674c000 JavaThread "Service Thread" daemon [_thread_blocked, id=4333, stack(0xa90fd000,0xa91fe000)]
+  0xb674a400 JavaThread "C1 CompilerThread0" daemon [_thread_blocked, id=4332, stack(0xa9a02000,0xa9a83000)]
+  0xb6748800 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=4331, stack(0xa91fe000,0xa92ff000)]
+  0xb6733400 JavaThread "Finalizer" daemon [_thread_blocked, id=4330, stack(0xa94ff000,0xa9600000)]
+  0xb6731c00 JavaThread "Reference Handler" daemon [_thread_blocked, id=4329, stack(0xa97ff000,0xa9900000)]
+  0xb6707800 JavaThread "main" [_thread_blocked, id=4327, stack(0xb68e0000,0xb69e1000)]
+
+Other Threads:
+  0xb6730400 

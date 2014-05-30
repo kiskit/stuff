@@ -18,20 +18,29 @@ import views.html.*;
 import java.util.Date;
 
 public class Users extends Controller {
-	
 
-    public static Result index() {    	
-    	return ok(userlist.render(User.find.findList(), new User()));
-    }
-    
-    public static Result editUser(Long id) {
+
+	public static Result index() {    	
+		return ok(userlist.render(User.find.findList(), new User()));
+	}
+
+	public static Result editUser(Long id) {
 		System.out.println("Editing user " + id);
 		/**
 		 * If the User already exists, we can look for it in the database
 		 * We will populate all the fields with it
 		 * If it does't exist, we are creating a new one
 		 */
+		String getAction = request().getQueryString("action");
+		//String[] getAction = request().body().asFormUrlEncoded().get("action");
 
+		/*if (postAction == null || postAction.length == 0) {
+			return badRequest("You must provide a valid action");
+		} else {
+			String action = postAction[0];
+		 */
+		if ("Cancel".equals(getAction))
+			return Application.index();
 		User u = Ebean.find(User.class, id);
 		if (u == null) {
 			// User not found, creating
@@ -64,7 +73,7 @@ public class Users extends Controller {
 		admin.setName("Wayne");
 		return ok(useredit.render(userForm, admin));
 	}
-    
+
 	public static Result validateUser() {
 		Form<User> userForm = Form.form(User.class).bindFromRequest();
 		if(userForm.hasErrors()) {
@@ -100,15 +109,15 @@ public class Users extends Controller {
 			if (Ebean.find(User.class, userForm.get().getId()) != null) {	
 				System.out.println("Updating user " + userForm.toString());
 				Ebean.update(userForm.get());
-			// If it doesn't exist, insert
+				// If it doesn't exist, insert
 			} else {
 				System.out.println("Inserting user" + userForm.toString());
 				Ebean.save(userForm.get());
 			}
-			
+
 			return ok(userlist.render(User.find.findList(), new User()));
 		}
 
 	}
-    
+
 }
