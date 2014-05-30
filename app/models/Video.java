@@ -9,6 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.omertron.themoviedbapi.MovieDbException;
+import com.omertron.themoviedbapi.TheMovieDbApi;
+import com.omertron.themoviedbapi.model.MovieDb;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -31,7 +34,7 @@ public class Video {
 
     public static MovieInfo getInfo(String id) {
     	//String url = "https://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + title;
-    	String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key="+key+"&language=fr";
+    	/*String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key="+key+"&language=fr";
 		URL obj;
 		try {
 			obj = new URL(url);
@@ -75,7 +78,19 @@ public class Video {
 			System.out.println("Dang, an exception");
 			e.printStackTrace();
 		}
-
+*/
+    	TheMovieDbApi api = null;
+    	try {
+    		api = new TheMovieDbApi(key);
+			MovieDb movie = api.getMovieInfo(Integer.parseInt(id), "fr");
+			System.out.println(movie.toString());
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MovieDbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     	return null;
     }
     
