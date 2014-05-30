@@ -12,7 +12,7 @@ create table user (
   status                    integer,
   creation_date             timestamp,
   update_date               timestamp,
-  is_admin                  boolean,
+  admin                     boolean,
   constraint ck_user_status check (status in (0,1)),
   constraint pk_user primary key (id))
 ;

@@ -39,8 +39,7 @@ public class User {
 	@Formats.DateTime(pattern = "MM/dd/yy")
 	private Date updateDate;
 	@Constraints.Required
-	private boolean isAdmin;
-	
+	private boolean admin;
     public static Finder find = new Finder(Long.class, User.class);
 
 	
@@ -144,35 +143,24 @@ public class User {
 		this.updateDate = updateDate;
 	}
 
-
-
 	public boolean isAdmin() {
-		return isAdmin;
+		return admin;
 	}
 
 
 
-	public void setAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 
-	public boolean setIsAdmin() {
-		return isAdmin;
-	}
-
-
-
-	public void getIsAdmin(boolean isAdmin) {
-		this.isAdmin = isAdmin;
-	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", firstName=" + firstName
 				+ ", email=" + email + ", password=" + password + ", status="
 				+ status + ", creationDate=" + creationDate + ", updateDate="
-				+ updateDate + ", isAdmin=" + isAdmin + "]";
+				+ updateDate + ", isAdmin=" + admin + "]";
 	}
 	
 	public String getFullName() {

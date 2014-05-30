@@ -24,10 +24,26 @@ import java.util.List;
 
 public class Videos extends Controller {
 
+	public static class UserChoice {
+		public UserChoice() {
+
+		}
+
+		public Long getId() {
+			return id;
+		}
+
+		public void setId(Long id) {
+			this.id = id;
+		}
+
+		public Long id;
+	}
+
 	public static Result index() {
 		// Call the video list with all the videos
 		//return ok(index.render(Video.find.all()));
-		Video vid = vid = Ebean.find(Video.class).where().eq("id", 12L).findUnique();
+		Video vid = Ebean.find(Video.class).where().eq("id", 12L).findUnique();
 		if (vid == null) {
 			vid = new Video();
 
@@ -61,8 +77,32 @@ public class Videos extends Controller {
 			vid.setRentedTo(18L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
-		}
 
+		}
+		User u = Ebean.find(User.class).where().eq("id", 1).findUnique();
+		if (u == null) {
+			u = new User();
+
+			u.setId(1L);
+			u.setName("Pinatel");
+			u.setFirstName("Boris");
+			u.setAdmin(true);
+			u.setCreationDate(new Date());
+			u.setUpdateDate(new Date());
+			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
+			u.setPassword(u.getFirstName());
+			Ebean.save(u);
+			u = new User();
+			u.setId(2L);
+			u.setName("Bellardie");
+			u.setFirstName("Nicolas");
+			u.setAdmin(true);
+			u.setCreationDate(new Date());
+			u.setUpdateDate(new Date());
+			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
+			u.setPassword(u.getFirstName());
+			Ebean.save(u);
+		}
 		return ok(videolist.render(Video.find.findList(), new User()));
 		//return ok(videolist.render(Video.find.findList(), null));
 
@@ -75,7 +115,7 @@ public class Videos extends Controller {
 		 * We will populate all the fields with it
 		 * If it does't exist, we are creating a new one
 		 */
-
+		
 		Video v = Ebean.find(Video.class, id);
 		if (v == null) {
 			// Video not found, creating
@@ -96,10 +136,24 @@ public class Videos extends Controller {
 	}
 	public static Result validateVideo() {
 		Form<Video> videoForm = Form.form(Video.class).bindFromRequest();
+
 		if(videoForm.hasErrors()) {
 			System.out.println("Bad request Validating video");
 			return badRequest(videoedit.render(videoForm));
 		} else {
+			
+			String[] postAction = request().body().asFormUrlEncoded().get("action");
+			if (postAction == null || postAction.length == 0) {
+				return badRequest("You must provide a valid action");
+			} else {
+				String action = postAction[0];
+
+				if ("Cancel".equals(action)) {
+					// Returns to main videolist page
+					return index();
+				}
+			}
+			
 			if (Ebean.find(Video.class, videoForm.get().getId()) != null) {
 				System.out.println("Updating video " + videoForm.toString());
 				Ebean.update(videoForm.get());	
@@ -107,25 +161,36 @@ public class Videos extends Controller {
 				System.out.println("Inserting video" + videoForm.toString());
 				Ebean.save(videoForm.get());
 			}
-			
+
 			return ok(videolist.render(Video.find.findList(), new User()));
 		}
 
 	}
-	
-	public static Result borrow() {
-		Form<Borrowing> bForm = Form.form(Borrowing.class);
-		return ok(borrowing.render(bForm, new User()));
-	}
 
+	public static Result borrow() {
+		Form<UserChoice> bForm = Form.form(UserChoice.class);
+		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
+		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
+		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
+		return ok(videolist.render(Video.find.findList(), new User()));
+	}
 	public static Result validateBorrow() {
-		Form<Borrowing> bForm = Form.form(Borrowing.class).bindFromRequest();
+		Form<UserChoice> bForm = Form.form(UserChoice.class);
+		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
+		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
+		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
+		return ok(videolist.render(Video.find.findList(), new User()));
+	}
+	//public static Result borrowList() {
+	//Form<Borrowing> bForm = Form.form(Borrowing.class).bindFromRequest();
+
+	/*
 		if(videoForm.hasErrors()) {
 			System.out.println("Bad request Validating video");
 			return badRequest(videoedit.render(videoForm));
 		} else {
 			User u = null;
-			
+
 			if (bForm.get().userId != null) {
 				u = Ebean.find(User.class, bForm.get().userId); 
 			}
@@ -139,11 +204,11 @@ public class Videos extends Controller {
 				} 
 			}
 			if (u != null) {
-				
-			}
-			return ok(borrowing.render(bForm, new User()));
-		}
-	}
+
+			}*/
+	//return ok(index.render("Your new application is ready."));
+	//			return ok(borrowing.render(bForm, new User()));
+	//}
 
 }
 

@@ -53,12 +53,18 @@ public class Users extends Controller {
 		u.setUpdateDate(new Date());
 
 		userForm = userForm.fill(u);
+		if(userForm.get().isAdmin()) {
+			System.out.println("Is admin before editing");
+		} else {
+			System.out.println("Is NOT admin before editing");
+		}
 		User admin = new User();
 		admin.setEmail("admin@admin.com");
 		admin.setFirstName("Bruce");
 		admin.setName("Wayne");
 		return ok(useredit.render(userForm, admin));
 	}
+    
 	public static Result validateUser() {
 		Form<User> userForm = Form.form(User.class).bindFromRequest();
 		if(userForm.hasErrors()) {
@@ -71,13 +77,24 @@ public class Users extends Controller {
 		} else {
 			System.out.println("Admin: " + userForm.get().isAdmin() + "-" + userForm.field("isAdmin").value() + "-");
 			// Set the checkbox field since form some reason it gets updated in the form but not in the object
-			if (userForm.field("isAdmin").value().equals("true")) {
+			String[] postAction = request().body().asFormUrlEncoded().get("action");
+			if (postAction == null || postAction.length == 0) {
+				return badRequest("You must provide a valid action");
+			} else {
+				String action = postAction[0];
+
+				if ("Cancel".equals(action)) {
+					// Returns to main userlist page
+					return index();
+				}
+			}
+			/*if (userForm.field("isAdmin").value().equals("true")) {
 				System.out.println("setting to true");
 				userForm.get().setAdmin(true);
 			} else {
 				System.out.println("setting to false");
 				userForm.get().setAdmin(false);
-			}
+			}*/
 			System.out.println("Admin after correction: " + userForm.get().isAdmin());
 			// If user exists, update
 			if (Ebean.find(User.class, userForm.get().getId()) != null) {	

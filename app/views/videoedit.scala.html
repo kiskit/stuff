@@ -33,8 +33,9 @@
         	@helper.select(videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
         	@helper.select(videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
         	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
-        	<button type="submit" class="btn btn-default">Terminé</button>
-        	<button type="button" class="btn btn-default">Annuler</button>
+        	
+        	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
+        	<button type="submit" class="btn btn-danger" name="action" value="Cancel">Annuler</button>
         	<button type="button" class="btn btn-default">Remplir informations vidéo</button>
         	        
 	}

@@ -1,4 +1,4 @@
-@(bForm: Form[Borrowing], user: User)
+@(longForm: Form[Videos.UserChoice], userList: List[User], user: User)
 @import helper.twitterBootstrap._
 
 <html>
@@ -21,28 +21,25 @@
                 </dd>
             </dl>
         </header>
-        
-    <div class="container">
-    
-	@helper.form(action = routes.Videos.validateBorrow(), 'class -> "form-horizontal") {
+ <div class="control-group">       
+ 	@helper.form(action = routes.Videos.validateBorrow) {
+		<div class="container">
 			<h2 >Emprunt Vidéo</h2>	
-            @if(bForm.hasGlobalErrors){
-				<p class="error">
-            		@bForm.globalError.message
-        		</p>
-    		}
-           
- <div class="control-group">
-           	@helper.inputText(bForm("userId"), '_label -> "Id utilisateur", '_showConstraints -> false, 'class -> "form-control")
-           	@helper.inputText(bForm("userName"), '_label -> "Nom", '_showConstraints -> false, 'class -> "form-control")
-           	@helper.inputText(bForm("videoId"), '_label -> "Id Vidéo", '_showConstraints -> false, 'class -> "form-control")
-           	@helper.inputText(bForm("videoTitle"), '_label -> "Titre Vidéo", '_showConstraints -> false, 'class -> "form-control", 'placeholder -> "Titre vidéo")
-        	        	
-        	<button type="submit" class="btn btn-primary">Terminé</button>
+			
+	
+			@helper.input(longForm("id"), '_label -> "my label") { (id, name, value, args) =>
+				<select name="@name" value="@value" id="@id" @toHtmlArgs(args)>@for(u <- userList){<option value="@u.getId()"> @u.getFullName()</option>}</select>	
+			} 
+					
+			
+         	<button type="submit" class="btn btn-primary">Terminé</button>
         	<button type="button" class="btn btn-danger">Annuler</button>
- </div>       	        
-	}
-    </div> <!-- /container -->
+		</div>
+	}       	        
+</div> <!-- /container -->
+
+
+
     </body>
 </html> 
 
