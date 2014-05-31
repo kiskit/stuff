@@ -36,13 +36,15 @@
            	@helper.inputText(userForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
            	@helper.inputText(userForm("name"), '_label -> "Nom", '_showConstraints -> false, 'class -> "form-control")
            	@helper.inputText(userForm("firstName"), '_label -> "Prénom", '_showConstraints -> false, 'class -> "form-control")
-			@if(userForm("email") != null) {           	           	
+			@if(userForm("email") != null) {        
+			<p> untruc </p>   	           	
            		@helper.input(userForm("email")) { (id, name, value, args) =>
-        			<input type="email" class="form-control" placeholder="Email address" name="@name" value="@value" id="@id" @toHtmlArgs(args) label="Email" showConstraints="false" required autofocus>
+        			<input type="email" class="form-control" placeholder="Email address" name="@name" value="@value" id="@id" label="Email" @toHtmlArgs(args)  showConstraints="false" required autofocus>
 	        	}
 	        } else {
+	        <p> unautre truc</p>
 	        	@helper.input(userForm("email")) { (id, name, value, args) =>
-        			<input type="email" class="form-control" placeholder="Email address2" name="@name" value="support@@orange.com" id="@id" @toHtmlArgs(args) label="Email2" showConstraints="false" required autofocus>
+        			<input type="email" class="form-control" placeholder="Email address2" name="@name" value="support@@orange.com" id="@id"  label="Email2" @toHtmlArgs(args) showConstraints="false" required autofocus>
 	        	}
 	        }
            	@helper.inputText(userForm("password"), '_label -> "Password", '_showConstraints -> false, 'class -> "form-control")
