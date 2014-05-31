@@ -25,6 +25,8 @@ POST	/borrow						controllers.Videos.validateBorrow()
 GET		/videos						controllers.Videos.index()
 GET		/videoedit/:id				controllers.Videos.editVideo(id: Long)
 POST	/videoedit					controllers.Videos.validateVideo()
+GET		/videoinfo/:id				controllers.Videos.videoInfo(id: Long)
+#POST	/videoedit/:id				controllers.Videos.validateVideoInfo(id: Long)
 
 # Video edition page
 GET		/users						controllers.Users.index()

@@ -56,9 +56,8 @@
         	@helper.checkbox(field = userForm("admin"), 'name -> "admin", '_label -> "Administrateur", '_showConstraints -> false, 'class -> "checkbox")
         	
         	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
-        	<form action=@routes.Application.admin method="GET" style="margin: 0px; padding: 0px;">
-				<button type="submit" class="btn btn-danger" name="action" value="Cancel">Annuler</button>
-			</form>        	
+			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
+			        	
  </div>       	        
 	}
 	

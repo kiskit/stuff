@@ -25,7 +25,6 @@
            
            	@helper.inputText(videoForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
            	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false, 'class -> "form-control")
-
            	
 			@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
            	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
@@ -35,9 +34,7 @@
         	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
         	
         	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
-        	<button type="submit" class="btn btn-danger" name="action" value="Cancel">Annuler</button>
-        	<button type="button" class="btn btn-default">Remplir informations vidéo</button>
-        	        
+			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/videos';">Retour</button>        	        
 	}
     </div> <!-- /container -->
     </body>

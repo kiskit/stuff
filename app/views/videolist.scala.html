@@ -36,7 +36,7 @@
                 		@v.getId()
                 	</td>
 					<td>
-						@v.getInputTitle()
+						<a href="videoinfo/@v.getId()" >@v.getInputTitle()</a>
 					</td> 
 					<td>
 						@v.getCreationDate()
@@ -82,6 +82,7 @@
         </table>
         <form action="videoedit/0" method="get" style="margin: 0px; padding: 0px;">
 			<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
+			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
 		</form>
     </div> <!-- /container -->
     </body>
