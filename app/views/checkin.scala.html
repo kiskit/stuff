@@ -44,11 +44,14 @@
 							document.getElementById("usersListSelect").selectedIndex = data['userId']; 
 							document.getElementById("vidInput").value = data['videos'][0]['id'];
 							if(data['videos'].length > 1) {
-								console.log();
+								console.log("More than 1 vid");
 								var inputs = document.getElementById("vidInputGroup");
 								var newInput = document.createElement('input');
 								newInput.setAttribute('value', data['videos'][1]['id']);
 								inputs.appendChild(newInput);
+							} else {
+								console.log("Only 1 vid");
+								removeAdditionalInput();
 							}
 						});
 					}
@@ -64,10 +67,19 @@
 							var inputs = document.getElementById("vidInputGroup");
 							var newInput = document.createElement('input');
 							newInput.setAttribute('value', data['videos'][1]['id']);
+							newInput.setAttribute('id', "additionalInput");
 							inputs.appendChild(newInput);
+						} else {
+							removeAdditionalInput();
 						}
 						
 					});
+				}
+				
+				function removeAdditionalInput() {
+					var inputs = document.getElementById("vidInputGroup");
+					var toRemove = document.getElementById("additionalInput");
+					inputs.removeChild(toRemove);
 				}
 				function changeUserOrVideos(result) {
 					// Assign user in the select box
