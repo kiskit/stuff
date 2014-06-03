@@ -1,0 +1,87 @@
+@(users: List[User], admin: User)
+<html>
+	<header>
+		<link href="bootstrap.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
+	</header>
+	<body>
+		<!-- form  -->
+		<form class="form-horizontal panel panel-default" role="form">
+		<div class="panel-heading" style="margin-left:50px;">Check in video</div>
+		<div class="form-group panel-body" style="margin-left:50px;">
+			<!-- drop down list. Each line sends a user id, meant to get the videos for this user -->
+			<!-- Don't forget to use helpers to populate form -->
+			<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
+				<option value="0">-- Selectionnez un utilisateur --</option>
+				@for(u <- users) {
+					<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
+				} 
+			</select>
+			<p id="userError"></p>
+			<div class="form-group panel-body" style="margin-left:10px;">
+			    <div class="row">
+			    	<div id="vidInputGroup">
+						<input id="vidInput" label="Identifiant Video"  placeholder="Identifiant video"> </input>
+					</div>
+					<button type="button" class="btn btn-primary" onclick="changeVideoSelect()">Remplir automatiquement</button>
+					<p id="videoError"></p>
+				</div>
+			</div>
+			
+			<button type="submit" class="btn btn-primary">Terminer</button>
+			<!-- <button type="button" class="btn-danger" onclick=";">Annuler</button> -->
+			<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
+			
+			<script>
+				var newDataRequest; 
+				function changeUserSelect(index) {
+					document.getElementById("parag").innerHTML=index;
+					if (index > 0) {
+						newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
+						newDataRequest.done(function(data){
+							document.getElementById("usersListSelect").selectedIndex = data['userId']; 
+							document.getElementById("vidInput").value = data['videos'][0]['id'];
+							if(data['videos'].length > 1) {
+								console.log();
+								var inputs = document.getElementById("vidInputGroup");
+								var newInput = document.createElement('input');
+								newInput.setAttribute('value', data['videos'][1]['id']);
+								inputs.appendChild(newInput);
+							}
+						});
+					}
+				}
+				function changeVideoSelect(index) {
+					document.getElementById("parag").innerHTML=document.getElementById("vidInput").value;
+					newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
+					newDataRequest.done(function(data){
+						document.getElementById("usersListSelect").selectedIndex = data['userId']; 
+						document.getElementById("vidInput").value = data['videos'][0]['id'];
+						if(data['videos'].length > 1) {
+							console.log();
+							var inputs = document.getElementById("vidInputGroup");
+							var newInput = document.createElement('input');
+							newInput.setAttribute('value', data['videos'][1]['id']);
+							inputs.appendChild(newInput);
+						}
+						
+					});
+				}
+				function changeUserOrVideos(result) {
+					// Assign user in the select box
+					// Fill in the videos list
+					document.getElementById("parag").innerHTML="Done and in the right function";
+				}
+			;
+			</script>
+			<!-- input field for video id with button. Once sent to the server, we get all the other videos and are able to deduce the user -->
+		</div>
+		</form>
+		<p id="parag"></p>
+	</body>
+</html>
+	
+
+  

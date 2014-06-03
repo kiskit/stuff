@@ -66,7 +66,7 @@ public class Application extends Controller {
 				return ok(index.render("Your new application is ready."));
 				
 			} else if ("Checkin".equals(action)) {
-				return ok(index.render("Your new application is ready."));
+				return Videos.checkin();
 				
 			} else if ("Checkout".equals(action)) {
 				return ok(index.render("Your new application is ready."));
@@ -93,76 +93,4 @@ public class Application extends Controller {
 		}
 	}
 }
-/*	public static Result index() {
 
-		Video vid = new Video();
-		vid.setId(12L);
-		vid.setContentType(Video.VideoContentType.MOVIE);
-		vid.setSupportType(Video.VideoSupportType.BLURAY);
-		vid.setInputTitle("Elysium");
-		vid.setCreationDate(new Date());
-		vid.setUpdateDate(new Date());
-		//vid.save();
-		//Ebean.save(vid);
-		Video v = Ebean.find(Video.class, 34L);
-		if (v == null) {
-			System.out.println("Video 34 not found");
-		}
-		v = Ebean.find(Video.class, 12L);
-		if (v == null) {
-			System.out.println("Video 12 not found");
-		}
-		return ok(index.render("Your new application is ready."));
-	}
-	public static Result user(){
-		System.out.println("Displaying user");
-		return ok(
-				user.render(Form.form(User.class)) 
-		);
-	}
-
-	public static Result validateUser(){
-		Form<User> userForm = Form.form(User.class).bindFromRequest();
-		System.out.println("Validating user");
-
-		if(userForm.hasErrors()){
-			System.out.println("Baaaad");
-			return badRequest(user.render(userForm));
-		}
-		else{
-			System.out.println("Goooood");
-			session().clear();
-			session("email", userForm.get().getEmail());
-			System.out.println(userForm.get().getFirstName());
-			System.out.println(userForm.get().getName());
-			if (userForm.get().isAdmin())
-				System.out.println("is admin");
-			else
-				System.out.println("is not admin");
-			return redirect(controllers.routes.Application.index());
-		}
-	}
-
-	public static Result insertUser(){
-		System.out.println("Inserting user");
-		return ok(index.render("Your new application is ready."));
-	}
-}
- */
-
-
-/*
- * Controllers
- * 		Application
- * 			login
- * 			admin page
- * 		Users
- * 			User edit
- * 			User list
- * 		Video
- * 			Video list
- * 			Video edit
- * 			Video information populate
- * Forms
- * 	
- */

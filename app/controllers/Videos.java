@@ -2,6 +2,7 @@ package controllers;
 
 import models.Borrowing;
 
+import models.Rental;
 import models.User;
 import models.Video;
 import models.Video.StateType;
@@ -15,11 +16,13 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.omertron.themoviedbapi.model.MovieDb;
 
 import controllers.Application.Login;
 
 import play.data.Form;
+import play.libs.Json;
 import play.libs.Yaml;
 import views.html.*;
 import java.util.Date;
@@ -62,6 +65,18 @@ public class Videos extends Controller {
 			Ebean.save(vid);
 
 			vid = new Video();
+			vid.setId(13L);
+			vid.setContentType(Video.ContentType.MOVIE);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("Eragon");
+			vid.setMovieId("10190");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setState(StateType.OK);
+			vid.setRentedTo(2L);
+			Ebean.save(vid);
+			
+			vid = new Video();
 			vid.setId(14L);
 			vid.setContentType(Video.ContentType.MOVIE);
 			vid.setSupportType(Video.SupportType.DVD);
@@ -70,6 +85,18 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
+
+			Ebean.save(vid);
+			vid = new Video();
+			vid.setId(15L);
+			vid.setContentType(Video.ContentType.MOVIE);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("Fight Club");
+			vid.setMovieId("10192");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setState(StateType.OK);
+			vid.setRentedTo(1L);
 			Ebean.save(vid);
 
 			vid = new Video();
@@ -79,7 +106,7 @@ public class Videos extends Controller {
 			vid.setInputTitle("Rome");
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
-			vid.setRentedTo(18L);
+			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
 
@@ -200,9 +227,40 @@ public class Videos extends Controller {
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		return ok(videolist.render(Video.find.findList(), new User()));
 	}
+	public static Result getUserRentals(Long userId, Long videoId) {
+		List<Video> list = null;
+		System.out.println("In get user rentals");
+		if (userId != 0) {
+			System.out.println("got a user id of " + userId);
+			// Get all videos rented by this user
+			list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+			
+		} else if (videoId != 0) {
+			System.out.println("got a video id of " + userId);
+			// Get the user who rented that video
+			Video v = Ebean.find(Video.class, videoId);
+			// TODO: test video not found
+			userId = v.getRentedTo();
+			// Get all videos rented by this user
+			list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+		}
+		Rental rental = new Rental();
+		rental.setUserId(userId);
+		for (Video rv: list) {
+			System.out.println("Adding rental " + userId + " for video " + rv.getId());
+		    rental.addVideo(rv.getId(), rv.getInputTitle());
+		}
+		System.out.println("Jason:" + Json.toJson(rental));
+		return ok(Json.toJson(rental));
+	}
 	public static class Checkout {
 		public Checkout() {
 			
 		}
 	}
+	
+	public static Result checkin() {
+		return ok(checkin.render(User.find.findList(), new User()));
+	}
+	
 }
