@@ -32,58 +32,20 @@ public class Video {
     public static Finder find = new Finder(Long.class, Video.class);
     private static String key = "c589965ca14962d100212f66a6a2b1c5";
 
-    public static MovieInfo getInfo(String id) {
-    	//String url = "https://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + title;
-    	/*String url = "https://api.themoviedb.org/3/movie/" + id + "?api_key="+key+"&language=fr";
-		URL obj;
-		try {
-			obj = new URL(url);
-
-			System.out.println("URL:" + url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("GET");
-
-			//add request header
-			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'GET' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
-
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			System.out.println(response);
-			in.close();
-			System.out.println("Mapping objects");			
-			ObjectMapper objectMapper = new ObjectMapper();
-			//		movies = objectMapper.readValue(response.toString(), new TypeReference<List<Movie>>(){});
-			//movies = new ArrayList<Movie>();
-			MovieInfo info = objectMapper.readValue(response.toString(), MovieInfo.class);
-			if (info != null) {
-				System.out.println("Info read" + info.toString());
-			} else {
-				System.out.println("No info read");
-			}
-			return info;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Dang, an exception");
-			e.printStackTrace();
-		}
-*/
-    	TheMovieDbApi api = null;
+    public static MovieDb getInfo(String id) {
+ 
+    	if (api == null)
     	try {
     		api = new TheMovieDbApi(key);
+    	} catch (MovieDbException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+    	}
+    	try {
 			MovieDb movie = api.getMovieInfo(Integer.parseInt(id), "fr");
 			System.out.println(movie.toString());
+			return movie;
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -93,7 +55,22 @@ public class Video {
 		}
     	return null;
     }
-    
+    public URL getPoster(MovieDb movie) {
+    	try {
+    		return getApi().createImageUrl(movie.getPosterPath(), "w185");
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+    }
+    public URL getBackdrop(MovieDb movie) {
+    	try {
+    		return getApi().createImageUrl(movie.getBackdropPath(), "w780");
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    		return null;
+    	}
+    }
 	@Id
 	private Long id;
 	@Constraints.Required
@@ -115,7 +92,9 @@ public class Video {
 	@Constraints.Required
     private StateType state;
     
-    
+    private static TheMovieDbApi api = null;
+
+	
 	public Long getId() {
 		return id;
 	}
@@ -172,6 +151,35 @@ public class Video {
 	}
 	public void setState(StateType state) {
 		this.state = state;
+	}
+	
+	
+	public static String getKey() {
+		return key;
+	}
+	public static void setKey(String key) {
+		Video.key = key;
+	}
+	public Date getRentalDate() {
+		return rentalDate;
+	}
+	public void setRentalDate(Date rentalDate) {
+		this.rentalDate = rentalDate;
+	}
+	public static TheMovieDbApi getApi() {
+		if (api == null) {
+			try {
+				return new TheMovieDbApi(key);
+			} catch (Exception e){
+				e.printStackTrace();
+				return null;
+			}
+		}
+		else
+			return api;
+	}
+	public static void setApi(TheMovieDbApi api) {
+		Video.api = api;
 	}
 	@Override
 	public String toString() {

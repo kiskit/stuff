@@ -1,11 +1,11 @@
 package controllers;
 
 import models.Borrowing;
-import models.MovieInfo;
+
 import models.User;
 import models.Video;
 import models.Video.StateType;
-import models.VideoInfo;
+
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -15,6 +15,7 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+import com.omertron.themoviedbapi.model.MovieDb;
 
 import controllers.Application.Login;
 
@@ -173,7 +174,13 @@ public class Videos extends Controller {
 	public static Result videoInfo(Long id) {
 		Video v = Ebean.find(Video.class, id);
 		String idVideo = v.getMovieId();
-		MovieInfo info = Video.getInfo(idVideo);
+		MovieDb info = Video.getInfo(idVideo);
+		try {
+			System.out.println("Info path: " + info.getPosterPath());
+			System.out.println("Image path: " + v.getApi().createImageUrl(info.getPosterPath(), "w185"));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return ok(videoinfo.render(v, info, new User()));
 	}
 	public static Result validateVideoInfo() {
@@ -193,121 +200,9 @@ public class Videos extends Controller {
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		return ok(videolist.render(Video.find.findList(), new User()));
 	}
-	//public static Result borrowList() {
-	//Form<Borrowing> bForm = Form.form(Borrowing.class).bindFromRequest();
-
-	/*
-		if(videoForm.hasErrors()) {
-			System.out.println("Bad request Validating video");
-			return badRequest(videoedit.render(videoForm));
-		} else {
-			User u = null;
-
-			if (bForm.get().userId != null) {
-				u = Ebean.find(User.class, bForm.get().userId); 
-			}
-			List <User> lUser = null;
-			if ((u == null) && (bForm.get().userName != null)) {
-				lUser = Ebean.find(User.class).where().ilike("userName", "%" + bForm.get().userName + "%").findList();
-			}
-			if (lUser != null) {
-				if (lUser.size() == 1) {
-					u = lUser.get(0);
-				} 
-			}
-			if (u != null) {
-
-			}*/
-	//return ok(index.render("Your new application is ready."));
-	//			return ok(borrowing.render(bForm, new User()));
-	//}
-
-}
-
-/*
-	@helper.input(videoForm("supportType"), '_label -> "Type de support") { (id, name, value, args) =>
-    		<select>
-    			<option value="DVD">DVD</option>
-    		 	<option value="BLURAY">Blu-Ray</option>
-    		</select> 
-    	}
-
-
- 	@helper.input(videoForm("inputTitle"), '_label -> "Titre vidéo", '_showConstraints -> false) { (id, name, value, args) =>
-        		<input type="text" class="form-control" value="nimportequoi"  required autofocus>
-        	}    	
-
- */
-/*	public static Result index() {
-
-		Video vid = new Video();
-		vid.setId(12L);
-		vid.setContentType(Video.VideoContentType.MOVIE);
-		vid.setSupportType(Video.VideoSupportType.BLURAY);
-		vid.setInputTitle("Elysium");
-		vid.setCreationDate(new Date());
-		vid.setUpdateDate(new Date());
-		//vid.save();
-		//Ebean.save(vid);
-		Video v = Ebean.find(Video.class, 34L);
-		if (v == null) {
-			System.out.println("Video 34 not found");
+	public static class Checkout {
+		public Checkout() {
+			
 		}
-		v = Ebean.find(Video.class, 12L);
-		if (v == null) {
-			System.out.println("Video 12 not found");
-		}
-		return ok(index.render("Your new application is ready."));
-	}
-	public static Result user(){
-		System.out.println("Displaying user");
-		return ok(
-				user.render(Form.form(User.class)) 
-		);
-	}
-
-	public static Result validateUser(){
-		Form<User> userForm = Form.form(User.class).bindFromRequest();
-		System.out.println("Validating user");
-
-		if(userForm.hasErrors()){
-			System.out.println("Baaaad");
-			return badRequest(user.render(userForm));
-		}
-		else{
-			System.out.println("Goooood");
-			session().clear();
-			session("email", userForm.get().getEmail());
-			System.out.println(userForm.get().getFirstName());
-			System.out.println(userForm.get().getName());
-			if (userForm.get().isAdmin())
-				System.out.println("is admin");
-			else
-				System.out.println("is not admin");
-			return redirect(controllers.routes.Application.index());
-		}
-	}
-
-	public static Result insertUser(){
-		System.out.println("Inserting user");
-		return ok(index.render("Your new application is ready."));
 	}
 }
- */
-
-
-/*
- * Controllers
- * 		Application
- * 			login
- * 			admin page
- * 		Users
- * 			User edit
- * 			User list
- * 		Video
- * 			Video list
- * 			Video edit
- * 			Video information populate
- * Forms
- * 	
- */

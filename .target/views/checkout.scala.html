@@ -1,4 +1,4 @@
-@(longForm: Form[Videos.UserChoice], userList: List[User], user: User)
+@(checkoutForm: Form[Videos.Checkout], userList: List[User], user: User)
 @import helper.twitterBootstrap._
 
 <html>
@@ -27,13 +27,13 @@
 			<h2 >Emprunt Vidéo</h2>	
 			
 	
-			@helper.input(longForm("id"), '_label -> "my label") { (id, name, value, args) =>
+			@helper.input(checkoutForm("id"), '_label -> "my label") { (id, name, value, args) =>
 				<select name="@name" value="@value" id="@id" @toHtmlArgs(args)>@for(u <- userList){<option value="@u.getId()"> @u.getFullName()</option>}</select>	
 			} 
 					
 			
-         	<button type="submit" class="btn btn-primary">Terminé</button>
-        	<button type="button" class="btn btn-danger">Annuler</button>
+         	<button type="submit" class="btn btn-primary">Enregistrer</button>
+        	<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
 		</div>
 	}       	        
 </div> <!-- /container -->

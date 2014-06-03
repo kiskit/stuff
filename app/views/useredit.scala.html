@@ -6,7 +6,7 @@
         <title>Edition d'un utilisateur</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
         <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
     </head>
     <body>
@@ -24,45 +24,41 @@
         
     <div class="container">
     
-	@helper.form(action = routes.Users.validateUser(), 'class -> "form-horizontal") {
-			<h2 >Edition Utilisateur</h2>	
+@helper.form(action = routes.Users.validateUser(), 'class -> "form-horizontal") {
+<h2 >Edition Utilisateur</h2>	
             @if(userForm.hasGlobalErrors){
-				<p class="error">
-            		@userForm.globalError.message
-        		</p>
-    		}
+<p class="error">
+             @userForm.globalError.message
+         </p>
+     }
            
  <div class="control-group">
-           	@helper.inputText(userForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
-           	@helper.inputText(userForm("name"), '_label -> "Nom", '_showConstraints -> false, 'class -> "form-control")
-           	@helper.inputText(userForm("firstName"), '_label -> "Prénom", '_showConstraints -> false, 'class -> "form-control")
-			@if(userForm("email") != null) {        
-			<p> untruc </p>   	           	
-           		@helper.input(userForm("email")) { (id, name, value, args) =>
-        			<input type="email" class="form-control" placeholder="Email address" name="@name" value="@value" id="@id" label="Email" @toHtmlArgs(args)  showConstraints="false" required autofocus>
-	        	}
-	        } else {
-	        <p> unautre truc</p>
-	        	@helper.input(userForm("email")) { (id, name, value, args) =>
-        			<input type="email" class="form-control" placeholder="Email address2" name="@name" value="support@@orange.com" id="@id"  label="Email2" @toHtmlArgs(args) showConstraints="false" required autofocus>
-	        	}
-	        }
-           	@helper.inputText(userForm("password"), '_label -> "Password", '_showConstraints -> false, 'class -> "form-control")
-			@helper.inputDate(userForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
-           	@helper.inputDate(userForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
-        	
-        	@helper.select(userForm("status"), options = Seq("ACTIVE"->"Actif", "INACTIVE"->"Inactif"), '_label -> "Statut", '_showConstraints -> false)
-        	
-        	@helper.checkbox(field = userForm("admin"), 'name -> "admin", '_label -> "Administrateur", '_showConstraints -> false, 'class -> "checkbox")
-        	
-        	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
-			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
-			        	
- </div>       	        
-	}
-	
+            @helper.inputText(userForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
+            @helper.inputText(userForm("name"), '_label -> "Nom", '_showConstraints -> false, 'class -> "form-control")
+            @helper.inputText(userForm("firstName"), '_label -> "Prénom", '_showConstraints -> false, 'class -> "form-control")
+@if(userForm("email") != null) {
+            @helper.input(userForm("email")) { (id, name, value, args) =>
+         <input type="email" class="form-control" placeholder="Email address" name="@name" value="@value" id="@id" @toHtmlArgs(args) label="Email" showConstraints="false" required autofocus>
+}
+} else {
+@helper.input(userForm("email")) { (id, name, value, args) =>
+         <input type="email" class="form-control" placeholder="Email address2" name="@name" value="support@@orange.com" id="@id" @toHtmlArgs(args) label="Email2" showConstraints="false" required autofocus>
+}
+}
+            @helper.inputText(userForm("password"), '_label -> "Password", '_showConstraints -> false, 'class -> "form-control")
+@helper.inputDate(userForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
+            @helper.inputDate(userForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
+        
+         @helper.select(userForm("status"), options = Seq("ACTIVE"->"Actif", "INACTIVE"->"Inactif"), '_label -> "Statut", '_showConstraints -> false)
+        
+         @helper.checkbox(field = userForm("admin"), 'name -> "admin", '_label -> "Administrateur", '_showConstraints -> false, 'class -> "checkbox")
+        
+         <button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
+<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
+
+ </div>
+}
+
     </div> <!-- /container -->
     </body>
 </html> 
-
-  
