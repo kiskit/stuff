@@ -1,0 +1,89 @@
+@(videos: List[Video], admin: User)
+<html>
+    <head>
+        <title>Login</title>
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
+        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
+    </head>
+    <body>
+        <header>
+            <!-- If user connected, then display the admin header-->
+            <!-- display filters: most recent, available only-->
+        </header>
+    <div class="container">
+		
+	<table class="table table-striped table-bordered sortable">
+		<tr>
+			<th>ID</th>
+			<th>Titre</th>
+			<th>Date d'ajout</th>
+			<th>Support</th>
+			
+			@if(admin != null) {
+				<th>
+					Etat
+				</th>
+			}
+			<th>TV/Film</th>
+			<th>Disponibilité</th>
+        </tr>
+        @for(v <- videos) {
+                <tr>
+                	<!-- if we're logged in, we need to be able to edit the movie -->
+					<td>
+                		@v.getId()
+                	</td>
+					<td>
+						<a href="videoinfo/@v.getId()" >@v.getInputTitle()</a>
+					</td> 
+					<td>
+						@v.getCreationDate()
+					</td>
+					<td>
+						@if(v.getSupportType() == Video.SupportType.BLURAY) {
+							BLURAY
+						} else {
+							DVD
+						}
+					</td>
+					@if(admin != null) {
+					<td>
+						@v.getState()
+					</td>
+					}
+					<td>
+						@if(v.getContentType() == Video.ContentType.TV) {
+							TV
+						} else {
+							Film
+						}
+					</td>
+					
+					<td>
+						@if(v.getRentedTo() == null) {
+							DISPONIBLE 
+						} else {
+							SORTI
+						} 
+					</td>
+					@if(admin !=null) {
+						<td>
+							<form action="videoedit/@v.getId()" method="get" style="margin: 0px; padding: 0px;">
+  								<!-- <button class="btn btn-mini btn-primary" type="submit" value="@v.getId()">Edit</button> -->
+  								<button class="btn btn-xs btn-primary" type="submit">Edit</button>
+							</form> 
+						 						
+						</td>
+					}
+                </tr>
+        }
+        </table>
+        <form action="videoedit/0" method="get" style="margin: 0px; padding: 0px;">
+			<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
+			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
+		</form>
+    </div> <!-- /container -->
+    </body>
+</html> 

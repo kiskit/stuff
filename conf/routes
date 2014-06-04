@@ -28,6 +28,7 @@ POST	/videoedit					controllers.Videos.validateVideo()
 GET		/videoinfo/:id				controllers.Videos.videoInfo(id: Long)
 #POST	/videoedit/:id				controllers.Videos.validateVideoInfo(id: Long)
 GET		/rentals					controllers.Videos.getUserRentals(userId: Long ?= 0, videoId: Long ?= 0)
+GET		/videolist					controllers.Videos.getVideoList(pageNumber: Integer, pageSize: Integer)
 
 # Video edition page
 GET		/users						controllers.Users.index()

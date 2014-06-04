@@ -135,9 +135,8 @@ public class Videos extends Controller {
 			u.setPassword(u.getFirstName());
 			Ebean.save(u);
 		}
-		return ok(videolist.render(Video.find.findList(), new User()));
-		//return ok(videolist.render(Video.find.findList(), null));
-
+		//return ok(videolist.render(Video.find.findList(), new User()));
+		return ok(videolist.render(Video.find.findList().size(), new User()));
 	}
 
 	public static Result editVideo(Long id) {
@@ -194,7 +193,8 @@ public class Videos extends Controller {
 				Ebean.save(videoForm.get());
 			}
 
-			return ok(videolist.render(Video.find.findList(), new User()));
+			//return ok(videolist.render(Video.find.findList(), new User()));
+			return ok(videolist.render(Video.find.findList().size(), new User()));
 		}
 
 	}
@@ -211,21 +211,24 @@ public class Videos extends Controller {
 		return ok(videoinfo.render(v, info, new User()));
 	}
 	public static Result validateVideoInfo() {
-		return ok(videolist.render(Video.find.findList(), new User()));
+		//return ok(videolist.render(Video.find.findList(), new User()));
+		return ok(videolist.render(Video.find.findList().size(), new User()));
 	}
 	public static Result borrow() {
 		Form<UserChoice> bForm = Form.form(UserChoice.class);
 		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
 		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		return ok(videolist.render(Video.find.findList(), new User()));
+		return ok(videolist.render(Video.find.findList().size(), new User()));
+		//return ok(videolist.render(Video.find.findList(), new User()));
 	}
 	public static Result validateBorrow() {
 		Form<UserChoice> bForm = Form.form(UserChoice.class);
 		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
 		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		return ok(videolist.render(Video.find.findList(), new User()));
+		//return ok(videolist.render(Video.find.findList(), new User()));
+		return ok(videolist.render(Video.find.findList().size(), new User()));
 	}
 	public static Result getUserRentals(Long userId, Long videoId) {
 		List<Video> list = null;
@@ -253,12 +256,21 @@ public class Videos extends Controller {
 		System.out.println("Jason:" + Json.toJson(rental));
 		return ok(Json.toJson(rental));
 	}
+	
+	public static Result getVideoList(Integer pageNumber, Integer pageSize) {
+		System.out.println("In get video list");
+		List<Video> videoList = Ebean.find(Video.class).where().findPagingList(pageSize).getPage(pageNumber - 1).getList();
+		System.out.println("List size " + videoList.size());
+		return ok(Json.toJson(videoList));
+	}
+	
 	public static class Checkout {
 		public Checkout() {
 			
 		}
 	}
 	
+
 	public static Result checkin() {
 		return ok(checkin.render(User.find.findList(), new User()));
 	}
