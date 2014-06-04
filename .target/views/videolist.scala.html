@@ -1,89 +1,209 @@
-@(videos: List[Video], admin: User)
+@(listSize: Integer, admin: User)
 <html>
     <head>
         <title>Login</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
+        <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
+        
+        <script>
+        	// Must be at least 3
+        	var maxPagerSize = 8;
+        	var pageSize = 1;
+        	var currentPage = 1;
+        	var lastPage = Math.ceil(@listSize / pageSize); 
+        	function scrollPager(direction) {
+        	}
+        	function initPager() {
+        		var pager = document.getElementById("pager");
+        		// Left <<
+        		var newliLeft = document.createElement('li');
+        		var newaLeft = document.createElement('a');
+        		newaLeft.setAttribute('onclick','pagerOnClickLeft()');
+        		newaLeft.setAttribute('id','pagerLeft');
+        		newliLeft.setAttribute('class', 'disabled');
+        		newaLeft.innerHTML="&laquo;";
+        		pager.appendChild(newliLeft);
+        		newliLeft.appendChild(newaLeft);
+        		// Right >>
+				var newliRight = document.createElement('li');
+        		var newaRight = document.createElement('a');
+        		newaRight.setAttribute('onclick','pagerOnClickRight()');
+        		newaRight.setAttribute('id','pagerRight');
+        		newaRight.innerHTML="&raquo;";
+        		pager.appendChild(newliRight);
+        		newliRight.appendChild(newaRight);
+        	}
+
+			function cleanPager() {
+				var leftButton = document.getElementById('pagerLeft');
+				var rightButton = document.getElementById('pagerRight');
+				for(var i = leftButton.nextSibling; i != rightButton;++i) {
+					i.parentNode.removeChild(i);					
+				}
+			}
+        	
+        	function addPagerPage(pageNumber) {
+        		var newli = document.createElement('li');
+        		var newa = document.createElement('a');
+        		newa.setAttribute('onclick','pagerOnClickPage(' + pageNumber + ')');
+        		newa.innerHTML=pageNumber;
+        		newli.appendChild(newa);
+        		return newli;
+        	}
+        	
+        	function buildPager() {
+        		console.log("building pager with " + lastPage + " pages");
+        		var indexLeft = currentPage;
+        		var indexRight = currentPage;
+        		// Add current page       		
+        		for (var i = 1; (i <= pageNumber) && (i <= maxPagerSize); i++) {        			
+        			// Create an element left
+        			var index = i;
+        			var idxLeft = currentPage - index;
+        			if (idxLeft >= 1) {
+        			      // Label idxLeft  					
+        			}
+        			++i;
+        			if (i <= maxPagerSize) {
+        				// Create element right
+        				if ((currentPage + index) <= maxPagerSize) {
+        				}
+        			}
+				}
+			}
+        	function redrawPager() {
+        		// Try to keep current page in the center
+        	}
+        	function pagerOnClickLeft() {
+        		console.log("clicked on left");
+        		pagerOnClickPage(currentPage == 1?1:currentPage - 1);
+        	}
+        	function pagerOnClickRight() {
+        		console.log("clicked on right");
+        		currentPage = (currentPage == lastPage?lastPage:currentPage + 1);
+        		pagerOnClickPage(currentPage);
+        	}
+       
+        	function pagerOnClickPage(pageNumber) {
+        		currentPage = pageNumber;
+        		console.log("Page number: " + pageNumber + " lastPage " + lastPage); 
+        		var pagerButon;
+        		pagerButton = document.getElementById("pagerLeft");
+        		pagerButton.removeAttribute('class');
+        		pagerButton.setAttribute('class',currentPage==1?'disabled':'');
+        		pagerButton = document.getElementById("pagerRight");
+        		pagerButton.removeAttribute('class');
+        		pagerButton.setAttribute('class',currentPage==lastPage?'disabled':'');
+        		
+        		deleteTable();
+        		populateTable();
+        		redrawPager();
+        	}
+        	function deleteTable() {
+        		console.log("Deleting table");
+        		var l = document.getElementById("listTable").rows.length; 
+        		console.log("Table length: " + l);
+				for (var i = 1, row; i < l; i++) {
+					console.log("Deleting table row " + i);
+				 	document.getElementById("listTable").deleteRow(1);
+				}
+        	}
+        	function populateTable() {
+        		console.log("Populating table");
+        		newDataRequest = $.ajax({url: "/videolist?pageNumber="+currentPage+"&pageSize=" + pageSize});						
+				newDataRequest.done(function(data){
+					var tableBody = document.getElementById("listTableBody"); 
+					for (var i = 0; i < data.length; i++) {
+						console.log("Populating table loop " + i);
+						var tr = document.createElement('tr');
+						var td;
+						td = document.createElement('td');
+						td.innerHTML=data[i]['id'];
+						tr.appendChild(td);
+						td = document.createElement('td');
+						td.innerHTML=data[i]['inputTitle'];
+						tr.appendChild(td);
+						td = document.createElement('td');
+						var d = new Date(data[i]['creationDate']);
+						//td.innerHTML=d.getUTCDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+						td.innerHTML=d.toLocaleDateString();
+						tr.appendChild(td);
+						td = document.createElement('td');
+						if (data[i]['supportType'] === "DVD") {
+							td.innerHTML='DVD';
+						} else {
+							td.innerHTML='Blu-Ray';
+						}
+						tr.appendChild(td);
+						td = document.createElement('td');
+						if (data[i]['contentType'] === "MOVIE") {
+							td.innerHTML='Film';
+						} else {
+							td.innerHTML='Série';
+						}
+						tr.appendChild(td);
+						// Availability
+						td = document.createElement('td');
+						if (data[i]['rentedTo'] == null) {
+							td.innerHTML='Disponible';
+						} else {
+							td.innerHTML='Sorti';
+						}
+						tr.appendChild(td);
+						// Edit button
+						td = document.createElement('td');
+						var button = document.createElement('a');
+						button.setAttribute('class', 'btn btn-primary btn-sm');
+						button.setAttribute('href', '/videoedit/' + data[i]['id']);
+						button.innerHTML="Edit";
+						td.appendChild(button);
+						tr.appendChild(td);
+						
+						//[{"id":14,"supportType":"DVD","contentType":"MOVIE","movieId":"10191","inputTitle":"Dragons","creationDate":1401867399497,"updateDate":1401867399497,"rentalDate":null,"rentedTo":null,"state":"OK"},
+						tableBody.appendChild(tr);
+					}			
+					
+				});		
+        	}
+        	function onLoad() {
+        		buildPager();
+        		populateTable();
+        	}
+        	; 
+        </script>
+        
+        
     </head>
-    <body>
+	<body onload="onLoad()">
         <header>
             <!-- If user connected, then display the admin header-->
             <!-- display filters: most recent, available only-->
         </header>
-    <div class="container">
-		
-	<table class="table table-striped table-bordered sortable">
+    <div id="mainContainer" class="container">
+	<div>
+	<table id="listTable" class="table table-striped table-bordered">
+	<tbody id="listTableBody">	
 		<tr>
 			<th>ID</th>
 			<th>Titre</th>
 			<th>Date d'ajout</th>
 			<th>Support</th>
-			
-			@if(admin != null) {
-				<th>
-					Etat
-				</th>
-			}
 			<th>TV/Film</th>
 			<th>Disponibilité</th>
         </tr>
-        @for(v <- videos) {
-                <tr>
-                	<!-- if we're logged in, we need to be able to edit the movie -->
-					<td>
-                		@v.getId()
-                	</td>
-					<td>
-						<a href="videoinfo/@v.getId()" >@v.getInputTitle()</a>
-					</td> 
-					<td>
-						@v.getCreationDate()
-					</td>
-					<td>
-						@if(v.getSupportType() == Video.SupportType.BLURAY) {
-							BLURAY
-						} else {
-							DVD
-						}
-					</td>
-					@if(admin != null) {
-					<td>
-						@v.getState()
-					</td>
-					}
-					<td>
-						@if(v.getContentType() == Video.ContentType.TV) {
-							TV
-						} else {
-							Film
-						}
-					</td>
-					
-					<td>
-						@if(v.getRentedTo() == null) {
-							DISPONIBLE 
-						} else {
-							SORTI
-						} 
-					</td>
-					@if(admin !=null) {
-						<td>
-							<form action="videoedit/@v.getId()" method="get" style="margin: 0px; padding: 0px;">
-  								<!-- <button class="btn btn-mini btn-primary" type="submit" value="@v.getId()">Edit</button> -->
-  								<button class="btn btn-xs btn-primary" type="submit">Edit</button>
-							</form> 
-						 						
-						</td>
-					}
-                </tr>
-        }
-        </table>
-        <form action="videoedit/0" method="get" style="margin: 0px; padding: 0px;">
-			<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
-			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
-		</form>
+    </tbody>
+	</table>
+	</div>
+	<div>
+	<ul id="pager" class="pagination">
+	</ul>
+	</div>
+	
+	<form action="videoedit/0" method="get" style="margin: 0px; padding: 0px;">
+		<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
+		<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
+	</form>
     </div> <!-- /container -->
     </body>
 </html> 

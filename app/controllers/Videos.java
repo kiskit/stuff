@@ -100,6 +100,16 @@ public class Videos extends Controller {
 			Ebean.save(vid);
 
 			vid = new Video();
+			vid.setId(16L);
+			vid.setContentType(Video.ContentType.TV);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("Frasier");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setRentedTo(1L);
+			vid.setState(StateType.BROKEN);
+			Ebean.save(vid);
+			vid = new Video();
 			vid.setId(18L);
 			vid.setContentType(Video.ContentType.TV);
 			vid.setSupportType(Video.SupportType.DVD);
@@ -109,7 +119,52 @@ public class Videos extends Controller {
 			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
-
+			
+			vid = new Video();
+			vid.setId(19L);
+			vid.setContentType(Video.ContentType.TV);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("24");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+//			vid.setRentedTo(1L);
+			vid.setState(StateType.BROKEN);
+			Ebean.save(vid);
+			
+			vid = new Video();
+			vid.setId(20L);
+			vid.setContentType(Video.ContentType.TV);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("Modern Family");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setRentedTo(1L);
+			vid.setState(StateType.BROKEN);
+			Ebean.save(vid);		
+			
+			vid = new Video();
+			vid.setId(21L);
+			vid.setContentType(Video.ContentType.TV);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("Lost");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setRentedTo(1L);
+			vid.setState(StateType.LOST);
+			Ebean.save(vid);
+			vid = new Video();
+			
+			vid.setId(22L);
+			vid.setContentType(Video.ContentType.MOVIE);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("Snake in the eagle's shadow");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setRentedTo(1L);
+			vid.setState(StateType.BROKEN);
+			Ebean.save(vid);
+			
+			
 		}
 		User u = Ebean.find(User.class).where().eq("id", 1).findUnique();
 		if (u == null) {

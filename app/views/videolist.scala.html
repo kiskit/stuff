@@ -7,57 +7,98 @@
         <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
         
         <script>
+        	// Must be at least 3
         	var maxPagerSize = 8;
-        	var pageSize = 2;
+        	var pageSize = 1;
         	var currentPage = 1;
         	var lastPage = Math.ceil(@listSize / pageSize); 
-        	function buildPager() {
-        		console.log("building pager with " + lastPage + " pages");
+        	function scrollPager(direction) {
+        	}
+        	function initPager() {
         		var pager = document.getElementById("pager");
         		// Left <<
         		var newliLeft = document.createElement('li');
         		var newaLeft = document.createElement('a');
-        		//newaLeft.setAttribute('href','/videolist?pageNumber=' + (currentPage > 1?currentPage - 1:1) + '&pageSize='+pageSize);
         		newaLeft.setAttribute('onclick','pagerOnClickLeft()');
-        		if (currentPage == 1) {newliLeft.setAttribute('class', 'disabled');}
+        		newaLeft.setAttribute('id','pagerLeft');
+        		newliLeft.setAttribute('class', 'disabled');
         		newaLeft.innerHTML="&laquo;";
         		pager.appendChild(newliLeft);
         		newliLeft.appendChild(newaLeft);
-        		// Pages numbers
-        		for (var i = 1; (i <= maxPagerSize) && (i <= lastPage); i++) {
-        			var newli = document.createElement('li');
-        			var newa = document.createElement('a');
-        			//newa.setAttribute('href','/videolist?pageNumber=' + i + '&pageSize='+pageSize);
-        			newa.setAttribute('onclick','pagerOnClickPage(' + i + ')');
-        			newa.innerHTML=i;
-        			newli.appendChild(newa);
-        			pager.appendChild(newli);
-				}
-				// Right >>
+        		// Right >>
 				var newliRight = document.createElement('li');
-				if (currentPage == 1) {newliRight.setAttribute('class', 'disabled');}
         		var newaRight = document.createElement('a');
-        		//newaRight.setAttribute('href','/videolist?pageNumber=' + (currentPage < lastPage?currentPage + 1:lastPage) + '&pageSize='+pageSize);
-        		newaLeft.setAttribute('onclick','pagerOnClickRight()');
+        		newaRight.setAttribute('onclick','pagerOnClickRight()');
+        		newaRight.setAttribute('id','pagerRight');
         		newaRight.innerHTML="&raquo;";
         		pager.appendChild(newliRight);
         		newliRight.appendChild(newaRight);
         	}
+
+			function cleanPager() {
+				var leftButton = document.getElementById('pagerLeft');
+				var rightButton = document.getElementById('pagerRight');
+				for(var i = leftButton.nextSibling; i != rightButton;++i) {
+					i.parentNode.removeChild(i);					
+				}
+			}
         	
+        	function addPagerPage(pageNumber) {
+        		var newli = document.createElement('li');
+        		var newa = document.createElement('a');
+        		newa.setAttribute('onclick','pagerOnClickPage(' + pageNumber + ')');
+        		newa.innerHTML=pageNumber;
+        		newli.appendChild(newa);
+        		return newli;
+        	}
+        	
+        	function buildPager() {
+        		console.log("building pager with " + lastPage + " pages");
+        		var indexLeft = currentPage;
+        		var indexRight = currentPage;
+        		// Add current page       		
+        		for (var i = 1; (i <= pageNumber) && (i <= maxPagerSize); i++) {        			
+        			// Create an element left
+        			var index = i;
+        			var idxLeft = currentPage - index;
+        			if (idxLeft >= 1) {
+        			      // Label idxLeft  					
+        			}
+        			++i;
+        			if (i <= maxPagerSize) {
+        				// Create element right
+        				if ((currentPage + index) <= maxPagerSize) {
+        				}
+        			}
+				}
+			}
+        	function redrawPager() {
+        		// Try to keep current page in the center
+        	}
         	function pagerOnClickLeft() {
         		console.log("clicked on left");
-        		currentPage = (currentPage == 1?1:currentPage - 1);
-        		pagerOnClickPage(currentPage);
+        		pagerOnClickPage(currentPage == 1?1:currentPage - 1);
         	}
         	function pagerOnClickRight() {
         		console.log("clicked on right");
         		currentPage = (currentPage == lastPage?lastPage:currentPage + 1);
         		pagerOnClickPage(currentPage);
         	}
+       
         	function pagerOnClickPage(pageNumber) {
         		currentPage = pageNumber;
+        		console.log("Page number: " + pageNumber + " lastPage " + lastPage); 
+        		var pagerButon;
+        		pagerButton = document.getElementById("pagerLeft");
+        		pagerButton.removeAttribute('class');
+        		pagerButton.setAttribute('class',currentPage==1?'disabled':'');
+        		pagerButton = document.getElementById("pagerRight");
+        		pagerButton.removeAttribute('class');
+        		pagerButton.setAttribute('class',currentPage==lastPage?'disabled':'');
+        		
         		deleteTable();
         		populateTable();
+        		redrawPager();
         	}
         	function deleteTable() {
         		console.log("Deleting table");
