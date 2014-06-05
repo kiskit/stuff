@@ -5,95 +5,164 @@
 		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
-	</header>
-	<body>
-		<!-- form  -->
-		<form class="form-horizontal panel panel-default" role="form">
-		<div class="panel-heading" style="margin-left:50px;">Check in video</div>
-		<div class="form-group panel-body" style="margin-left:50px;">
-			<!-- drop down list. Each line sends a user id, meant to get the videos for this user -->
-			<!-- Don't forget to use helpers to populate form -->
-			<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
-				<option value="0">-- Selectionnez un utilisateur --</option>
-				@for(u <- users) {
-					<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
-				} 
-			</select>
-			<p id="userError"></p>
-			<div class="form-group panel-body" style="margin-left:10px;">
-			    <div class="row">
-			    	<div id="vidInputGroup">
-						<input id="vidInput" label="Identifiant Video"  placeholder="Identifiant video"> </input>
-					</div>
-					<button type="button" class="btn btn-primary" onclick="changeVideoSelect()">Remplir automatiquement</button>
-					<p id="videoError"></p>
-				</div>
-			</div>
-			
-			<button type="submit" class="btn btn-primary">Terminer</button>
-			<!-- <button type="button" class="btn-danger" onclick=";">Annuler</button> -->
-			<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
-			
-			<script>
-				var newDataRequest; 
-				function changeUserSelect(index) {
-					document.getElementById("parag").innerHTML=index;
-					if (index > 0) {
-						newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
-						newDataRequest.done(function(data){
-							document.getElementById("usersListSelect").selectedIndex = data['userId']; 
-							document.getElementById("vidInput").value = data['videos'][0]['id'];
-							if(data['videos'].length > 1) {
-								console.log("More than 1 vid");
-								var inputs = document.getElementById("vidInputGroup");
-								var newInput = document.createElement('input');
-								newInput.setAttribute('value', data['videos'][1]['id']);
-								inputs.appendChild(newInput);
-							} else {
-								console.log("Only 1 vid");
-								removeAdditionalInput();
-							}
-						});
+		
+		<script>
+			// TODO: when no users, when no videos for a user
+			function applyFilter() {
+				// go through the select elements
+				var selectObject=document.getElementById("usersListSelect");
+				var pattern = new RegExp(".*" + document.getElementById("nameFilterInput").value + ".*", "i");
+				console.log("going through user list");
+				for (var i = 1; i < selectObject.length; i++){
+					// if regexp matches, enables, else disables
+					console.log("Testing " +selectObject[i].text);
+					if (pattern.exec(selectObject[i].text) == null) {
+						//selectObject.options[i].setAttribute('type', 'hidden');
+						selectObject.options[i].setAttribute('style', 'display:none;');
+						console.log("Disabling " + selectObject.options[i].value);
+					} else {
+						console.log("Clearing " + selectObject.options[i].value);
+						selectObject.options[i].removeAttribute('style');
 					}
 				}
-				function changeVideoSelect(index) {
-					document.getElementById("parag").innerHTML=document.getElementById("vidInput").value;
-					newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
+			}
+			function clearFilter() {
+				console.log("going through user list in clear");
+				document.getElementById("nameFilterInput").value = "";
+				var selectObject=document.getElementById("usersListSelect");
+				for (var i = 0; i < selectObject.length; i++){
+					console.log("Clearing " + selectObject.options[i].value);
+					selectObject.options[i].removeAttribute('style');
+				}
+			}
+		</script>
+		<script>
+			var newDataRequest; 
+			function changeUserSelect(index) {
+				document.getElementById("parag").innerHTML=index;
+				if (index > 0) {
+					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
 					newDataRequest.done(function(data){
 						document.getElementById("usersListSelect").selectedIndex = data['userId']; 
 						document.getElementById("vidInput").value = data['videos'][0]['id'];
 						if(data['videos'].length > 1) {
-							console.log();
+							console.log("More than 1 vid");
 							var inputs = document.getElementById("vidInputGroup");
 							var newInput = document.createElement('input');
 							newInput.setAttribute('value', data['videos'][1]['id']);
-							newInput.setAttribute('id', "additionalInput");
 							inputs.appendChild(newInput);
 						} else {
+							console.log("Only 1 vid");
 							removeAdditionalInput();
 						}
-						
 					});
 				}
+			}
+			
+			function selectUserById(id) {
+				var selectObject=document.getElementById("usersListSelect");
+				var i;
+				for (i = 1; (i < selectObject.length) && (selectObject.options[i].value != id); i++){}
+				if (i != selectObject.length) {
+					selectObject.selectedIndex = i; 
+				} else {
+					selectObject.selectedIndex = 0; 
+				}
+			}
+			function changeVideoSelect(index) {
+				clearFilter();
+				document.getElementById("parag").innerHTML=document.getElementById("vidInput").value;
+				newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
+				newDataRequest.done(function(data){
+					selectUserById(data['userId']);
+					populateVideosSelect(data);
+				});
+			}
+			function cleanVideosSelect() {
+				var videos = document.getElementById("videosSelect");
+			}
+			function populateVideosSelect(data) {
+				document.getElementById("vidInput").value = data['videos'][0]['id'];
+				var videos = document.getElementById("videosSelect");
+				for(var i = 0; i < data['videos'].length;++i) {
+					var newDiv = document.createElement("div");
+					var newSpan = document.createElement("span");
+					newSpan.setAttribute('class', 'input-group-addon');
+					var newCb = document.createElement("input");
+					newCb.setAttribute("type", "checkbox");
+					var newInput = document.createElement('input');
+					newSpan.appendChild(newCb);
+					newInput.setAttribute('value', data['videos'][i]['id']);
+					newInput.setAttribute('readonly', '');
+					newDiv.appendChild(newSpan);
+					newDiv.appendChild(newInput);
+					videos.appendChild(newDiv);
+				} 
+			}
+			function removeAdditionalInput() {
+				var inputs = document.getElementById("vidInputGroup");
+				var toRemove = inputs.childNodes[1];
+				inputs.removeChild(toRemove);
+			}
+			function changeUserOrVideos(result) {
+				// Assign user in the select box
+				// Fill in the videos list
+				document.getElementById("parag").innerHTML="Done and in the right function";
+			}
 				
-				function removeAdditionalInput() {
-					var inputs = document.getElementById("vidInputGroup");
-					var toRemove = document.getElementById("additionalInput");
-					inputs.removeChild(toRemove);
-				}
-				function changeUserOrVideos(result) {
-					// Assign user in the select box
-					// Fill in the videos list
-					document.getElementById("parag").innerHTML="Done and in the right function";
-				}
 			;
 			</script>
-			<!-- input field for video id with button. Once sent to the server, we get all the other videos and are able to deduce the user -->
+	</header>
+	<body>
+		<div class="panel panel-default">
+	  	<div class="panel-heading">Rendre des vidéos</div>
+  		<div class="panel-body">
+ 		<!-- search zone -->
+ 		<div class="panel panel-primary">
+ 			<div class="panel-heading">Rechercher par...</div>
+ 			<div class="panel-body">
+ 				<div>
+				<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
+				<button type="button" onclick="applyFilter()">Filtrer</button>
+				<button type="button" onclick="clearFilter()">Effacer filtre</button>
+				</div>
+				<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
+					<option value="">-- Selectionnez un utilisateur --</option>
+					@for(u <- users) {
+						<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
+					} 
+				</select>
+				<div id="vidInputGroup">
+					<input id="vidInput" label="Identifiant Video" placeholder="Identifiant video"> </input>
+					<button type="button" class="btn btn-primary" onclick="changeVideoSelect();">Retrouver utilisateur</button>
+				</div>
+			</div>
+ 		</div>
+ 
+		<!-- form  -->
+		<form class="form-horizontal panel panel-primary" role="form">
+		<div class="panel-heading">Vidéos à rendre</div>
+		<div class="form-group panel-body">
+		<div class="row">
+			<div class="input-group col-lg-6" id="videosSelect">
+				
+			</div>
+			<div>
+			<button type="submit" class="btn btn-primary">Terminer</button>
+			<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
+			</div>
+		</div>	
 		</div>
 		</form>
 		<p id="parag"></p>
 	</body>
 </html>
 	
-
+<script>
+/*
+	clean video list
+	build video list (with list)
+	clean filter
+	*/
+</script>
   
