@@ -71,7 +71,12 @@
 				newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
 				newDataRequest.done(function(data){
 					selectUserById(data['userId']);
-					populateVideosSelect(data);
+					if (data['userId'] == null) {
+						clearVideosSelect();
+						// TODO: error message (no user found)
+					} else {
+						populateVideosSelect(data);
+					}
 				});
 			}
 			function clearVideosSelect() {
@@ -91,6 +96,7 @@
 					newSpan.setAttribute('class', 'input-group-addon');
 					var newSpanInput = document.createElement("input");
 					newSpanInput.setAttribute("type", "checkbox");
+					newSpanInput.value = data['videos'][i]['id'];
 					var newInput = document.createElement("input");
 					newInput.setAttribute("type", "text");
 					newInput.setAttribute("class", "form-control");
@@ -102,7 +108,29 @@
 					videos.appendChild(newDiv);
 				} 
 			}
-
+			function doCheckin() {
+				// Get list of all checkboxes checked 
+				var videos = document.getElementById("videosSelect");
+				var queryString = null;
+				console.log("Entering for "  + videos.childNodes.length);
+				console.log("First child "  + videos.firstChild.firstChild.firstChild.value);
+				for (var i = 0; i < videos.childNodes.length; ++i) {
+					
+					if (videos.childNodes[i].firstChild.firstChild.checked == true) {
+						console.log("cb " + i + " is checked");
+						if (queryString == null) {
+							//console.log("init query string");
+							queryString = "?list=" + videos.childNodes[i].firstChild.firstChild.value;
+						} else {
+							queryString = queryString + "," + videos.childNodes[i].firstChild.firstChild.value;
+						}
+					} else {
+						console.log("cb " + i + " is not checked");
+					}
+				}
+				console.log("query string " + queryString);
+				window.location.href = "/doCheckin"+queryString;
+			}
 				
 			;
 			</script>
@@ -117,8 +145,8 @@
  			<div class="panel-body">
  				<div>
 				<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
-				<button type="button" onclick="applyFilter()">Filtrer</button>
-				<button type="button" onclick="clearFilter()">Effacer filtre</button>
+				<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
+				<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
 				</div>
 				<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
 					<option value="">-- Selectionnez un utilisateur --</option>
@@ -146,20 +174,11 @@
 		</div>  <!-- panel body -->
 		</div class="row">
 			<div>
-				<button type="submit" class="btn btn-primary">Enregistrer</button>
 				<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
+				<button type="button" class="btn btn-success" onclick="doCheckin();">Enregistrer</button>
 			</div>
 		</div> <!-- row -->	
 		</form>
 		<p id="parag"></p>
 	</body>
 </html>
-	
-<script>
-/*
-	clean video list
-	build video list (with list)
-	clean filter
-	*/
-</script>
-  
