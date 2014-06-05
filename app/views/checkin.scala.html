@@ -8,7 +8,6 @@
 		
 		
 		<script>
-			// TODO: when no users, when no videos for a user
 			
 			var newDataRequest;
 			
@@ -37,6 +36,7 @@
  
 			function clearVideoSearch() {
 				document.getElementById("vidInput").value = "";
+				document.getElementById("vidError").innerHTML="";
 			}
 			function changeUserSelect(index) {
 				//*  */document.getElementById("parag").innerHTML=index;
@@ -66,26 +66,33 @@
 				}
 			}
 			function changeVideoSelect(index) {
+				
+				if ((document.getElementById("vidInput").value == null) || (document.getElementById("vidInput").value === "")) {
+					return;
+				}
 				clearFilter();
-				//document.getElementById("parag").innerHTML=document.getElementById("vidInput").value;
+				clearVideosSelect();
 				newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
 				newDataRequest.done(function(data){
 					selectUserById(data['userId']);
 					if (data['userId'] == null) {
-						clearVideosSelect();
-						// TODO: error message (no user found)
+						console.log("no user id found");
+						document.getElementById("vidError").innerHTML="* Vidéo non sortie ou non trouvée";
+						window.setTimeout("clearVideoSearch();", 5000);
 					} else {
 						populateVideosSelect(data);
 					}
 				});
 			}
 			function clearVideosSelect() {
-				var videos = document.getElementById("videosSelect");				
+				console.log("clearing videos select");
+				var videos = document.getElementById("videosSelect");
 				while (videos.firstChild) {
 					  videos.removeChild(videos.firstChild);
 					}
 			}
 			function populateVideosSelect(data) {
+				console.log("not here");
 				clearVideosSelect();				
 				var videos = document.getElementById("videosSelect");
 				for(var i = 0; i < data['videos'].length;++i) {
@@ -144,9 +151,9 @@
  			<div class="panel-heading">Rechercher par...</div>
  			<div class="panel-body">
  				<div>
-				<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
-				<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
-				<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
+					<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
+					<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
+					<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
 				</div>
 				<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
 					<option value="">-- Selectionnez un utilisateur --</option>
@@ -157,7 +164,9 @@
 				<div id="vidInputGroup">
 					<input id="vidInput" label="Identifiant Video" placeholder="Identifiant video"> </input>
 					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
+					<p class="text-danger" id="vidError"> </p>
 				</div>
+
 			</div>
  		</div>
  

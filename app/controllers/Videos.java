@@ -298,7 +298,9 @@ public class Videos extends Controller {
 			// Get the user who rented that video
 			Video v = Ebean.find(Video.class, videoId);
 			// TODO: test video not found
-			userId = v.getRentedTo();
+			if (v != null)
+				userId = v.getRentedTo();
+			else userId = null;
 			if (userId == null) {
 				list = null;
 			} else {

@@ -1,46 +1,184 @@
-@(checkoutForm: Form[Videos.Checkout], userList: List[User], user: User)
-@import helper.twitterBootstrap._
-
+@(users: List[User], admin: User)
 <html>
-    <head>
-        <title>Edition d'un utilisateur</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
-    </head>
-    <body>
-        <header>
-            <!-- If user connected, then display the admin header-->
-            <!-- display filters: most recent, available only-->
-            <a href="@routes.Application.index" id="logo"><span>VideoTruc</span>tasks</a>
-            <dl id="user">
-                <dt>@user.getName() <span>(@user.getEmail())</span></dt>
-                <dd>
-                    <a href="@routes.Application.logout()">Logout</a>
-                </dd>
-            </dl>
-        </header>
- <div class="control-group">       
- 	@helper.form(action = routes.Videos.validateBorrow) {
-		<div class="container">
-			<h2 >Emprunt Vidéo</h2>	
+	<header>
+		<link href="bootstrap.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
+		
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
+		
+		
+		<script>
+			// TODO: when no users, when no videos for a user
 			
-	
-			@helper.input(checkoutForm("id"), '_label -> "my label") { (id, name, value, args) =>
-				<select name="@name" value="@value" id="@id" @toHtmlArgs(args)>@for(u <- userList){<option value="@u.getId()"> @u.getFullName()</option>}</select>	
-			} 
+			var newDataRequest;
+			
+			function applyFilter() {
+				// go through the select elements
+				var selectObject=document.getElementById("usersListSelect");
+				var pattern = new RegExp(".*" + document.getElementById("nameFilterInput").value + ".*", "i");
+				clearVideoSearch();
+				for (var i = 1; i < selectObject.length; i++){
+					// if regexp matches, enables, else disables
+					if (pattern.exec(selectObject[i].text) == null) {
+						selectObject.options[i].setAttribute('style', 'display:none;');
+					} else {
+						selectObject.options[i].removeAttribute('style');
+					}
+				}
+				selectUserById(0);
+			}
+			function clearFilter() {
+				document.getElementById("nameFilterInput").value = "";
+				var selectObject=document.getElementById("usersListSelect");
+				for (var i = 0; i < selectObject.length; i++){
+					selectObject.options[i].removeAttribute('style');
+				}
+			}
+ 
+			function clearVideoSearch() {
+				document.getElementById("vidInput").value = "";
+			}
+			function changeUserSelect(index) {
+				//*  */document.getElementById("parag").innerHTML=index;
+				clearVideoSearch();
+				if (index > 0) {
+					clearFilter();
+					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
+					newDataRequest.done(function(data){
+						console.log(data);
+						populateVideosSelect(data);
+					});
+				} else {
+					clearFilter();
+					clearVideoSearch();
+					clearVideosSelect();
+				}
+			}
+			
+			function selectUserById(id) {
+				var selectObject=document.getElementById("usersListSelect");
+				var i;
+				for (i = 1; (i < selectObject.length) && (selectObject.options[i].value != id); i++){}
+				if (i != selectObject.length) {
+					selectObject.selectedIndex = i; 
+				} else {
+					selectObject.selectedIndex = 0; 
+				}
+			}
+			function changeVideoSelect(index) {
+				clearFilter();
+				//document.getElementById("parag").innerHTML=document.getElementById("vidInput").value;
+				newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
+				newDataRequest.done(function(data){
+					selectUserById(data['userId']);
+					if (data['userId'] == null) {
+						clearVideosSelect();
+						// TODO: error message (no user found)
+					} else {
+						populateVideosSelect(data);
+					}
+				});
+			}
+			function clearVideosSelect() {
+				var videos = document.getElementById("videosSelect");				
+				while (videos.firstChild) {
+					  videos.removeChild(videos.firstChild);
+					}
+			}
+			function populateVideosSelect(data) {
+				clearVideosSelect();				
+				var videos = document.getElementById("videosSelect");
+				for(var i = 0; i < data['videos'].length;++i) {
 					
-			
-         	<button type="submit" class="btn btn-primary">Enregistrer</button>
-        	<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
-		</div>
-	}       	        
-</div> <!-- /container -->
-
-
-
-    </body>
-</html> 
-
-  
+					var newDiv = document.createElement("div");
+					newDiv.setAttribute("class", "input-group");
+					var newSpan = document.createElement("span");
+					newSpan.setAttribute('class', 'input-group-addon');
+					var newSpanInput = document.createElement("input");
+					newSpanInput.setAttribute("type", "checkbox");
+					newSpanInput.value = data['videos'][i]['id'];
+					var newInput = document.createElement("input");
+					newInput.setAttribute("type", "text");
+					newInput.setAttribute("class", "form-control");
+					newInput.setAttribute("readonly", "true");
+					newInput.setAttribute("placeholder", data['videos'][i]['id'] + " - " + data['videos'][i]['title']);
+					newSpan.appendChild(newSpanInput);
+					newDiv.appendChild(newSpan);
+					newDiv.appendChild(newInput);
+					videos.appendChild(newDiv);
+				} 
+			}
+			function doCheckin() {
+				// Get list of all checkboxes checked 
+				var videos = document.getElementById("videosSelect");
+				var queryString = null;
+				console.log("Entering for "  + videos.childNodes.length);
+				console.log("First child "  + videos.firstChild.firstChild.firstChild.value);
+				for (var i = 0; i < videos.childNodes.length; ++i) {
+					
+					if (videos.childNodes[i].firstChild.firstChild.checked == true) {
+						console.log("cb " + i + " is checked");
+						if (queryString == null) {
+							//console.log("init query string");
+							queryString = "?list=" + videos.childNodes[i].firstChild.firstChild.value;
+						} else {
+							queryString = queryString + "," + videos.childNodes[i].firstChild.firstChild.value;
+						}
+					} else {
+						console.log("cb " + i + " is not checked");
+					}
+				}
+				console.log("query string " + queryString);
+				window.location.href = "/doCheckin"+queryString;
+			}
+				
+			;
+			</script>
+	</header>
+	<body>
+		<div class="panel panel-default">
+	  	<div class="panel-heading">Rendre des vidéos</div>
+  		<div class="panel-body">
+ 		<!-- search zone -->
+ 		<div class="panel panel-primary">
+ 			<div class="panel-heading">Rechercher par...</div>
+ 			<div class="panel-body">
+ 				<div>
+				<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
+				<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
+				<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
+				</div>
+				<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
+					<option value="">-- Selectionnez un utilisateur --</option>
+					@for(u <- users) {
+						<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
+					} 
+				</select>
+				<div id="vidInputGroup">
+					<input id="vidInput" label="Identifiant Video" placeholder="Identifiant video"> </input>
+					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
+				</div>
+			</div>
+ 		</div>
+ 
+		<!-- form  -->
+		<form class="form-horizontal panel panel-primary" role="form">
+		<div class="panel-heading">Vidéos à rendre</div>
+		<div class="panel-body">
+		<div class="row">
+			<div class="input-group col-lg-6" id="videosSelect">
+				
+			</div> <!-- /input-group -->
+		</div> <!--  row -->
+		
+		</div>  <!-- panel body -->
+		</div class="row">
+			<div>
+				<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
+				<button type="button" class="btn btn-success" onclick="doCheckin();">Enregistrer</button>
+			</div>
+		</div> <!-- row -->	
+		</form>
+		<p id="parag"></p>
+	</body>
+</html>
