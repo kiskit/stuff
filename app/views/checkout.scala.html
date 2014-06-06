@@ -35,12 +35,8 @@
 				}
 			}
  
-			function clearVideoSearch() {
-				document.getElementById("vidInput").value = "";
-			}
 			function changeUserSelect(index) {
 				//*  */document.getElementById("parag").innerHTML=index;
-				clearVideoSearch();
 				if (index > 0) {
 					clearFilter();
 					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
@@ -183,7 +179,7 @@
 		</div class="row">
 			<div>
 				<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
-				<button type="button" class="btn btn-success" onclick="doCheckin();">Enregistrer</button>
+				<button type="button" class="btn btn-success" onclick="doCheckout();">Enregistrer</button>
 			</div>
 		</div> <!-- row -->	
 		</form>
