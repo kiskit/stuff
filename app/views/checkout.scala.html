@@ -154,20 +154,28 @@
 						<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
 					} 
 				</select>
-				<div id="vidInputGroup">
-					<input id="vidInput" label="Identifiant Video" placeholder="Identifiant video"> </input>
+				<div id="searchByIdGroup">
+					<input id="byIdInput" label="Identifiant Video" placeholder="Identifiant"> </input>
 					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
+				</div>
+				<div id="searchByTitleGroup">
+					<input id="byTitleInput" label="Titre Video" placeholder="Titre"> </input>
+					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
+				</div>
+				<div id="videoSearchResultGroup">
+					<input id="videoSearchResultInput" label="Titre Video" placeholder="Titre"> </input>
+					<button type="button" class="btn btn-info" onclick="addVideo();">Ajouter</button>
 				</div>
 			</div>
  		</div>
  
 		<!-- form  -->
-		<form class="form-horizontal panel panel-primary" role="form">
+		<div class="form-horizontal panel panel-primary">
 		<div class="panel-heading">Vidéos à rendre</div>
 		<div class="panel-body">
 		<div class="row">
-			<div class="input-group col-lg-6" id="videosSelect">
-				
+			<div class="input-group col-lg-6" id="videoList">
+				<!-- Elements of video (id, title) with a minus button -->
 			</div> <!-- /input-group -->
 		</div> <!--  row -->
 		
