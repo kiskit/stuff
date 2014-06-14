@@ -27,9 +27,12 @@ GET		/videoedit/:id				controllers.Videos.editVideo(id: Long)
 POST	/videoedit					controllers.Videos.validateVideo()
 GET		/videoinfo/:id				controllers.Videos.videoInfo(id: Long)
 #POST	/videoedit/:id				controllers.Videos.validateVideoInfo(id: Long)
+# Ajax methods
 GET		/rentals					controllers.Videos.getUserRentals(userId: Long ?= 0, videoId: Long ?= 0)
 GET		/videolist					controllers.Videos.getVideoList(pageNumber: Integer, pageSize: Integer)
+GET		/videobyid					controllers.Videos.getVideoById(id: Long)
 GET		/doCheckin					controllers.Videos.doCheckin(list: String)
+GET		/doCheckout					controllers.Videos.doCheckout(userId: Long, list: String)
 
 # Video edition page
 GET		/users						controllers.Users.index()

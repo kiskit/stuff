@@ -74,6 +74,7 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
 			vid.setRentedTo(2L);
+			vid.setRentalDate(new Date());
 			Ebean.save(vid);
 			
 			vid = new Video();
@@ -97,6 +98,7 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
 			vid.setRentedTo(1L);
+			vid.setRentalDate(new Date());
 			Ebean.save(vid);
 
 			vid = new Video();
@@ -107,6 +109,7 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
+			vid.setRentalDate(new Date());
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
 			vid = new Video();
@@ -116,6 +119,7 @@ public class Videos extends Controller {
 			vid.setInputTitle("Rome");
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
+			vid.setRentalDate(new Date());
 			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
@@ -138,6 +142,7 @@ public class Videos extends Controller {
 			vid.setInputTitle("Modern Family");
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
+			vid.setRentalDate(new Date());
 			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);		
@@ -150,6 +155,7 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
+			vid.setRentalDate(new Date());
 			vid.setState(StateType.LOST);
 			Ebean.save(vid);
 			vid = new Video();
@@ -161,6 +167,7 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
+			vid.setRentalDate(new Date());
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
 			
@@ -313,7 +320,7 @@ public class Videos extends Controller {
 		if (list != null) {
 			for (Video rv: list) {
 				System.out.println("Adding rental " + userId + " for video " + rv.getId());
-				rental.addVideo(rv.getId(), rv.getInputTitle());
+				rental.addVideo(rv.getId(), rv.getInputTitle(), rv.getRentalDate());
 			}
 		}
 		System.out.println("Jason:" + Json.toJson(rental));
@@ -326,14 +333,37 @@ public class Videos extends Controller {
 		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
-	
-	public static class Checkout {
-		public Checkout() {
-			
-		}
+	public static Result getVideoByTitle(String title) {
+		System.out.println("In get video list");
+		List<Video> videoList = Ebean.find(Video.class).where().like("inputTitle", title).findList();
+		System.out.println("List size " + videoList.size());
+		return ok(Json.toJson(videoList));
 	}
 	
-
+	public static Result getVideoById(Long id) {
+		System.out.println("In get video by ID");
+		return ok(Json.toJson(Ebean.find(Video.class, id)));
+	}
+	
+	public static Result checkout() {
+		return ok(checkout.render(User.find.findList(), new User()));
+	}
+	public static Result doCheckout(Long userId, String list) {
+		String[] parts = list.split(",");
+		for (int i = 0; i < parts.length; ++i) {
+			Video v = Ebean.find(Video.class, Long.parseLong(parts[i]));
+			if (v != null) {
+				v.setRentedTo(userId);
+				v.setRentalDate(new Date());
+				Ebean.save(v);
+			} else {
+				// TODO: error, a vid was not found
+				System.out.println("Video " + parts[i] + " not found");
+			}
+		}
+		return ok(checkout.render(User.find.findList(), new User()));
+	}
+	
 	public static Result checkin() {
 		return ok(checkin.render(User.find.findList(), new User()));
 	}

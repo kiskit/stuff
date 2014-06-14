@@ -1,22 +1,21 @@
 @(users: List[User], admin: User)
 <html>
 	<header>
-		<link href="bootstrap.css" rel="stylesheet" type="text/css">
 		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
-		
 		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
-		
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap-responsive.js")'></script>
 		
 		<script>
 			// TODO: when no users, when no videos for a user
 			
 			var newDataRequest;
 			
-			function applyFilter() {
+			function applyUserFilter() {
 				// go through the select elements
 				var selectObject=document.getElementById("usersListSelect");
-				var pattern = new RegExp(".*" + document.getElementById("nameFilterInput").value + ".*", "i");
-				clearVideoSearch();
+				var pattern = new RegExp(".*" + document.getElementById("userFilterInput").value + ".*", "i");
+				clearAllVideos();
 				for (var i = 1; i < selectObject.length; i++){
 					// if regexp matches, enables, else disables
 					if (pattern.exec(selectObject[i].text) == null) {
@@ -25,10 +24,10 @@
 						selectObject.options[i].removeAttribute('style');
 					}
 				}
-				selectUserById(0);
+				document.getElementById("usersListSelect").selectedIndex = 0;
 			}
-			function clearFilter() {
-				document.getElementById("nameFilterInput").value = "";
+			function clearUserFilter() {
+				document.getElementById("userFilterInput").value = "";
 				var selectObject=document.getElementById("usersListSelect");
 				for (var i = 0; i < selectObject.length; i++){
 					selectObject.options[i].removeAttribute('style');
@@ -36,77 +35,130 @@
 			}
  
 			function changeUserSelect(index) {
-				//*  */document.getElementById("parag").innerHTML=index;
 				if (index > 0) {
-					clearFilter();
+					clearUserFilter();
 					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
 					newDataRequest.done(function(data){
 						console.log(data);
-						populateVideosSelect(data);
+						// the user may already have videos checked out
+						if (data['videos'] != null) {
+							console.log("Error borrowing");
+							//displayErrorZone("Cet utilisateur a des videos non rendues");
+							populateBorrowedVideos(data);
+						}
+						
 					});
 				} else {
-					clearFilter();
-					clearVideoSearch();
-					clearVideosSelect();
+					clearUserFilter();
+					clearAllVideos();
 				}
+			}
+		
+			function displayErrorZone(errorMessage) {
+				var zone = document.createElement("div");
+				zone.setAttribute("class", "alert alert-danger fade in");
+				var button = document.createElement("button");
+				zone.appendChild(button);
+				button.setAttribute("aria-hidden", "true");
+				button.setAttribute("data-dismiss", "alert");
+				button.setAttribute("class", "close");
+				button.setAttribute("type", "button");
+				button.innerHTML="×";
+				var h = document.createElement("h4");
+				zone.appendChild(h);
+				h.innerHTML = "Attention";
+				
+				zone.appendChild(errorMessage);
+				var errorDiv = document.getElementById("errorDiv");
+				errorDiv.appendChild(zone);
+				console.log("Done erroring");
 			}
 			
-			function selectUserById(id) {
-				var selectObject=document.getElementById("usersListSelect");
-				var i;
-				for (i = 1; (i < selectObject.length) && (selectObject.options[i].value != id); i++){}
-				if (i != selectObject.length) {
-					selectObject.selectedIndex = i; 
-				} else {
-					selectObject.selectedIndex = 0; 
-				}
-			}
-			function changeVideoSelect(index) {
-				clearFilter();
-				//document.getElementById("parag").innerHTML=document.getElementById("vidInput").value;
-				newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
+			function changeVideoSelectById(index) {
+				//clearFilter();
+				newDataRequest = $.ajax({url: "/videobyid?id=" + document.getElementById("byIdInput").value});						
 				newDataRequest.done(function(data){
-					selectUserById(data['userId']);
-					if (data['userId'] == null) {
-						clearVideosSelect();
+					//selectUserById(data['userId']);
+					console.log("Got video " + data);
+					if (data['rentedTo'] != null) {
 						// TODO: error message (no user found)
+						var p = document.createElement("p");
+						p.innerHTML = "Video indisponible ("+ data['inputTitle']+ ")";
+						displayErrorZone(p);
 					} else {
-						populateVideosSelect(data);
+						clearSelectedVideos();
+						var newOption = document.createElement("option");
+						newOption.setAttribute("value", data['id']);
+						newOption.innerHTML = data['id'] + " - " + data['inputTitle'];
+						document.getElementById("selectedVideos").appendChild(newOption);
 					}
 				});
 			}
-			function clearVideosSelect() {
-				var videos = document.getElementById("videosSelect");				
+			function clearSelectedVideos() {
+				var videos = document.getElementById("selectedVideos");				
 				while (videos.firstChild) {
 					  videos.removeChild(videos.firstChild);
 					}
 			}
-			function populateVideosSelect(data) {
-				clearVideosSelect();				
-				var videos = document.getElementById("videosSelect");
-				for(var i = 0; i < data['videos'].length;++i) {
-					
-					var newDiv = document.createElement("div");
-					newDiv.setAttribute("class", "input-group");
-					var newSpan = document.createElement("span");
-					newSpan.setAttribute('class', 'input-group-addon');
-					var newSpanInput = document.createElement("input");
-					newSpanInput.setAttribute("type", "checkbox");
-					newSpanInput.value = data['videos'][i]['id'];
-					var newInput = document.createElement("input");
-					newInput.setAttribute("type", "text");
-					newInput.setAttribute("class", "form-control");
-					newInput.setAttribute("readonly", "true");
-					newInput.setAttribute("placeholder", data['videos'][i]['id'] + " - " + data['videos'][i]['title']);
-					newSpan.appendChild(newSpanInput);
-					newDiv.appendChild(newSpan);
-					newDiv.appendChild(newInput);
-					videos.appendChild(newDiv);
-				} 
+			function clearBorrowedVideos() {
+				var videos = document.getElementById("borrowedVideosDiv");
+				if (videos != null) {
+					while (videos.firstChild) {
+						  videos.removeChild(videos.firstChild);
+					}
+					videos.parentNode.removeChild(videos);
+				}
 			}
-			function doCheckin() {
+			function clearTitleSearch() {
+				var input = document.getElementById("byTitleInput");
+				input.value = "";
+			}
+			function clearIdSearch() {
+				var input = document.getElementById("byIdInput");
+				input.value = "";
+			}
+			function clearAllVideos() {
+				clearSelectedVideos();
+				clearBorrowedVideos();
+			}
+			function populateBorrowedVideos(data) {
+				clearBorrowedVideos();
+				var text = document.createElement("div");
+				var info = document.createElement("ul");
+
+				info.innerHTML="Cet utilisateur a des vidéos non rendues";
+				text.appendChild(info);
+				for(var i = 0; i < data['videos'].length;++i) {
+					var newP = document.createElement("li");
+					var date = new Date(data['videos'][i]['rentalDate']);
+					var newText = document.createTextNode(data['videos'][i]['id'] + " - " + data['videos'][i]['title'] + " (" + date.toLocaleDateString() + ")");
+					newP.appendChild(newText);
+					text.appendChild(newP);
+				}
+				displayErrorZone(text);
+			}
+			function newSelectedVideo(id, title) {
+				var newDiv = document.createElement("div");
+				var newLabel = document.createElement("p");
+				var newButton = document.createElement("button");
+				newButton.innerHTML="-";
+				newDiv.appendChild(newLabel);
+				newDiv.appendChild(newButton);
+				return newDiv;
+			}
+			function populateSelectedVideos(data) {
+				clearSelectedVideos();
+				var videos = document.getElementById("selectedVideos");
+				for(var i = 0; i < data['videos'].length;++i) {
+					var newLi = document.createElement("li");
+					newLi.setAttribute("value", data['videos'][i]['id']);
+					newLi.innerHTML = data['videos'][i]['id'] + " - " + data['videos'][i]['title'] + " (" + date.toLocaleDateString() + ")";
+				}
+				videos.appendChild();
+			}
+			function doCheckout() {
 				// Get list of all checkboxes checked 
-				var videos = document.getElementById("videosSelect");
+				var videos = document.getElementById("selectedVideos");
 				var queryString = null;
 				console.log("Entering for "  + videos.childNodes.length);
 				console.log("First child "  + videos.firstChild.firstChild.firstChild.value);
@@ -133,44 +185,60 @@
 	</header>
 	<body>
 		<div class="panel panel-default">
-	  	<div class="panel-heading">Rendre des vidéos</div>
+	  	<div class="panel-heading">Emprunter des vidéos</div>
+	  	
+	  	
+	  	
   		<div class="panel-body">
  		<!-- search zone -->
- 		<div class="panel panel-primary">
- 			<div class="panel-heading">Rechercher par...</div>
- 			<div class="panel-body">
- 				<div>
-				<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
-				<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
-				<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
-				</div>
-				<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
-					<option value="">-- Selectionnez un utilisateur --</option>
-					@for(u <- users) {
-						<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
-					} 
-				</select>
-				<div id="searchByIdGroup">
-					<input id="byIdInput" label="Identifiant Video" placeholder="Identifiant"> </input>
-					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
-				</div>
-				<div id="searchByTitleGroup">
-					<input id="byTitleInput" label="Titre Video" placeholder="Titre"> </input>
-					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
-				</div>
-				<div id="videoSearchResultGroup">
-					<input id="videoSearchResultInput" label="Titre Video" placeholder="Titre"> </input>
-					<button type="button" class="btn btn-info" onclick="addVideo();">Ajouter</button>
+ 			<div class="panel panel-primary">
+ 				<div class="panel-heading">Rechercher utilisateur</div>
+ 				<div class="panel-body">
+	 				<div>
+						<input type="text" id="userFilterInput" placeholder="Nom" label="Filter"></input>
+						<button type="button" class ="btn btn-primary btn-sm" onclick="applyUserFilter()">Filtrer</button>
+						<button type="button" class ="btn btn-warning btn-sm" onclick="clearUserFilter()">Effacer filtre</button>
+					</div>
+					<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
+						<option value="">-- Selectionnez un utilisateur --</option>
+						@for(u <- users) {
+							<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
+						} 
+					</select>
 				</div>
 			</div>
- 		</div>
- 
+	
+			<div class="panel panel-primary">
+				<div class="panel-heading">Rechercher vidéo par...</div>
+ 				<div class="panel-body">
+					<div id="searchByIdGroup">
+						<input id="byIdInput" label="Identifiant Video" placeholder="Identifiant"> </input>
+						<button type="button" class="btn btn-info" onclick="changeVideoSelectById();">Chercher par identifiant</button>
+					</div>
+					<div id="searchByTitleGroup">
+						<input id="byTitleInput" label="Titre Video" placeholder="Titre"> </input>
+						<button type="button" class="btn btn-info" onclick="changeVideoSelectByTitle();">Chercher par titre</button>
+					</div>
+					<div id="videoSearchResultGroup">
+						<select id="videoSearchResultInput"> </select>
+					
+						<button type="button" class="btn btn-info" onclick="addVideo();"><span class="glyphicon glyphicon-plus"></span></button>
+					</div>
+				</div>
+			</div>
+			
+			<div class="input-group col-lg-6" id="errorDiv">
+
+				
+			</div>
+
+		
 		<!-- form  -->
 		<div class="form-horizontal panel panel-primary">
-		<div class="panel-heading">Vidéos à rendre</div>
+		<div class="panel-heading">Vidéos empruntées</div>
 		<div class="panel-body">
 		<div class="row">
-			<div class="input-group col-lg-6" id="videoList">
+			<div class="input-group col-lg-6" id="selectedVideos">
 				<!-- Elements of video (id, title) with a minus button -->
 			</div> <!-- /input-group -->
 		</div> <!--  row -->
@@ -181,7 +249,8 @@
 				<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
 				<button type="button" class="btn btn-success" onclick="doCheckout();">Enregistrer</button>
 			</div>
-		</div> <!-- row -->	
+		</div> <!-- row -->
+			
 		</form>
 		<p id="parag"></p>
 	</body>

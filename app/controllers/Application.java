@@ -69,7 +69,7 @@ public class Application extends Controller {
 				return Videos.checkin();
 				
 			} else if ("Checkout".equals(action)) {
-				return ok(index.render("Your new application is ready."));
+				return Videos.checkout();
 				
 			} else {
 				// TODO: major problem, someone clicked on a non existent button
