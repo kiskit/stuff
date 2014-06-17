@@ -57,7 +57,6 @@
 				console.log("Done erroring");
 			}
 			
-		
 			function changeUserSelect(index) {
 				if (index > 0) {
 					clearUserFilter();
@@ -66,8 +65,6 @@
 						console.log(data);
 						// the user may already have videos checked out
 						if (data['videos'] != null) {
-							console.log("Error borrowing");
-							//displayErrorZone("Cet utilisateur a des videos non rendues");
 							populateBorrowedVideos(data);
 						} else {
 							clearBorrowedVideos();
@@ -90,6 +87,7 @@
 				}
 			}
 			function clearAllVideos() {
+			console.log("Clearing all video");
 				clearBorrowedVideos();
 			}
 			function populateBorrowedVideos(data) {
@@ -140,6 +138,7 @@
 				var input = document.createElement("button");
 				div.setAttribute("class", "input-group");
 				div.setAttribute("id", "vid"+id);
+				div.setAttribute("value", id);
 				span.setAttribute("class", "input-group-addon");
 				input.setAttribute("type", "button");
 				input.setAttribute("class", "btn btn-danger");
@@ -172,7 +171,6 @@
 						break;
 					}
 				}
-				console.log("adding if not present " + i + " " + videos.children.length);
 				if ((videos.children.length === undefined) || (i == videos.children.length)) {
 					var vid = createSelectedVideo(id, title);
 					videos.appendChild(vid);
@@ -185,6 +183,20 @@
 				while (modal.firstChild != null) {
 					modal.removeChild(modal.firstChild);
 				}
+				if (data.length == 0) {
+					document.getElementById("modalButtonOK").disabled = true;
+					// No video found
+					var p = document.createElement("div");
+					p.setAttribute("class", "text-danger lead");
+					p.innerHTML = "Aucune vidéo trouvée avec ce critère";
+					modal.appendChild(p);
+					
+				} else {
+					document.getElementById("modalButtonOK").disabled = false;
+				}
+				// Visible button
+				
+				
 				for(var i = 0; i < data.length;++i) {
 					var radio = document.createElement("input");
 
@@ -237,15 +249,20 @@
 			
 			function doCheckout() {
 				// check which user
-				//if () 
-				// Get list of all checkboxes checked
 				var videos = document.getElementById("selectedVideos");
-				var queryString = null;
-				for (var i = 0; i < videos.childNodes.length; ++i) {
-					 
+				var idx = document.getElementById("usersListSelect").selectedIndex;
+				if ((idx == 0) || (videos.children.length == 0))
+					return;	
+				// Get list of all checkboxes checked
+				var queryString = "?userId=" + document.getElementById("usersListSelect").children[idx].value+"&list=";
+				for (var i = 0; i < videos.children.length; ++i) {
+					if (i != 0) {
+						queryString += ",";
+					}
+					queryString += videos.children[i].id.replace("vid", "");
 				}
 				console.log("query string " + queryString);
-				window.location.href = "/doCheckin"+queryString;
+				window.location.href = "/doCheckout"+queryString;
 			}				
 			;
 			</script>
@@ -268,7 +285,7 @@
       </form>		
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="addItem();">Ajouter</button>
+        <button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="addItem();">Ajouter</button>
       </div>
     </div>
   </div>
