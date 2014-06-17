@@ -25,6 +25,8 @@ import play.data.Form;
 import play.libs.Json;
 import play.libs.Yaml;
 import views.html.*;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -170,7 +172,18 @@ public class Videos extends Controller {
 			vid.setRentalDate(new Date());
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
-			
+			vid = new Video();
+			vid.setId(23L);
+			vid.setContentType(Video.ContentType.MOVIE);
+			vid.setSupportType(Video.SupportType.DVD);
+			vid.setInputTitle("12 monkeys");
+			vid.setCreationDate(new Date());
+			vid.setUpdateDate(new Date());
+			vid.setRentedTo(null);
+			vid.setRentalDate(null);
+			vid.setState(StateType.BROKEN);
+			Ebean.save(vid);
+	
 			
 		}
 		User u = Ebean.find(User.class).where().eq("id", 1).findUnique();
@@ -196,6 +209,18 @@ public class Videos extends Controller {
 			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
 			u.setPassword(u.getFirstName());
 			Ebean.save(u);
+			
+			u = new User();
+			u.setId(10L);
+			u.setName("Deslaugiers");
+			u.setFirstName("Marina");
+			u.setAdmin(false);
+			u.setCreationDate(new Date());
+			u.setUpdateDate(new Date());
+			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
+			u.setPassword(u.getFirstName());
+			Ebean.save(u);
+			
 		}
 		//return ok(videolist.render(Video.find.findList(), new User()));
 		return ok(videolist.render(Video.find.findList().size(), new User()));
@@ -334,16 +359,36 @@ public class Videos extends Controller {
 		return ok(Json.toJson(videoList));
 	}
 	public static Result getVideoByTitle(String title) {
-		System.out.println("In get video list");
-		List<Video> videoList = Ebean.find(Video.class).where().like("inputTitle", title).findList();
+		System.out.println("In get video list by title");
+		List<Video> videoList = Ebean.find(Video.class).where().ilike("inputTitle", "%" + title + "%").findList();
 		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
-	
 	public static Result getVideoById(Long id) {
 		System.out.println("In get video by ID");
 		return ok(Json.toJson(Ebean.find(Video.class, id)));
 	}
+	public static Result getVideoByTitleOrId(String titleOrId) {
+		System.out.println("In get video list by title or ID " + titleOrId );
+		Video v = null;
+		try {
+			v = Ebean.find(Video.class, Long.parseLong(titleOrId));
+		} catch (Exception e) {
+			// not a number
+			System.out.println("Title but not id");
+		}
+		List<Video> videoList = null;
+		if (v != null) {
+			videoList = new ArrayList<Video>();
+			videoList.add(v);
+			videoList.addAll(Ebean.find(Video.class).where().ilike("inputTitle", "%" + titleOrId + "%").findList());
+		} else {
+			videoList = Ebean.find(Video.class).where().ilike("inputTitle", "%" + titleOrId + "%").findList();
+		}
+		System.out.println("List size " + videoList.size());
+		return ok(Json.toJson(videoList));
+	}
+	
 	
 	public static Result checkout() {
 		return ok(checkout.render(User.find.findList(), new User()));
