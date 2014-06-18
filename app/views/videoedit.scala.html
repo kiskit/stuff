@@ -7,9 +7,33 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap-responsive.js")'></script>
         <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
     </head>
     <body>
+    
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+      </div>
+      <div class="modal-body" id="modalBody">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>   
+    
+    
+    
         <header>
             <!-- If user connected, then display the admin header-->
             <!-- display filters: most recent, available only-->
@@ -32,9 +56,21 @@
         	@helper.select(videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
         	@helper.select(videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
         	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
-        	
-        	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
+
+
+<div>
+<span>
+	@helper.input(videoForm("movieId"), '_label -> null) { (id, name, value, args) =>
+	    <input type="text" name="@name" id="@id" @toHtmlArgs(args)>
+	}
+</span>
+<span>
+<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Informations Vidéo</button>
+</span>
+</div>
+
 			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/videos';">Retour</button>        	        
+        	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
 	}
     </div> <!-- /container -->
     </body>
