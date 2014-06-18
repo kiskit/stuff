@@ -427,4 +427,9 @@ public class Videos extends Controller {
 		}
 		return ok(checkin.render(User.find.findList(), new User()));
 	}
+	
+	// Fetch movie identity on TMDB
+	public static Result getTMDBTitles(String title) {
+		return ok(Json.toJson(Video.getMatchingTitles(title)));
+	}
 }

@@ -12,12 +12,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.omertron.themoviedbapi.MovieDbException;
 import com.omertron.themoviedbapi.TheMovieDbApi;
 import com.omertron.themoviedbapi.model.MovieDb;
+import com.omertron.themoviedbapi.results.TmdbResultsList;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 public class Video {
@@ -32,6 +34,34 @@ public class Video {
     public static Finder find = new Finder(Long.class, Video.class);
     private static String key = "c589965ca14962d100212f66a6a2b1c5";
 
+    
+    public static List<MovieDb> getMatchingTitles(String title) {
+    	List<MovieDb> list = null;
+    	if (api == null)  {
+    	   	try {
+    	  		api = new TheMovieDbApi(key);
+    	   	} catch (MovieDbException e) {
+    	   		// TODO Auto-generated catch block
+    	   		e.printStackTrace();
+    			return null;
+    	  	}
+    	}
+    	System.out.println("Looking for title " + title);
+    	try {
+    		// Could be NPE
+    		TmdbResultsList<MovieDb> tmdblist = api.searchMovie(title, 0, "en", true, 10);
+    		if (tmdblist != null) {
+    			
+    			list = tmdblist.getResults();	
+    			System.out.println("Results " + list.size());
+    		}
+    	} catch (MovieDbException e) {
+	   		// TODO Auto-generated catch block
+	   		e.printStackTrace();    		
+    	}
+    	return list;
+    }
+    
     public static MovieDb getInfo(String id) {
  
     	if (api == null)
