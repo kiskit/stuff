@@ -1,10 +1,12 @@
 @(listSize: Integer, admin: User)
 <html>
     <head>
+    
         <title>Login</title>
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
         <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
+  		<script type="text/javascript" src='@routes.Assets.at("javascripts/css3-mediaqueries.js")'></script>
 
         <script>        
         	// Must be at least 3
@@ -43,7 +45,7 @@
 				newDataRequest.done(function(data){
 					var tableBody = document.getElementById("listTableBody"); 
 					for (var i = 0; i < data.length; i++) {
-						console.log("Populating table loop " + i);
+						//console.log("Populating table loop " + i);
 						var tr = document.createElement('tr');
 						var td;
 						td = document.createElement('td');
@@ -108,6 +110,31 @@
             <!-- If user connected, then display the admin header-->
             <!-- display filters: most recent, available only-->
         </header>
+        
+        
+    <div>
+      <div class="navbar navbar-default">
+        <div class="navbar-inner">
+          <div class="container">
+            <ul class="nav navbar-nav navbar-left">
+              <li>
+                <p class="navbar-text"><big style="color: #F5b000;"><strong>Orange Labs Vidéo Club</strong></big></p>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <p class="navbar-text">Logged in as</p>
+              </li>
+              <li>
+                <!--<a class="btn btn-link" href="#">Se déconnecter</a> -->
+                <button class="btn btn-primary navbar-btn">Se déconnecter</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>     
+        
+        
     <div id="mainContainer" class="container">
 	<div class="panel panel-default">
   	<div class="panel-heading">Liste des vidéos</div>
@@ -130,14 +157,15 @@
 	<div>
 	<ul class="pager" id="pager">
   		<li class="previous" ><a type="button" onclick="onClickLeft();" id="pagerLeft">&larr;Précédente</a></li>
-  		<li class"disabled" id="pageNumberP"></li>
+  		<li class="disabled" id="pageNumberP"></li>
   		<li class="next"><a type="button" onclick="onClickRight();" id="pagerRight">Suivante &rarr;</a></li>
 	</ul>
 	</div>
 	
 	<form action="videoedit/0" method="get" style="margin: 0px; padding: 0px;">
-		<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
 		<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
+		<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
+
 	</form>
 	</div>
     </div> <!-- /container -->

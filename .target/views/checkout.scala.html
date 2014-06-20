@@ -34,29 +34,12 @@
 				}
 			}
  
-			function changeUserSelect(index) {
-				if (index > 0) {
-					clearUserFilter();
-					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
-					newDataRequest.done(function(data){
-						console.log(data);
-						// the user may already have videos checked out
-						if (data['videos'] != null) {
-							console.log("Error borrowing");
-							//displayErrorZone("Cet utilisateur a des videos non rendues");
-							populateBorrowedVideos(data);
-						}
-						
-					});
-				} else {
-					clearUserFilter();
-					clearAllVideos();
-				}
-			}
-		
-			function displayErrorZone(errorMessage) {
+			function displayErrorZone(errorMessage, id) {
 				var zone = document.createElement("div");
 				zone.setAttribute("class", "alert alert-danger fade in");
+				zone.setAttribute("id", id);
+				
+				//zone.setAttribute("class", "alert alert-danger fade in");
 				var button = document.createElement("button");
 				zone.appendChild(button);
 				button.setAttribute("aria-hidden", "true");
@@ -74,51 +57,37 @@
 				console.log("Done erroring");
 			}
 			
-			function changeVideoSelectById(index) {
-				//clearFilter();
-				newDataRequest = $.ajax({url: "/videobyid?id=" + document.getElementById("byIdInput").value});						
-				newDataRequest.done(function(data){
-					//selectUserById(data['userId']);
-					console.log("Got video " + data);
-					if (data['rentedTo'] != null) {
-						// TODO: error message (no user found)
-						var p = document.createElement("p");
-						p.innerHTML = "Video indisponible ("+ data['inputTitle']+ ")";
-						displayErrorZone(p);
-					} else {
-						clearSelectedVideos();
-						var newOption = document.createElement("option");
-						newOption.setAttribute("value", data['id']);
-						newOption.innerHTML = data['id'] + " - " + data['inputTitle'];
-						document.getElementById("selectedVideos").appendChild(newOption);
-					}
-				});
-			}
-			function clearSelectedVideos() {
-				var videos = document.getElementById("selectedVideos");				
-				while (videos.firstChild) {
-					  videos.removeChild(videos.firstChild);
-					}
+			function changeUserSelect(index) {
+				if (index > 0) {
+					clearUserFilter();
+					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
+					newDataRequest.done(function(data){
+						console.log(data);
+						// the user may already have videos checked out
+						if (data['videos'] != null) {
+							populateBorrowedVideos(data);
+						} else {
+							clearBorrowedVideos();
+						}
+					});
+				} else {
+					clearUserFilter();
+					clearAllVideos();
+				}
 			}
 			function clearBorrowedVideos() {
 				var videos = document.getElementById("borrowedVideosDiv");
+				console.log("Clearing video div");
 				if (videos != null) {
-					while (videos.firstChild) {
+				console.log("Found the borrowed video div");
+					while (videos.firstChild != null) {
 						  videos.removeChild(videos.firstChild);
 					}
 					videos.parentNode.removeChild(videos);
 				}
 			}
-			function clearTitleSearch() {
-				var input = document.getElementById("byTitleInput");
-				input.value = "";
-			}
-			function clearIdSearch() {
-				var input = document.getElementById("byIdInput");
-				input.value = "";
-			}
 			function clearAllVideos() {
-				clearSelectedVideos();
+			console.log("Clearing all video");
 				clearBorrowedVideos();
 			}
 			function populateBorrowedVideos(data) {
@@ -126,7 +95,7 @@
 				var text = document.createElement("div");
 				var info = document.createElement("ul");
 
-				info.innerHTML="Cet utilisateur a des vidéos non rendues";
+				info.innerHTML="Cet abonné a des vidéos non rendues";
 				text.appendChild(info);
 				for(var i = 0; i < data['videos'].length;++i) {
 					var newP = document.createElement("li");
@@ -135,8 +104,127 @@
 					newP.appendChild(newText);
 					text.appendChild(newP);
 				}
-				displayErrorZone(text);
+				displayErrorZone(text, "borrowedVideosDiv");
 			}
+			
+			
+			function addItem() {
+				document.getElementById("videoSearchInput").value="";
+				// get selected radio
+				console.log("In add item");
+				var modal = document.getElementById("modalBody");
+				while (modal.firstChild != null) {
+					radio = modal.firstChild;
+					if (radio.type == "radio") {
+						if (radio.checked) {
+							break;
+						}
+					}	
+					modal.removeChild(modal.firstChild);
+				}
+				console.log("Adding " + radio.id + " - " + radio.value);
+				// Look for the same item already added
+				// Add item with minus button
+				while (modal.firstChild != null) {
+					modal.removeChild(modal.firstChild);
+				}
+				addItemIfNotPresent(radio.id, radio.value);
+			}
+			
+			function createSelectedVideo(id, title) {
+			console.log("creating div");
+				var div = document.createElement("div");
+				var span = document.createElement("span");
+				var input = document.createElement("button");
+				div.setAttribute("class", "input-group");
+				div.setAttribute("id", "vid"+id);
+				div.setAttribute("value", id);
+				span.setAttribute("class", "input-group-addon");
+				input.setAttribute("type", "button");
+				input.setAttribute("class", "btn btn-danger");
+				input.setAttribute("onclick", "removeItem(\"" + id + "\");");
+				input.innerHTML="&times;";
+				var spantxt = document.createElement("span");
+				spantxt.innerHTML=title;
+				spantxt.value=id;
+				spantxt.setAttribute("class", "input-group-addon");
+				div.appendChild(span);
+				div.appendChild(spantxt);
+				
+				span.appendChild(input);
+				return div;
+			}
+			
+			function removeItem(id) {
+				var vid = document.getElementById("vid"+id);
+				if (vid != null) {
+					vid.parentNode.removeChild(vid);
+				}
+			}
+			
+			function addItemIfNotPresent(id, title) {
+				var videos = document.getElementById("selectedVideos");
+				var i = 0;
+				for (; i < videos.children.length; ++i) {
+					if (videos.children[i].id === "vid"+id) {
+						console.log("Analyzing "+ videos.children[i].id + " against vid" + id); 
+						break;
+					}
+				}
+				if ((videos.children.length === undefined) || (i == videos.children.length)) {
+					var vid = createSelectedVideo(id, title);
+					videos.appendChild(vid);
+				}
+			}
+			
+			function buildModal(data) {
+				var modal = document.getElementById("modalBody");
+				
+				while (modal.firstChild != null) {
+					modal.removeChild(modal.firstChild);
+				}
+				if (data.length == 0) {
+					document.getElementById("modalButtonOK").disabled = true;
+					// No video found
+					var p = document.createElement("div");
+					p.setAttribute("class", "text-danger lead");
+					p.innerHTML = "Aucune vidéo trouvée avec ce critère";
+					modal.appendChild(p);
+					
+				} else {
+					document.getElementById("modalButtonOK").disabled = false;
+				}
+				// Visible button
+				
+				
+				for(var i = 0; i < data.length;++i) {
+					var radio = document.createElement("input");
+
+					if (i != 0) {
+						var br = document.createElement("br");
+						modal.appendChild(br);
+					} else {
+						radio.setAttribute("checked", "true");
+					}					
+					radio.setAttribute("type", "radio");
+					radio.setAttribute("name", "chooseVid");
+					radio.setAttribute("id",  data[i]['id']);
+					radio.setAttribute("value",  data[i]['id'] + " - " + data[i]['inputTitle']);
+					modal.appendChild(radio);
+					var span = document.createElement("span");
+					span.innerHTML = data[i]['id'] + " - " + data[i]['inputTitle']
+					modal.appendChild(span);
+				}
+			}
+			
+			function searchVideoByTitleOrId() {
+				var input = document.getElementById("videoSearchInput");
+				newDataRequest = $.ajax({url: "/videobytitleorid?titleOrId=" + input.value});						
+				newDataRequest.done(function(data){
+					buildModal(data);
+				});
+			}
+			
 			function newSelectedVideo(id, title) {
 				var newDiv = document.createElement("div");
 				var newLabel = document.createElement("p");
@@ -146,6 +234,7 @@
 				newDiv.appendChild(newButton);
 				return newDiv;
 			}
+
 			function populateSelectedVideos(data) {
 				clearSelectedVideos();
 				var videos = document.getElementById("selectedVideos");
@@ -156,34 +245,55 @@
 				}
 				videos.appendChild();
 			}
+						
+			
 			function doCheckout() {
-				// Get list of all checkboxes checked 
+				// check which user
 				var videos = document.getElementById("selectedVideos");
-				var queryString = null;
-				console.log("Entering for "  + videos.childNodes.length);
-				console.log("First child "  + videos.firstChild.firstChild.firstChild.value);
-				for (var i = 0; i < videos.childNodes.length; ++i) {
-					
-					if (videos.childNodes[i].firstChild.firstChild.checked == true) {
-						console.log("cb " + i + " is checked");
-						if (queryString == null) {
-							//console.log("init query string");
-							queryString = "?list=" + videos.childNodes[i].firstChild.firstChild.value;
-						} else {
-							queryString = queryString + "," + videos.childNodes[i].firstChild.firstChild.value;
-						}
-					} else {
-						console.log("cb " + i + " is not checked");
+				var idx = document.getElementById("usersListSelect").selectedIndex;
+				if ((idx == 0) || (videos.children.length == 0))
+					return;	
+				// Get list of all checkboxes checked
+				var queryString = "?userId=" + document.getElementById("usersListSelect").children[idx].value+"&list=";
+				for (var i = 0; i < videos.children.length; ++i) {
+					if (i != 0) {
+						queryString += ",";
 					}
+					queryString += videos.children[i].id.replace("vid", "");
 				}
 				console.log("query string " + queryString);
-				window.location.href = "/doCheckin"+queryString;
-			}
-				
+				window.location.href = "/doCheckout"+queryString;
+			}				
 			;
 			</script>
 	</header>
 	<body>
+
+			<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Sélectionnez la vidéo</h4>
+      </div>
+	<form action="" >       
+		<div class="modal-body" id="modalBody">
+
+
+		</div>
+      </form>		
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="addItem();">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div>
+			
+			
+
+
 		<div class="panel panel-default">
 	  	<div class="panel-heading">Emprunter des vidéos</div>
 	  	
@@ -211,21 +321,15 @@
 			<div class="panel panel-primary">
 				<div class="panel-heading">Rechercher vidéo par...</div>
  				<div class="panel-body">
-					<div id="searchByIdGroup">
-						<input id="byIdInput" label="Identifiant Video" placeholder="Identifiant"> </input>
-						<button type="button" class="btn btn-info" onclick="changeVideoSelectById();">Chercher par identifiant</button>
+					<div id="videoSearchGroup">
+						<input id="videoSearchInput" label="Identifiant Video" placeholder="Identifiant ou Titre"> </input>
+						<button type="button" class="btn btn-info" onclick="searchVideoByTitleOrId();" data-toggle="modal" data-target="#myModal">Chercher par identifiant</button>
+
 					</div>
-					<div id="searchByTitleGroup">
-						<input id="byTitleInput" label="Titre Video" placeholder="Titre"> </input>
-						<button type="button" class="btn btn-info" onclick="changeVideoSelectByTitle();">Chercher par titre</button>
-					</div>
-					<div id="videoSearchResultGroup">
-						<select id="videoSearchResultInput"> </select>
-					
-						<button type="button" class="btn btn-info" onclick="addVideo();"><span class="glyphicon glyphicon-plus"></span></button>
-					</div>
+
 				</div>
 			</div>
+			
 			
 			<div class="input-group col-lg-6" id="errorDiv">
 
@@ -238,8 +342,9 @@
 		<div class="panel-heading">Vidéos empruntées</div>
 		<div class="panel-body">
 		<div class="row">
-			<div class="input-group col-lg-6" id="selectedVideos">
-				<!-- Elements of video (id, title) with a minus button -->
+			<!-- Elements of video (id, title) with a minus button -->
+			<div class="input-group col-lg-8" id="selectedVideos">
+				
 			</div> <!-- /input-group -->
 		</div> <!--  row -->
 		

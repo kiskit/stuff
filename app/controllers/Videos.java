@@ -430,6 +430,13 @@ public class Videos extends Controller {
 	
 	// Fetch movie identity on TMDB
 	public static Result getTMDBTitles(String title) {
-		return ok(Json.toJson(Video.getMatchingTitles(title)));
+		List<MovieDb> list = Video.getMatchingTitles(title);
+		System.out.println("In Videos, getting list with " + list.size() + " elements");
+		for (int i = 0; i < list.size(); ++i) {
+			System.out.println(list.get(i).getId() + " - " + list.get(i).getTitle());
+			System.out.println(list.get(i).toString());
+			
+		}
+		return ok(Json.toJson(list));
 	}
 }

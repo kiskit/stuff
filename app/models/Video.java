@@ -49,7 +49,7 @@ public class Video {
     	System.out.println("Looking for title " + title);
     	try {
     		// Could be NPE
-    		TmdbResultsList<MovieDb> tmdblist = api.searchMovie(title, 0, "en", true, 10);
+    		TmdbResultsList<MovieDb> tmdblist = api.searchMovie(title, 0, "en", true, 0);
     		if (tmdblist != null) {
     			
     			list = tmdblist.getResults();	

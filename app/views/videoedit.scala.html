@@ -62,9 +62,10 @@
     		}
     		// query ajax for movie titles		
     		console.log("Calling TMDB with title " + title);
-			newDataRequest = $.ajax({url: "/tmdb?title=" + title});						
+			//newDataRequest = $.ajax({url: "/tmdb?title=" + title});						
+			newDataRequest = $.ajax({url: "/tmdb?title=" + title});
 			newDataRequest.done(function(data){
-				console.log(data);
+				//console.log(data);
 			});
 
 
@@ -93,10 +94,30 @@
       </div>
     </div>
   </div>
-</div>
+</div> <!--  end modal -->
     
     
-    
+     <div>
+      <div class="navbar navbar-default">
+        <div class="navbar-inner">
+          <div class="container">
+            <ul class="nav navbar-nav navbar-left">
+              <li>
+                <p class="navbar-text"><strong style="color: #F5b000;">Orange Labs Vidéo Club</strong></p>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <p class="navbar-text">Logged in as</p>
+              </li>
+              <li>
+                <!--<a class="btn btn-link" href="#">Se déconnecter</a> -->
+                <button class="btn btn-primary navbar-btn">Se déconnecter</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
         <header>
             <!-- If user connected, then display the admin header-->
             <!-- display filters: most recent, available only-->

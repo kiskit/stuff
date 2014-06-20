@@ -52,9 +52,9 @@
          @helper.select(userForm("status"), options = Seq("ACTIVE"->"Actif", "INACTIVE"->"Inactif"), '_label -> "Statut", '_showConstraints -> false)
         
          @helper.checkbox(field = userForm("admin"), 'name -> "admin", '_label -> "Administrateur", '_showConstraints -> false, 'class -> "checkbox")
-        
+
+		 <button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
          <button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
-<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/users';">Annuler</button>
 
  </div>
 }

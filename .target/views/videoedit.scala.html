@@ -7,9 +7,117 @@
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap-responsive.js")'></script>
+        
     </head>
+    
+    <script>
+    
+    function buildModal(data) {
+				var modal = document.getElementById("modalBody");
+				
+				while (modal.firstChild != null) {
+					modal.removeChild(modal.firstChild);
+				}
+				if (data.length == 0) {
+					document.getElementById("modalButtonOK").disabled = true;
+					// No video found
+					var p = document.createElement("div");
+					p.setAttribute("class", "text-danger lead");
+					p.innerHTML = "Aucune vidéo trouvée avec ce critère";
+					modal.appendChild(p);
+					
+				} else {
+					document.getElementById("modalButtonOK").disabled = false;
+				}
+				// Visible button
+				
+				
+				for(var i = 0; i < data.length;++i) {
+					var radio = document.createElement("input");
+
+					if (i != 0) {
+						var br = document.createElement("br");
+						modal.appendChild(br);
+					} else {
+						radio.setAttribute("checked", "true");
+					}					
+					radio.setAttribute("type", "radio");
+					radio.setAttribute("name", "chooseVid");
+					radio.setAttribute("id",  data[i]['id']);
+					radio.setAttribute("value",  data[i]['id'] + " - " + data[i]['inputTitle']);
+					modal.appendChild(radio);
+					var span = document.createElement("span");
+					span.innerHTML = data[i]['id'] + " - " + data[i]['inputTitle']
+					modal.appendChild(span);
+				}
+			}
+		function queryTMDB() {
+    		var title = document.getElementById("inputTitle").value;
+    		console.log("Calling TMDB with title " + title);
+    		if (title == null) {
+    			return;
+    		}
+    		// query ajax for movie titles		
+    		console.log("Calling TMDB with title " + title);
+			//newDataRequest = $.ajax({url: "/tmdb?title=" + title});						
+			newDataRequest = $.ajax({url: "/tmdb?title=" + title});
+			newDataRequest.done(function(data){
+				//console.log(data);
+			});
+
+
+    	}
+    </script>
+    
     <body>
+    
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Sélectionnez le titre correspondant</h4>
+      </div>
+	<form action="" >       
+		<div class="modal-body" id="modalBody">
+
+
+		</div>
+      </form>		
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="queryTMDB();">Ajouter</button>
+      </div>
+    </div>
+  </div>
+</div> <!--  end modal -->
+    
+    
+     <div>
+      <div class="navbar navbar-default">
+        <div class="navbar-inner">
+          <div class="container">
+            <ul class="nav navbar-nav navbar-left">
+              <li>
+                <p class="navbar-text"><strong style="color: #F5b000;">Orange Labs Vidéo Club</strong></p>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <p class="navbar-text">Logged in as</p>
+              </li>
+              <li>
+                <!--<a class="btn btn-link" href="#">Se déconnecter</a> -->
+                <button class="btn btn-primary navbar-btn">Se déconnecter</button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
         <header>
             <!-- If user connected, then display the admin header-->
             <!-- display filters: most recent, available only-->
@@ -24,7 +132,7 @@
     		}
            
            	@helper.inputText(videoForm("id"), '_label -> "ID", '_showConstraints -> false, 'readonly -> true, 'class -> "form-control")
-           	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false, 'class -> "form-control")
+           	@helper.inputText(videoForm("inputTitle"), '_label -> "Titre", '_showConstraints -> false, 'class -> "form-control", '_id -> "inputTitleId")
            	
 			@helper.inputDate(videoForm("creationDate"), '_label -> "Date de création", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
            	@helper.inputDate(videoForm("updateDate"), '_label -> "Date de dernière mise à jour", 'readonly -> true, '_showConstraints -> false, 'class -> "date form-control")
@@ -32,9 +140,19 @@
         	@helper.select(videoForm("supportType"), options = Seq("DVD"->"DVD", "BLURAY"->"Blu-Ray"), '_label -> "Type de support", '_showConstraints -> false)
         	@helper.select(videoForm("contentType"), options = Seq("UNKNOWN"-> "Inconnu", "TV"->"TV", "MOVIE"->"Film"), '_label -> "TV/Film", '_showConstraints -> false)
         	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
-        	
+
+
+
+<div class=row>    
+    @helper.inputText(videoForm("movieId"), '_label -> "themoviedb.org ID", '_showConstraints -> false, 'readonly -> true,  'class -> "form-input")
+    <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal" onclick="queryTMDB();">
+	  Launch demo modal
+	</button>
+</div>
+
+
+			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/videos';">Retour</button>
         	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
-			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/videos';">Retour</button>        	        
 	}
     </div> <!-- /container -->
     </body>
