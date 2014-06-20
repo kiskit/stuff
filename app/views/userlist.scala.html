@@ -1,31 +1,20 @@
 @(users: List[User], admin: User)
-<html>
-    <head>
-        <title>Gestion des utilisateurs</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
-    </head>
-    <body>
-        <header>
-            <!-- If user connected, then display the admin header-->
-            <!-- display filters: most recent, available only-->
-        </header>
-    <div class="container">
+
+
 		
-	<table class="table table-striped table-bordered sortable">
-		<tr>
-			<th>ID</th>
-			<th>Nom</th>
-			<th>Email</th>
-			<th>Status</th>
-			<th>Date d'ajout</th>
-			<th>Date de dernière modification</th>
-			<th>Admin</th>
+@main("Gestion des utilisateurs", admin) {	
+<table class="table table-striped table-bordered sortable">
+	<tr>
+		<th>ID</th>
+		<th>Nom</th>
+		<th>Email</th>
+		<th>Status</th>
+		<th>Date d'ajout</th>
+		<th>Date de dernière modification</th>
+		<th>Admin</th>
 			
 			
-		</tr>
+	</tr>
 		@for(u <- users) {
 			<tr>
                	<!-- if we're logged in, we need to be able to edit the movie -->
@@ -68,6 +57,4 @@
 			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
 			<button class="btn btn-primary" type="submit" name="action" value="Submit">Ajouter un utilisateur</button>
 		</form>
-    </div> <!-- /container -->
-    </body>
-</html> 
+}

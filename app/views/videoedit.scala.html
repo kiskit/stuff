@@ -1,18 +1,8 @@
-@(videoForm: Form[Video])
+@(videoForm: Form[Video], admin: User)
 @import helper.twitterBootstrap._
 
-<html>
-    <head>
-        <title>Login</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap-responsive.js")'></script>
-        
-    </head>
-    
+@main("Edition d'une vidéo", admin) {
+
     <script>
     
     function buildModal(data) {
@@ -72,8 +62,6 @@
     	}
     </script>
     
-    <body>
-    
 <!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -97,32 +85,6 @@
 </div> <!--  end modal -->
     
     
-     <div>
-      <div class="navbar navbar-default">
-        <div class="navbar-inner">
-          <div class="container">
-            <ul class="nav navbar-nav navbar-left">
-              <li>
-                <p class="navbar-text"><strong style="color: #F5b000;">Orange Labs Vidéo Club</strong></p>
-              </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-              <li>
-                <p class="navbar-text">Logged in as</p>
-              </li>
-              <li>
-                <!--<a class="btn btn-link" href="#">Se déconnecter</a> -->
-                <button class="btn btn-primary navbar-btn">Se déconnecter</button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-        <header>
-            <!-- If user connected, then display the admin header-->
-            <!-- display filters: most recent, available only-->
-        </header>
-    <div class="container">
 	@helper.form(action = routes.Videos.validateVideo()) {
 			<h2 >Edition Video</h2>
             @if(videoForm.hasGlobalErrors){
@@ -154,8 +116,5 @@
 			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/videos';">Retour</button>
         	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
 	}
-    </div> <!-- /container -->
-    </body>
-</html> 
-
+}
   

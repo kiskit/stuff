@@ -1,28 +1,7 @@
 @(userForm: Form[User], user: User)
 @import helper.twitterBootstrap._
 
-<html>
-    <head>
-        <title>Edition d'un utilisateur</title>
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/login.css")">
-        <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
-        <script type="text/javascript" src='@routes.Assets.at("javascripts/sorttable.js")'></script>
-    </head>
-    <body>
-        <header>
-            <!-- If user connected, then display the admin header-->
-            <!-- display filters: most recent, available only-->
-            <a href="@routes.Application.index" id="logo"><span>VideoTruc</span>tasks</a>
-            <dl id="user">
-                <dt>@user.getName() <span>(@user.getEmail())</span></dt>
-                <dd>
-                    <a href="@routes.Application.logout()">Logout</a>
-                </dd>
-            </dl>
-        </header>
-        
-    <div class="container">
+@main("", user) {
     
 @helper.form(action = routes.Users.validateUser(), 'class -> "form-horizontal") {
 <h2 >Edition Utilisateur</h2>	
@@ -59,6 +38,4 @@
  </div>
 }
 
-    </div> <!-- /container -->
-    </body>
-</html> 
+}

@@ -42,13 +42,24 @@ public class User {
 	private boolean admin;
     public static Finder find = new Finder(Long.class, User.class);
 
+
+	public String validate() {
+		return null;
+	}
+	// Not sure what it does
+	//public static Finder<String,User> find = new Finder<String,User>(String.class, User.class); 
+	public static User authenticate(String email, String password) {
+		User user = Ebean.find(User.class).where().ieq("email", email).eq("password", password).findUnique();
+		return user;
+	}
+    
+	public static User getByEmail(String email) {
+		return Ebean.find(User.class).where().ieq("email", email).findUnique();
+	}
 	
 	public User() {
 		
 	}
-
-
-
 	public Long getId() {
 		return id;
 	}
@@ -167,24 +178,5 @@ public class User {
 		return getFirstName() + " " + getName();
 	}
 	
-	public String validate() {
-		return null;
-	}
-	// Not sure what it does
-	//public static Finder<String,User> find = new Finder<String,User>(String.class, User.class); 
-	public static User authenticate(String email, String password) {
-		// 
-		User user = Ebean.find(User.class).where().eq("email", email)
-        .eq("password", password).findUnique();
-		List<User> users = Ebean.find(User.class).where().eq("email", email).findList();
-		
-		// Check for one user in the database with the right login and password
-		if (user != null) {
-			System.out.println("User found");	
-		}
-		else  {
-			System.out.println("User not found");
-		}
-		return user;
-	}
+
 }

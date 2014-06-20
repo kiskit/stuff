@@ -21,7 +21,7 @@ public class Users extends Controller {
 
 
 	public static Result index() {    	
-		return ok(userlist.render(User.find.findList(), new User()));
+		return ok(userlist.render(User.find.findList(), User.getByEmail(request().username())));
 	}
 
 	public static Result editUser(Long id) {
@@ -52,16 +52,7 @@ public class Users extends Controller {
 		u.setUpdateDate(new Date());
 
 		userForm = userForm.fill(u);
-		if(userForm.get().isAdmin()) {
-			System.out.println("Is admin before editing");
-		} else {
-			System.out.println("Is NOT admin before editing");
-		}
-		User admin = new User();
-		admin.setEmail("admin@admin.com");
-		admin.setFirstName("Bruce");
-		admin.setName("Wayne");
-		return ok(useredit.render(userForm, admin));
+		return ok(useredit.render(userForm, User.getByEmail(request().username())));
 	}
 
 	public static Result validateUser() {
@@ -104,8 +95,7 @@ public class Users extends Controller {
 				System.out.println("Inserting user" + userForm.toString());
 				Ebean.save(userForm.get());
 			}
-
-			return ok(userlist.render(User.find.findList(), new User()));
+			return ok(userlist.render(User.find.findList(), User.getByEmail(request().username())));
 		}
 
 	}

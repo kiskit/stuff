@@ -17,36 +17,74 @@ import views.html.helper.form;
 
 import java.util.Date;
 import play.data.*;
+
 public class Application extends Controller {
+	
+
+	// ----------- Authentication stuff -----------------
+	
+	public static Result login(){
+		return ok(login.render(Form.form(Login.class)));
+	}
+	
+	public static Result authenticate() {
+	    Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
+	    if (loginForm.hasErrors()) {
+	    	System.out.println("Form still has errors");
+	        return badRequest(login.render(loginForm));
+	    } else {
+	        session().clear();
+	        session("email", loginForm.get().email);
+	        System.out.println("Got the right login");
+	        return redirect(
+	            routes.Application.index()
+	        );
+	    }
+	}
+	
+	public static Result logout() {
+		session().clear();
+		flash("success", "You've been logged out");
+		return redirect(routes.Application.login());
+	}
+	
+	public static class Login{
+		public String email;
+		public String password;
+		public String validate(){
+			System.out.println("authenticating with email=" + email + " and password=" + password);
+			if (User.authenticate(email, password) == null){
+				return "Utilisateur ou mot de passe erroné";
+			}
+			System.out.println("authenticated");
+			return "success";
+		}
+		public Login() {
+			
+		}
+		public String getEmail() {
+			return email;
+		}
+		public void setEmail(String email) {
+			this.email = email;
+		}
+		public String getPassword() {
+			return password;
+		}
+		public void setPassword(String password) {
+			this.password = password;
+		}
+		
+	}
+	// ----------- END of authentication -----------------
 	
 	/** 
 	 * Administration index
 	*/
+	//@Security.Authenticated(Secured.class)
 	public static Result index() {
 		return ok(index.render("Your new application is ready."));
 	}
-	
-	
-	// HAVE A LOOK AT THE SECURE PACKAGE
-	public static Result login(){
-		System.out.println("Displaying login page");
-		return ok(login.render(Form.form(Login.class)));
-	}
-	public static Result authenticate() {
-		Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
-		if(loginForm.hasErrors()) {
-			//return badRequest(form.render(loginForm));
-			return badRequest();
-		} else {
-			System.out.println("authenticating");
-			User user = User.authenticate(loginForm.get().email, loginForm.get().password);
-			return ok(index.render("Your new application is ready."));
-		}
-	}
-	public static Result logout() {
-		return ok(index.render("Your new application is ready."));
-	}
-	
 	public static Result admin() {
 
 		String[] postAction = request().body().asFormUrlEncoded().get("action");
@@ -81,16 +119,6 @@ public class Application extends Controller {
 	}
 	
 	
-	public static class Login{
-		public String email;
-		public String password;
-		public boolean rememberMe;
-		public String validate(){
-			if (User.authenticate(email, password) == null){
-				return "Invalid user or password";
-			}
-			return null;
-		}
-	}
+
 }
 

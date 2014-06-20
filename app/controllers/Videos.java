@@ -197,7 +197,7 @@ public class Videos extends Controller {
 			u.setCreationDate(new Date());
 			u.setUpdateDate(new Date());
 			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
-			u.setPassword(u.getFirstName());
+			u.setPassword(u.getFirstName().toLowerCase());
 			Ebean.save(u);
 			u = new User();
 			u.setId(2L);
@@ -207,7 +207,7 @@ public class Videos extends Controller {
 			u.setCreationDate(new Date());
 			u.setUpdateDate(new Date());
 			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
-			u.setPassword(u.getFirstName());
+			u.setPassword(u.getFirstName().toLowerCase());
 			Ebean.save(u);
 			
 			u = new User();
@@ -218,14 +218,20 @@ public class Videos extends Controller {
 			u.setCreationDate(new Date());
 			u.setUpdateDate(new Date());
 			u.setEmail(u.getFirstName() + "." + u.getName() + "@orange.com");
-			u.setPassword(u.getFirstName());
+			u.setPassword(u.getFirstName().toLowerCase());
 			Ebean.save(u);
 			
 		}
 		//return ok(videolist.render(Video.find.findList(), new User()));
-		return ok(videolist.render(Video.find.findList().size(), new User()));
+		//return ok(videolist.render(Video.find.findList().size(), new User()));
+		return ok(
+				videolist.render(
+						Video.find.findList().size(), 
+						User.getByEmail(request().username())
+				)
+		);
 	}
-
+	//@Security.Authenticated(Secured.class)
 	public static Result editVideo(Long id) {
 		System.out.println("Editing video " + id);
 		/**
@@ -250,14 +256,19 @@ public class Videos extends Controller {
 		v.setUpdateDate(new Date());
 
 		videoForm = videoForm.fill(v);
-		return ok(videoedit.render(videoForm));
+		return ok(
+				videoedit.render(
+						videoForm,	
+						User.getByEmail(request().username())
+				)
+				);
 	}
 	public static Result validateVideo() {
 		Form<Video> videoForm = Form.form(Video.class).bindFromRequest();
 
 		if(videoForm.hasErrors()) {
 			System.out.println("Bad request Validating video");
-			return badRequest(videoedit.render(videoForm));
+			return badRequest(videoedit.render(videoForm, User.getByEmail(request().username())));
 		} else {
 			
 			String[] postAction = request().body().asFormUrlEncoded().get("action");
