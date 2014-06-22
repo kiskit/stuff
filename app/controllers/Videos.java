@@ -10,6 +10,7 @@ import models.Video.StateType;
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.Query;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.avaje.ebean.config.ServerConfig;
@@ -29,6 +30,10 @@ import views.html.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+
+import java.lang.Math;
+
 
 public class Videos extends Controller {
 
@@ -63,7 +68,9 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(null);
+			vid.setYear(1999L);
 			vid.setState(StateType.OK);
+			vid.setMinimumAge(16L);
 			Ebean.save(vid);
 
 			vid = new Video();
@@ -76,7 +83,9 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
 			vid.setRentedTo(2L);
+			vid.setYear(1997L);
 			vid.setRentalDate(new Date());
+			vid.setMinimumAge(10L);
 			Ebean.save(vid);
 			
 			vid = new Video();
@@ -88,7 +97,9 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
-
+			vid.setYear(1989L);
+			vid.setMinimumAge(8L);
+			
 			Ebean.save(vid);
 			vid = new Video();
 			vid.setId(15L);
@@ -100,6 +111,7 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setState(StateType.OK);
 			vid.setRentedTo(1L);
+			vid.setYear(1908L);
 			vid.setRentalDate(new Date());
 			Ebean.save(vid);
 
@@ -112,8 +124,10 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
 			vid.setRentalDate(new Date());
+			vid.setYear(2001L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
+			
 			vid = new Video();
 			vid.setId(18L);
 			vid.setContentType(Video.ContentType.TV);
@@ -122,8 +136,10 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentalDate(new Date());
+			vid.setYear(2010L);
 			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
+			vid.setMinimumAge(16L);
 			Ebean.save(vid);
 			
 			vid = new Video();
@@ -132,6 +148,7 @@ public class Videos extends Controller {
 			vid.setSupportType(Video.SupportType.DVD);
 			vid.setInputTitle("24");
 			vid.setCreationDate(new Date());
+			vid.setYear(2014L);
 			vid.setUpdateDate(new Date());
 //			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
@@ -141,7 +158,9 @@ public class Videos extends Controller {
 			vid.setId(20L);
 			vid.setContentType(Video.ContentType.TV);
 			vid.setSupportType(Video.SupportType.DVD);
-			vid.setInputTitle("Modern Family");
+			vid.setInputTitle("Famille moderne");
+			vid.setOriginalTitle("Modern Family");
+			vid.setYear(2006L);
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentalDate(new Date());
@@ -158,6 +177,7 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
 			vid.setRentalDate(new Date());
+			vid.setYear(2000L);
 			vid.setState(StateType.LOST);
 			Ebean.save(vid);
 			vid = new Video();
@@ -170,8 +190,10 @@ public class Videos extends Controller {
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
 			vid.setRentalDate(new Date());
+			vid.setYear(1950L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
+			
 			vid = new Video();
 			vid.setId(23L);
 			vid.setContentType(Video.ContentType.MOVIE);
@@ -180,6 +202,7 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(null);
+			vid.setYear(1997L);
 			vid.setRentalDate(null);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
@@ -222,15 +245,7 @@ public class Videos extends Controller {
 			Ebean.save(u);
 			
 		}
-		//return ok(videolist.render(Video.find.findList(), new User()));
-		//return ok(videolist.render(Video.find.findList().size(), new User()));
-		/*return ok(
-				videolist.render(
-						Video.find.findList().size(), 
-						User.getByEmail(request().username())
-				)
-		);
-		*/
+
 		return ok(videoclub.render(
 						Video.find.findList().size(), 
 						User.getByEmail(request().username())
@@ -329,6 +344,10 @@ public class Videos extends Controller {
 		//return ok(videolist.render(Video.find.findList(), new User()));
 		return ok(videolist.render(Video.find.findList().size(), new User()));
 	}
+	
+	
+	
+	// ****************** AJAX CALLS ************************
 	public static Result getUserRentals(Long userId, Long videoId) {
 		List<Video> list = null;
 		System.out.println("In get user rentals");
@@ -364,12 +383,88 @@ public class Videos extends Controller {
 		return ok(Json.toJson(rental));
 	}
 	
-	public static Result getVideoList(Integer pageNumber, Integer pageSize) {
-		System.out.println("In get video list");
-		List<Video> videoList = Ebean.find(Video.class).where().findPagingList(pageSize).getPage(pageNumber - 1).getList();
-		System.out.println("List size " + videoList.size());
-		return ok(Json.toJson(videoList));
+	// Used to get more than the bare video list from the ajax call in getVideoList
+	public static class JSonVideoList {
+		public JSonVideoList() {
+			
+		}
+		public int pages;
+		public List<Video> list;
 	}
+	
+	
+	public static Result getVideoList(Integer pageNumber, Integer pageSize, Boolean old, Boolean dvd, Boolean br, Boolean pg, Boolean available, String nameFilter) {
+		System.out.println("In get video list");
+		String queryString = "find video ";
+
+		String conditions = "";
+		// TODO: test
+		if (old == false) {
+			// Looks back 6 months before
+			conditions += "where creationDate > " + new Date(System.currentTimeMillis() - (365 / 2)* 24 * 3600 * 1000L);
+		}
+		// It's going to be dvd OR (inclusive) blu-ray. Can't be both false
+		if ((br == false) || (dvd == false)) {
+			if (conditions == "")
+				conditions = "where ";
+			else conditions += " and ";
+			conditions += "supportType = :support";
+			
+		}
+		
+		if (pg == false) {
+			if (conditions == "")
+				conditions += " where ";
+			else
+				conditions += " and ";
+			conditions += "minimumAge < :minAge";
+		}
+		
+		if (nameFilter != null) {
+			if (conditions == "")
+				conditions += " where ";
+			else
+				conditions += " and ";
+			conditions += "lower(inputTitle) like :name or lower(originalTitle) like :name";
+		}
+		
+		if (available == false) {
+			if (conditions == "")
+				conditions += " where ";
+			else
+				conditions += " and ";
+			conditions += "rentedTo is null";
+		}
+		
+		// Populate query with values
+		Query<Video> query = Ebean.createQuery(Video.class, queryString + conditions);
+		if (br == false) {
+			// Query only dvd
+			query.setParameter("support", Video.SupportType.DVD);				
+		} else {
+			// Query only blu-ray
+			query.setParameter("support", Video.SupportType.BLURAY);
+		}
+		if (nameFilter != null)
+			query.setParameter("name", "%" + nameFilter.toLowerCase() + "%");
+		query.setParameter("minAge", 12);
+		
+		System.out.println("QueryString " + query.getGeneratedSql());
+		
+		JSonVideoList list = new JSonVideoList();
+		double rowCount = (double) query.findRowCount();
+		System.out.println("Would return " + rowCount);
+		list.list = query.findPagingList(pageSize).getPage(pageNumber - 1).getList();
+		
+		list.pages = (int)Math.ceil(rowCount / pageSize);
+		System.out.println("List size " + list.list.size());
+		System.out.println("List pages " + list.pages);
+		return ok(Json.toJson(list));
+	}
+
+
+	
+	
 	public static Result getVideoByTitle(String title) {
 		System.out.println("In get video list by title");
 		List<Video> videoList = Ebean.find(Video.class).where().ilike("inputTitle", "%" + title + "%").findList();
@@ -400,7 +495,7 @@ public class Videos extends Controller {
 		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
-	
+	// *********** END AJAX CALLS ****************
 	
 	public static Result checkout() {
 		return ok(checkout.render(User.find.findList(), new User()));

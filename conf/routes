@@ -33,7 +33,7 @@ GET		/videoinfo					controllers.Videos.videoInfo(id: Long)
 
 # Ajax methods
 GET		/rentals					controllers.Videos.getUserRentals(userId: Long ?= 0, videoId: Long ?= 0)
-GET		/videolist					controllers.Videos.getVideoList(pageNumber: Integer, pageSize: Integer)
+GET		/videolist					controllers.Videos.getVideoList(pageNumber: Integer, pageSize: Integer, old: Boolean ?= true, dvd: Boolean ?= true, br: Boolean ?= true, pg: Boolean ?= true, available: Boolean ?= true, nameFilter: String ?= null)
 GET		/videobytitleorid			controllers.Videos.getVideoByTitleOrId(titleOrId: String)
 GET		/tmdb						controllers.Videos.getTMDBTitles(title: String)
 # End Ajax methods

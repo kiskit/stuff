@@ -35,6 +35,8 @@ public class Video {
     private static String key = "c589965ca14962d100212f66a6a2b1c5";
 
     
+    
+    
     public static List<MovieDb> getMatchingTitles(String title) {
     	List<MovieDb> list = null;
     	if (api == null)  {
@@ -48,8 +50,8 @@ public class Video {
     	}
     	System.out.println("Looking for title " + title);
     	try {
-    		// Could be NPE
-    		TmdbResultsList<MovieDb> tmdblist = api.searchMovie(title, 0, "en", true, 0);
+    		// Could be Null Pointer Exception
+    		TmdbResultsList<MovieDb> tmdblist = api.searchMovie(title, 0, "", true, 0);
     		if (tmdblist != null) {
     			
     			list = tmdblist.getResults();	
@@ -110,6 +112,8 @@ public class Video {
 	private String movieId;
 	@Constraints.Required
 	private String inputTitle;
+	Long year;
+	private String originalTitle;
     @Formats.DateTime(pattern = "dd/MM/yyyy")
     @Constraints.Required
     private Date creationDate;
@@ -117,10 +121,12 @@ public class Video {
     @Constraints.Required
     private Date updateDate;
     @Formats.DateTime(pattern = "dd/MM/yyyy")
+    String genres;
     private Date rentalDate;
     private Long rentedTo;
 	@Constraints.Required
     private StateType state;
+	private Long minimumAge;
     
     private static TheMovieDbApi api = null;
 
@@ -211,117 +217,50 @@ public class Video {
 	public static void setApi(TheMovieDbApi api) {
 		Video.api = api;
 	}
+	
+	public Long getMinimumAge() {
+		return minimumAge;
+	}
+
+	public void setMinimumAge(Long minimumAge) {
+		this.minimumAge = minimumAge;
+	}
+
+	public Long getYear() {
+		return year;
+	}
+
+	public void setYear(Long year) {
+		this.year = year;
+	}
+
+	public String getOriginalTitle() {
+		return originalTitle;
+	}
+
+	public void setOriginalTitle(String originalTitle) {
+		this.originalTitle = originalTitle;
+	}
+
+	public String getGenres() {
+		return genres;
+	}
+
+	public void setGenres(String genres) {
+		this.genres = genres;
+	}
+
 	@Override
 	public String toString() {
 		return "Video [id=" + id + ", supportType=" + supportType
 				+ ", contentType=" + contentType + ", movieId=" + movieId
-				+ ", inputTitle=" + inputTitle + ", creationDate="
-				+ creationDate + ", updateDate=" + updateDate + ", rentedTo="
-				+ rentedTo + ", state=" + state + "]";
+				+ ", inputTitle=" + inputTitle + ", year=" + year
+				+ ", originalTitle=" + originalTitle + ", creationDate="
+				+ creationDate + ", updateDate=" + updateDate + ", genres="
+				+ genres + ", rentalDate=" + rentalDate + ", rentedTo="
+				+ rentedTo + ", state=" + state + ", minimumAge=" + minimumAge
+				+ "]";
 	}
 
-
+	
 }
-/*
-package model;
-
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-public class MovieSearch {
-	MovieSearch() {
-
-	}
-
-
-
-	public int getPage() {
-		return page;
-	}
-	public void setPage(int page) {
-		this.page = page;
-	}
-	public List<Movie> getResults() {
-		return results;
-	}
-	public void setResults(List<Movie> results) {
-		this.results = results;
-	}
-
-	public int getTotal_pages() {
-		return total_pages;
-	}
-
-	public void setTotal_pages(int total_pages) {
-		this.total_pages = total_pages;
-	}
-
-	public int getTotal_results() {
-		return total_results;
-	}
-
-	public void setTotal_results(int total_results) {
-		this.total_results = total_results;
-	}
-
-	public static List<Movie> populateFromRemoteDB(String key, String title) {
-
-		List<Movie> movies = null;
-		MovieSearch search = null;
-		String url = "https://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + title; 
-		URL obj;
-		try {
-			obj = new URL(url);
-
-			System.out.println("URL:" + url);
-			HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-
-			// optional default is GET
-			con.setRequestMethod("GET");
-
-			//add request header
-			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
-			int responseCode = con.getResponseCode();
-			System.out.println("\nSending 'GET' request to URL : " + url);
-			System.out.println("Response Code : " + responseCode);
-
-			BufferedReader in = new BufferedReader(
-					new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			System.out.println(response);
-			in.close();
-			System.out.println("Mapping objects");			
-			ObjectMapper objectMapper = new ObjectMapper();
-			//		movies = objectMapper.readValue(response.toString(), new TypeReference<List<Movie>>(){});
-			//movies = new ArrayList<Movie>();
-			search = objectMapper.readValue(response.toString(), MovieSearch.class);
-			if (search != null) {
-				movies = search.getResults();
-			}
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Dang, an exception");
-			e.printStackTrace();
-		}
-		return (movies);
-	}
-
-	int page;
-	List <Movie> results;
-	int total_pages;
-	int total_results;
-}
-*/
