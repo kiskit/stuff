@@ -33,6 +33,10 @@
 				}
         	}
         	function populateTable() {
+        		
+        		// Have a look at filters 
+        		
+        		
         		newDataRequest = $.ajax({url: "/videolist?pageNumber="+currentPage+"&pageSize=" + pageSize});						
 				newDataRequest.done(function(data){
 					var tableBody = document.getElementById("listTableBody"); 
@@ -75,11 +79,16 @@
 						tr.appendChild(td);
 						// Edit button
 						td = document.createElement('td');
-						var button = document.createElement('a');
+						var form = document.createElement('form');
+						var button = document.createElement('button');
 						button.setAttribute('class', 'btn btn-primary btn-sm');
-						button.setAttribute('href', '/videoedit/' + data[i]['id']);
+						form.setAttribute('action', '/videoedit');
+						button.setAttribute("value", data[i]['id']);
+						button.setAttribute("name", "id")
 						button.innerHTML="Edit";
-						td.appendChild(button);
+						
+						form.appendChild(button);
+						td.appendChild(form);
 						tr.appendChild(td);
 						
 						//[{"id":14,"supportType":"DVD","contentType":"MOVIE","movieId":"10191","inputTitle":"Dragons","creationDate":1401867399497,"updateDate":1401867399497,"rentalDate":null,"rentedTo":null,"state":"OK"},
@@ -121,10 +130,10 @@
 	</ul>
 	</div>
 	
-	<form action="videoedit/0" method="get" style="margin: 0px; padding: 0px;">
+	<form action="videoedit" method="get" style="margin: 0px; padding: 0px;">
 		<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
-		<button class="btn btn-primary" type="submit">Ajouter une vidéo</button>
-
+		<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter une vidéo</button>
 	</form>
+	<script>onLoad();</script> 
 	</div>
 }

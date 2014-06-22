@@ -224,8 +224,14 @@ public class Videos extends Controller {
 		}
 		//return ok(videolist.render(Video.find.findList(), new User()));
 		//return ok(videolist.render(Video.find.findList().size(), new User()));
-		return ok(
+		/*return ok(
 				videolist.render(
+						Video.find.findList().size(), 
+						User.getByEmail(request().username())
+				)
+		);
+		*/
+		return ok(videoclub.render(
 						Video.find.findList().size(), 
 						User.getByEmail(request().username())
 				)
@@ -256,12 +262,7 @@ public class Videos extends Controller {
 		v.setUpdateDate(new Date());
 
 		videoForm = videoForm.fill(v);
-		return ok(
-				videoedit.render(
-						videoForm,	
-						User.getByEmail(request().username())
-				)
-				);
+		return ok(videoedit.render(videoForm, User.getByEmail(request().username())));
 	}
 	public static Result validateVideo() {
 		Form<Video> videoForm = Form.form(Video.class).bindFromRequest();

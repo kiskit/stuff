@@ -29,10 +29,8 @@
 				</td>
 				<td align="center">
 					@if(u.getStatus() == User.StatusType.ACTIVE) {
-						<img src="@routes.Assets.at("images/moviePlay.png")" alt="Admin" height="24" width="32">
-					} else {
-					no
-					}
+						<img src="@routes.Assets.at("images/on_air.png")" alt="Admin" height="24" width="32">
+					} 
 				</td> 
 				<td>
 					@u.getCreationDate()
@@ -46,15 +44,15 @@
 					}
 				</td>
 				<td>
-					<form action="useredit/@u.getId()" method="get" style="margin: 0px; padding: 0px;">  						
-  						<button class="btn btn-xs btn-primary" type="submit">Edit</button>
+					<form action="/useredit" method="get" style="margin: 0px; padding: 0px;">  						
+  						<button class="btn btn-xs btn-primary" type="submit" name="id" value="@u.getId()">Edit</button>
 					</form> 
 				</td>
 		    </tr>
         }	
         </table>
-        <form action="useredit/0" method="get" style="margin: 0px; padding: 0px;">
+        <form action="/useredit" method="get" style="margin: 0px; padding: 0px;">
 			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/admin';">Retour</button>
-			<button class="btn btn-primary" type="submit" name="action" value="Submit">Ajouter un utilisateur</button>
+			<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter un utilisateur</button>
 		</form>
 }

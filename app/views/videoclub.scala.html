@@ -1,0 +1,269 @@
+@(listSize: Integer, admin: User)
+
+        
+
+@main("Liste des vidéos", admin) {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+        <script>        
+        	// Must be at least 3
+        	var pageSize = 4;
+        	var currentPage = 1;
+        	var lastPage = Math.ceil(@listSize / pageSize); 
+        
+        	// Filters 
+        	function setFilterOption(size) {
+        	}
+        	// END Filters 
+        	
+			// Page number management        	
+        	function setPagerSize(size) {
+        		var oldId = "pagerSize" + pageSize;
+        		document.getElementById(oldId).innerHTML = pageSize;
+        		pageSize = size;
+        		var newId = "pagerSize" + pageSize;
+        		document.getElementById(newId).innerHTML = '<strong>' + pageSize + '</strong>'; 
+        		currentPage = 1;
+        		lastPage = Math.ceil(@listSize / pageSize);
+        		updatePage();
+        		deleteTable();
+        		populateTable();
+        	}
+        	// END Page number management
+        	
+			// Pager buttons 
+       		function updatePage() {
+       			document.getElementById("pageNumberP").innerHTML=currentPage + " sur " + lastPage;
+       		}
+        	function pagerOnClickPage() {
+        		updatePage();
+        		deleteTable();
+        		populateTable();
+        	}
+        	function onClickLeft() {
+        		if (currentPage == 1)
+        			return;
+        		currentPage = currentPage - 1;
+        		pagerOnClickPage();
+        	}
+        	function onClickRight() {
+        		if (currentPage == lastPage)
+        			return;
+        		currentPage = currentPage + 1;
+        		pagerOnClickPage();
+        	}
+        	// END Pager buttons 
+        	// Table Management functions 
+        	function deleteTable() {
+        		var l = document.getElementById("listTable").rows.length; 
+				for (var i = 1, row; i < l; i++) {
+				 	document.getElementById("listTable").deleteRow(1);
+				}
+        	}
+        	function populateTable() {
+        		newDataRequest = $.ajax({url: "/videolist?pageNumber="+currentPage+"&pageSize=" + pageSize});						
+				newDataRequest.done(function(data){
+					var tableBody = document.getElementById("listTableBody");
+					var img = null;
+					for (var i = 0; i < data.length; i++) {
+						//console.log("Populating table loop " + i);
+						var tr = document.createElement('tr');
+						var td;
+						// Id
+						td = document.createElement('td');
+						td.innerHTML=data[i]['id'];
+						tr.appendChild(td);
+						
+						// Title 
+						td = document.createElement('td');
+						td.innerHTML=data[i]['inputTitle'];
+						tr.appendChild(td);
+						
+						// Original title 
+						td = document.createElement('td');
+						td.innerHTML=data[i]['inputTitle'];
+						tr.appendChild(td);
+						
+						// Year  
+						td = document.createElement('td');
+						//td.innerHTML=data[i]['year'];
+						td.innerHTML="2014";
+						tr.appendChild(td);
+						
+						// Creation Date 
+						td = document.createElement('td');
+						var d = new Date(data[i]['creationDate']);
+						//td.innerHTML=d.getUTCDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+						td.innerHTML=d.toLocaleDateString();
+						tr.appendChild(td);
+						
+						// Support Type 
+						td = document.createElement('td');
+						img = document.createElement('img');
+						img.setAttribute("height", "24px");
+						img.setAttribute("width", "24px");
+						td.setAttribute("align","center");
+						if (data[i]['supportType'] === "DVD") {
+							img.setAttribute("src", '@routes.Assets.at("images/dvd-256px.png")');
+						} else {
+							img.setAttribute("src", '@routes.Assets.at("images/blu-ray-48px.png")');
+						}
+						td.appendChild(img);
+						tr.appendChild(td);
+						// Genre 
+						td = document.createElement('td');
+						td.innerHTML='Drama';
+						tr.appendChild(td);
+						// Movie or TV 
+						td = document.createElement('td');
+						img = document.createElement('img');
+						img.setAttribute("height", "24px");
+						img.setAttribute("width", "24px");
+						td.setAttribute("align","center");
+						if (data[i]['contentType'] === "MOVIE") {
+							img.setAttribute("src", '@routes.Assets.at("images/movie-256px.png")');
+						} else {
+							img.setAttribute("src", '@routes.Assets.at("images/tv-300px.png")');
+						}
+						td.appendChild(img);
+						tr.appendChild(td);
+						// Availability 
+						td = document.createElement('td');
+						img = document.createElement('img');
+						img.setAttribute("height", "24px");
+						img.setAttribute("width", "24px");
+						td.setAttribute("align","center");
+						if (data[i]['rentedTo'] == null) {
+							img.setAttribute("src", '@routes.Assets.at("images/tick.png")');
+						} else {
+							img.setAttribute("src", '@routes.Assets.at("images/error.png")');
+						}
+						td.appendChild(img);
+						tr.appendChild(td);
+						tableBody.appendChild(tr);
+					}
+				});		
+        	}
+        	// END Table Management functions 
+        	function onLoad() {
+        		updatePage();
+        		populateTable();
+        	}
+        	; 
+        </script>
+
+
+
+
+
+
+
+       <!-- Filters bar -->
+        <div class="panel panel-info">
+          <div class="panel-heading">Filtres</div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="col-lg-2">
+                <!-- Single button -->
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Afficher seulement <span class="caret"></span>
+
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li>
+                    <a href="#">Nouveautés</a>
+                  </li>
+                  <li>
+                    <a href="#">DVDs</a>
+                  </li>
+                  <li>
+                    <a href="#">Disponibles</a>
+                  </li>
+                  <li>
+                    <a href="#">Pour enfants</a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.col-lg-3 -->
+              <div class="col-lg-4">
+                <div class="input-group">
+                  <input type="text" class="form-control" placeholder="Mot dans le titre">	<span class="input-group-btn"><button class="btn btn-default" type="button">Filtrer!</button></span>
+
+                </div>
+                <!-- /input-group -->
+              </div>
+              <!-- /.col-lg-3 -->
+              <div class="col-lg-2">
+                <!-- Single button -->
+                <button type="button" class="btn btn-warning">Reset</button>
+              </div>
+              <!-- /.col-lg-3 -->
+              <!-- Placeholder -->
+              <div class="col-lg-2"></div>
+              <div class="col-lg-2">
+                <!-- Single button -->
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">Résultats par page <span class="caret"></span>
+
+                </button>
+                <ul class="dropdown-menu" id="pagerSizeID" role="menu">
+                  <li>
+                    <a id="pagerSize4" onclick="setPagerSize('4');">4</a>
+                  </li>
+                  <li>
+                    <a id="pagerSize8" onclick="setPagerSize('8');">8</a>
+                  </li>
+                  <li>
+                    <a id="pagerSize16" onclick="setPagerSize('16');">16</a>
+                  </li>
+                  <li>
+                    <a id="pagerSize32" onclick="setPagerSize('32');">32</a>
+                  </li>
+                </ul>
+              </div>
+              <!-- /.col-lg-1 -->
+            </div>
+            <!-- row -->
+          </div>
+        </div>
+        <!-- /Filters bar -->
+        <!-- Movie list table -->
+        <div class="panel panel-primary">
+          <div class="panel-heading">Liste des vidéos</div>
+          <div class="panel-body">
+            <div>
+              <table id="listTable" class="table table-striped table-bordered">
+                <tbody id="listTableBody">
+                  <tr>
+                    <th>ID</th>
+                    <th>Titre</th>
+                    <th>Titre original</th>
+                    <th>Année</th>
+                    <th>Date d'ajout</th>
+                    <th>DVD</th>
+                    <th>Genre</th>
+                    <th>TV/Film</th>
+                    <th>Dispo</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div>
+              <ul class="pager" id="pager">
+                <li class="previous">
+                  <a type="button" id="pagerLeft" onclick="onClickLeft();">←Précédente</a>
+                </li>
+                <li class="disabled" id="pageNumberP"></li>
+                <li class="next">
+                  <a type="button" id="pagerRight" onclick="onClickRight();">Suivante →</a>
+                </li>
+              </ul>
+            </div>
+            <div class="panel-footer">
+              <p class="text-info"><i>Pour plus d'informations sur un film, cliquez sur son titre</i>
+
+              </p>
+            </div>
+          </div>
+          <!-- /Movie list table -->
+	<script>
+	onLoad();
+	</script> 
+}
