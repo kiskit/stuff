@@ -170,8 +170,14 @@
 						
 						// Title 
 						td = document.createElement('td');
-						td.innerHTML=data[i]['inputTitle'];
+						var a = document.createElement('a');
+						a.setAttribute("data-toggle", "modal");
+						a.setAttribute("data-target", "#movieModal");
+						a.setAttribute("onclick", "showMovie(" + data[i]['id'] + ");");
+						a.innerHTML=data[i]['inputTitle'];
+						td.appendChild(a);
 						tr.appendChild(td);
+						
 						
 						// Original title 
 						td = document.createElement('td');
@@ -208,6 +214,12 @@
 						td.innerHTML=data[i]['genres'];
 						tr.appendChild(td);
 						
+						// Rating 
+						td = document.createElement('td');
+						td.innerHTML=data[i]['rating'];
+						tr.appendChild(td);
+						
+						// PG 
 						td = document.createElement('td');
 						if (data[i].minimumAge != null)
 							td.innerHTML=data[i].minimumAge + ' ans';
@@ -261,6 +273,22 @@
 				});		
         	}
         	// END Table Management functions 
+        	
+        	// Modal management
+        	function showMovie(id) {
+        		newDataRequest = $.ajax({url: "/videobyid?id="+id});
+				newDataRequest.done(function(data){
+					document.getElementById("movieModalBackDrop").setAttribute("src", data["backdropPath"]);
+					document.getElementById("movieModalTitle").innerHTML = data["inputTitle"] + " (" + data["year"] + ")";
+					document.getElementById("movieModalOriginalTitle").innerHTML = data["originalTitle"];
+					document.getElementById("movieModalPoster").setAttribute("src", data["posterPath"]);
+					document.getElementById("movieModalSummary").innerHTML = data["summary"];
+					document.getElementById("movieModalRating").innerHTML = data["rating"];
+					document.getElementById("movieModalRuntime").innerHTML = data["runtime"];
+					document.getElementById("movieModalYear").innerHTML = data["year"];
+				});			
+        	}
+        	
         	function onLoad() {
         		initFilters();
         		populateTable();
@@ -269,7 +297,61 @@
         	; 
         </script>
 
-
+<!-- Modal -->
+<div class="modal fade" id="movieModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+      		<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    	    	<h4 class="modal-title" id="movieModalTitle"></h4>
+			</div>
+			<div class="modal-body" id="movieModalBody">
+				<div class="row">
+					<div class="col-lg-12">
+						<img id="movieModalBackDrop">
+					</div>
+				</div>
+				<div class="row">
+					<h4>
+					<div class="col-lg-3">
+						<p for="movieModalOriginalTitle">Titre original: </p>
+					</div>
+					<div class="col-lg-9">
+						<p id="movieModalOriginalTitle"></p>
+					</div>
+					</h4>
+				</div>
+				<div class="row">
+					<div class="col-lg-4">
+						<a class="thumbnail">
+						<img id="movieModalPoster">
+						</a>
+					</div>
+					<div class="col-lg-6">
+						<p id="movieModalSummary"></p>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-lg-2">
+						<p id="movieModalRating"></p>
+					</div>
+					<div class="col-lg-2">
+						<p id="movieModalRuntime"></p>
+					</div>
+					<div class="col-lg-2">
+						<p id="movieModalYear"></p>
+					</div>
+					<div class="col-lg-2">
+						<p id="movieModalPG"></p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>
+			</div>
+		</div>
+	</div>
+</div> <!--  end modal -->
 
 
 
@@ -369,6 +451,7 @@
                     <th>Date d'ajout</th>
                     <th>DVD</th>
                     <th>Genre</th>
+                    <th>Note</th>
                     <th>A partir de</th>
                     <th>TV/Film</th>
                     <th>Dispo</th>
@@ -395,6 +478,10 @@
             </div>
           </div>
           <!-- /Movie list table -->
+          	<form action="videoedit" method="get" style="margin: 0px; padding: 0px;">
+				<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/';">Retour</button>
+				<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter une vidéo</button>
+			</form>
 	<script>
 	onLoad();
 	</script> 

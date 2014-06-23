@@ -42,16 +42,18 @@
 			radio.setAttribute("type", "radio");
 			radio.setAttribute("name", "chooseVid");
 			radio.setAttribute("id",  data[i]['id']);
+			radio.setAttribute("value",  data[i]['id']);
 			
 			modal.appendChild(radio);
 			var label = document.createElement("label");
 			label.setAttribute("for",  data[i]['id']);
-			label.textContent = "  " + data[i]['title'] + "(" + data[i]['id'] + ")";
+			//label.textContent = "  " + data[i]['title'] + "(" + data[i]['id'] + ")";
+			label.textContent = "  " + data[i]['title'] + " (" + new Date(data[i]['release_date']).getFullYear() + ")";
 			modal.appendChild(label);
 		}
 	}
 	
-	function queryTMDB() {
+	function queryTmdb() {
    		var title = document.getElementById("inputTitle").value;
    		console.log("Calling TMDB with title " + title);
    		if (title == null) {
@@ -59,33 +61,61 @@
    		}
    		// query ajax for movie titles		
    		console.log("Calling TMDB with title " + title);
-		newDataRequest = $.ajax({url: "/tmdb?title=" + title});
+		newDataRequest = $.ajax({url: "/tmdbSearch?title=" + title});
 		newDataRequest.done(function(data){
 			buildModal(data['results']);
 		});
    	}
+	function assignTmdbId() {
+		document.getElementById("movieId").value = $('input[name=chooseVid]:checked', '#titlesForm').val();
+	}
+	
+	function updatePoster() {
+		document.getElementById("poster").src = "http://image.tmdb.org/t/p/w500" + document.getElementById("posterPath").value; 
+	}
+	function updateSummary() {
+		document.getElementById("summaryP").innerHTML = document.getElementById("summary").value;
+	}
+	
+	function updateTmdbInfo() {
+		console.log("Getting tmdb info");
+		var id = document.getElementById("movieId");
+		if (id == null)
+			return;
+		newDataRequest = $.ajax({url: "/tmdbId?id=" + id.value});
+		newDataRequest.done(function(data){
+			var date = new Date(data["release_date"]);
+			document.getElementById("rating").value = data["vote_average"];
+			document.getElementById("posterPath").value = data["poster_path"];
+			document.getElementById("backdropPath").value = data["backdrop_path"];
+			document.getElementById("year").value = date.getFullYear();
+			document.getElementById("summary").value = data["overview"];
+			document.getElementById("originalTitle").value = data["original_title"];
+			document.getElementById("runtime").value = data["runtime"];
+			updatePoster();
+			updateSummary();
+		});
+	}
+	
     </script>
     
 <!-- Modal -->
 <div class="modal fade" id="titlesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">Sélectionnez le titre correspondant</h4>
-      </div>
-	<form action="" >       
-		<div class="modal-body" id="titlesModalBody">
-
-
+	<div class="modal-dialog">
+		<div class="modal-content">
+      		<div class="modal-header">
+	        	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    	    	<h4 class="modal-title" id="myModalLabel">Sélectionnez le titre correspondant</h4>
+			</div>
+			<form id="titlesForm" action="" >       
+				<div class="modal-body" id="titlesModalBody"></div>
+			</form>		
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+				<button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="assignTmdbId();">Mettre à jour</button>
+			</div>
 		</div>
-      </form>		
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
-        <button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="queryTMDB();">Ajouter</button>
-      </div>
-    </div>
-  </div>
+	</div>
 </div> <!--  end modal -->
     
     <div class="panel panel-primary">
@@ -114,24 +144,77 @@
         	@helper.select(videoForm("state"), options = Seq("OK"->"OK", "LOST"->"Perdu", "BROKEN" -> "Déterioré"), '_label -> "Etat", '_showConstraints -> false)
 			</div>
 			</div>
-
+			<div class="well well-lg">
   			<div class="row">
-
-  			<div class="col-lg-2">
-    		@helper.inputText(videoForm("movieId"), '_label-> "themoviedb.org ID", '_showConstraints -> false, 'readonly -> true,  'class -> "form-input")
-    		</div>
-    		<div class="col-lg-2">
-    		<button class="btn btn-primary" data-toggle="modal" data-target="#titlesModal" onclick="queryTMDB();">
-	  			Launch demo modal
-			</button>
+  				<div class="col-lg-2">
+    			@helper.inputText(videoForm("movieId"), '_label-> "themoviedb.org ID", '_showConstraints -> false, 'readonly -> true,  'class -> "form-input")
+    			</div>
+    			<div class="col-lg-2">
+    				<label>
+    				</label>
+    				<div>
+	    			<button class="btn btn-primary" data-toggle="modal" data-target="#titlesModal" onclick="queryTmdb();">
+		  				Trouver le film sur tmdb
+					</button>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+  				<div class="col-lg-2">
+   		   			@helper.inputText(videoForm("rating"), '_label -> "Note TMDB", 'readonly -> true, '_showConstraints -> false, 'class -> "form-control")
+   		   		</div>
+   		   		
+   				<div class="col-lg-4">
+   					@helper.inputText(videoForm("originalTitle"), '_label -> "Titre original", '_showConstraints -> false, 'class -> "form-control", '_id -> "inputTitleId")
+   				</div>
+   				<div class="col-lg-2">
+   					@helper.inputText(videoForm("year"), '_label -> "Année", '_showConstraints -> false, 'class -> "form-control")
+   				</div>
+   				<div class="col-lg-2">
+   					<label for="btnUpdateTmdb">
+					</label>
+					<div>
+   					<button type="button" id="btnUpdateTmdb" class="btn btn-primary" onclick="updateTmdbInfo();">
+		  				Mettre à jour
+					</button>
+					</div>
+   				</div>
+   			</div>
+			<div class="row">
+				<div class="col-xs-6 col-md-3">
+    			<a class="thumbnail">
+					<img id="poster">
+    			</a>	
+  				</div>
+				<div class="col-lg-6">
+					<p id="summaryP">					
+					</p>
+					@helper.input(videoForm("summary"), '_label -> "") { (id, name, value, args) =>
+						<input type="hidden" name="@name" id="@id" value="@value" @toHtmlArgs(args)>
+					} 
+				</div>
 			</div>
 			</div>
-
-
-			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/videos';">Retour</button>
+			<div hidden>
+				@helper.input(videoForm("posterPath")) { (id, name, value, args) =>
+					<input  name="@name" id="@id" value="@value" @toHtmlArgs(args)>
+				} 
+				@helper.input(videoForm("backdropPath")) { (id, name, value, args) =>
+					<input name="@name" id="@id" value="@value" @toHtmlArgs(args)>
+				}
+				@helper.input(videoForm("runtime")) { (id, name, value, args) =>
+					<input name="@name" id="@id" value="@value" @toHtmlArgs(args)>
+				}
+			</div>
+			<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/';">Retour</button>
         	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>
 	}
 	</div>
 	</div>
+
+	<script>
+		updatePoster();
+		updateSummary();
+	</script>
 }
   

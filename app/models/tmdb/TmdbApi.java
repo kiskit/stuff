@@ -11,6 +11,7 @@ import java.util.List;
 
 
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class TmdbApi {
@@ -62,6 +63,7 @@ public class TmdbApi {
 	public static BasicMovieInfoSearch searchByTitle(String title) {
 		String response = null;
 		BasicMovieInfoSearch search = null;
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			String url = "http://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + URLEncoder.encode(title, "UTF-8");
 			response = getContent(url);
@@ -73,6 +75,23 @@ public class TmdbApi {
 		}
 		return (search);
 	}
+	public static MovieInfo searchById(String id) {
+		String response = null;
+		MovieInfo info = null;
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		try {
+			String url = "http://api.themoviedb.org/3/movie/" + id + "?api_key=" + key+"&language=fr";
+			response = getContent(url);
+			info = mapper.readValue(response, MovieInfo.class);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Dang, an exception");
+			e.printStackTrace();
+		}
+		return (info);
+	}
+	
+	
 	
 /*	public static List<BasicMovieInfo> searchByTitle(String key, String title) {
 		String url = "https://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + title;

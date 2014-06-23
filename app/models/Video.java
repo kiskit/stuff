@@ -4,9 +4,11 @@ package models;
 import play.data.format.Formats;
 import play.data.validation.Constraints;
 import play.db.ebean.Model.Finder;
+//import play.db.ebean.*;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 
 import models.tmdb.MovieInfo;
 
@@ -23,90 +25,23 @@ import java.util.List;
 @Entity
 public class Video {
 	public Video() {
-		
+
 	}
 
 	public enum SupportType {DVD, BLURAY};
 	public enum ContentType {UNKNOWN, TV, MOVIE};
 	public enum StateType {OK, BROKEN, LOST};
-	
-    public static Finder find = new Finder(Long.class, Video.class);
-  
-    public static List<MovieInfo> getMatchingTitles(String title) {
-    	String URL = "";
-    	
-    	//getHTML();
-    	return null;
-    }
-    
-    /*
-    public static List<MovieDb> getMatchingTitles(String title) {
-    	List<MovieDb> list = null;
-    	if (api == null)  {
-    	   	try {
-    	  		api = new TheMovieDbApi(key);
-    	   	} catch (MovieDbException e) {
-    	   		// TODO Auto-generated catch block
-    	   		e.printStackTrace();
-    			return null;
-    	  	}
-    	}
-    	System.out.println("Looking for title " + title);
-    	try {
-    		// Could be Null Pointer Exception
-    		TmdbResultsList<MovieDb> tmdblist = api.searchMovie(title, 0, "", true, 0);
-    		if (tmdblist != null) {
-    			
-    			list = tmdblist.getResults();	
-    			System.out.println("Results " + list.size());
-    		}
-    	} catch (MovieDbException e) {
-	   		// TODO Auto-generated catch block
-	   		e.printStackTrace();    		
-    	}
-    	return list;
-    }
-    
-    public static MovieDb getInfo(String id) {
- 
-    	if (api == null)
-    	try {
-    		api = new TheMovieDbApi(key);
-    	} catch (MovieDbException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-    	}
-    	try {
-			MovieDb movie = api.getMovieInfo(Integer.parseInt(id), "fr");
-			System.out.println(movie.toString());
-			return movie;
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MovieDbException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	return null;
-    }
-    public URL getPoster(MovieDb movie) {
-    	try {
-    		return getApi().createImageUrl(movie.getPosterPath(), "w185");
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return null;
-    	}
-    }
-    public URL getBackdrop(MovieDb movie) {
-    	try {
-    		return getApi().createImageUrl(movie.getBackdropPath(), "w780");
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    		return null;
-    	}
-    }
-    */
+
+	public static Finder find = new Finder(Long.class, Video.class);
+
+	public static List<MovieInfo> getMatchingTitles(String title) {
+		String URL = "";
+
+		//getHTML();
+		return null;
+	}
+
+
 	@Id
 	private Long id;
 	@Constraints.Required
@@ -118,20 +53,51 @@ public class Video {
 	private String inputTitle;
 	Long year;
 	private String originalTitle;
-    @Formats.DateTime(pattern = "dd/MM/yyyy")
-    @Constraints.Required
-    private Date creationDate;
-    @Formats.DateTime(pattern = "dd/MM/yyyy")
-    @Constraints.Required
-    private Date updateDate;
-    @Formats.DateTime(pattern = "dd/MM/yyyy")
-    String genres;
-    private Date rentalDate;
-    private Long rentedTo;
+	@Formats.DateTime(pattern = "dd/MM/yyyy")
 	@Constraints.Required
-    private StateType state;
+	private Date creationDate;
+	@Formats.DateTime(pattern = "dd/MM/yyyy")
+	@Constraints.Required
+	private Date updateDate;
+	@Formats.DateTime(pattern = "dd/MM/yyyy")
+	String genres;
+	private Date rentalDate;
+	private Long rentedTo;
+	@Constraints.Required
+	private StateType state;
 	private Long minimumAge;
-    	
+	double rating;
+	private String posterPath;
+	private String backdropPath;
+	@Lob
+	private String summary;
+
+
+
+	public String getSummary() {
+		return summary;
+	}
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+	public String getBackdropPath() {
+		return "http://image.tmdb.org/t/p/w500" + backdropPath;
+	}
+	public void setBackdropPath(String backdropPath) {
+		this.backdropPath = backdropPath;
+	}
+	public double getRating() {
+		return rating;
+	}
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+	public String getPosterPath() {
+		return "http://image.tmdb.org/t/p/w500" + posterPath;
+	}
+	public void setPosterPath(String posterPath) {
+		this.posterPath = posterPath;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -174,23 +140,23 @@ public class Video {
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-	
+
 	public Long getRentedTo() {
 		return rentedTo;
 	}
 	public void setRentedTo(Long rentedTo) {
 		this.rentedTo = rentedTo;
 	}
-	
-	
+
+
 	public StateType getState() {
 		return state;
 	}
 	public void setState(StateType state) {
 		this.state = state;
 	}
-	
-	
+
+
 	public static String getKey() {
 		//return key;
 		return null;
@@ -204,8 +170,8 @@ public class Video {
 	public void setRentalDate(Date rentalDate) {
 		this.rentalDate = rentalDate;
 	}
-	
-	
+
+
 	public Long getMinimumAge() {
 		return minimumAge;
 	}
@@ -249,6 +215,4 @@ public class Video {
 				+ rentedTo + ", state=" + state + ", minimumAge=" + minimumAge
 				+ "]";
 	}
-
-	
 }

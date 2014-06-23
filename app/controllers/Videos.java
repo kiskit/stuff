@@ -7,6 +7,7 @@ import models.User;
 import models.Video;
 import models.Video.StateType;
 import models.tmdb.BasicMovieInfo;
+import models.tmdb.MovieInfo;
 import models.tmdb.TmdbApi;
 import models.tmdb.BasicMovieInfoSearch;
 
@@ -387,8 +388,7 @@ return null;
 		public int pages;
 		public List<Video> list;
 	}
-	
-	
+
 	public static Result getVideoList(Integer pageNumber, Integer pageSize, Boolean old, Boolean dvd, Boolean br, Boolean pg, Boolean available, String nameFilter) {
 		System.out.println("In get video list");
 		String queryString = "find video ";
@@ -457,10 +457,6 @@ return null;
 		System.out.println("List pages " + list.pages);
 		return ok(Json.toJson(list));
 	}
-
-
-	
-	
 	public static Result getVideoByTitle(String title) {
 		System.out.println("In get video list by title");
 		List<Video> videoList = Ebean.find(Video.class).where().ilike("inputTitle", "%" + title + "%").findList();
@@ -468,7 +464,6 @@ return null;
 		return ok(Json.toJson(videoList));
 	}
 	public static Result getVideoById(Long id) {
-		System.out.println("In get video by ID");
 		return ok(Json.toJson(Ebean.find(Video.class, id)));
 	}
 	public static Result getVideoByTitleOrId(String titleOrId) {
@@ -491,14 +486,16 @@ return null;
 		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
-	
+
 	// Fetch movie identity on TMDB. Returns the jSon directly because there is no need to do otherwise
 	public static Result getTMDBTitles(String title) {
 		BasicMovieInfoSearch search = TmdbApi.searchByTitle(title);
-		//return ok(response==null?"":response);
 		return ok(Json.toJson(search));
 	}	
-	
+	public static Result getTMDBId(String id) {
+		MovieInfo info = TmdbApi.searchById(id);
+		return ok(Json.toJson(info));
+	}
 	// *********** END AJAX CALLS ****************
 	
 	public static Result checkout() {
@@ -538,5 +535,4 @@ return null;
 		}
 		return ok(checkin.render(User.find.findList(), new User()));
 	}
-
 }
