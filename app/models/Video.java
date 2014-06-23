@@ -8,6 +8,8 @@ import play.db.ebean.Model.Finder;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import models.tmdb.MovieInfo;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.omertron.themoviedbapi.MovieDbException;
 import com.omertron.themoviedbapi.TheMovieDbApi;
@@ -15,6 +17,7 @@ import com.omertron.themoviedbapi.model.MovieDb;
 import com.omertron.themoviedbapi.results.TmdbResultsList;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -35,8 +38,38 @@ public class Video {
     private static String key = "c589965ca14962d100212f66a6a2b1c5";
 
     
+    // Get method
+    public String getHTML(String urlToRead) {
+        URL url;
+        HttpURLConnection conn;
+        BufferedReader rd;
+        String line;
+        String result = "";
+        try {
+           url = new URL(urlToRead);
+           conn = (HttpURLConnection) url.openConnection();
+           conn.setRequestMethod("GET");
+           rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+           while ((line = rd.readLine()) != null) {
+              result += line;
+           }
+           rd.close();
+        } catch (IOException e) {
+           e.printStackTrace();
+        } catch (Exception e) {
+           e.printStackTrace();
+        }
+        return result;
+     }
+
+    public static List<MovieInfo> getMatchingTitles(String title) {
+    	String URL = "";
+    	
+    	//getHTML();
+    	return null;
+    }
     
-    
+    /*
     public static List<MovieDb> getMatchingTitles(String title) {
     	List<MovieDb> list = null;
     	if (api == null)  {
@@ -103,6 +136,7 @@ public class Video {
     		return null;
     	}
     }
+    */
 	@Id
 	private Long id;
 	@Constraints.Required
