@@ -11,10 +11,6 @@ import javax.persistence.Id;
 import models.tmdb.MovieInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.omertron.themoviedbapi.MovieDbException;
-import com.omertron.themoviedbapi.TheMovieDbApi;
-import com.omertron.themoviedbapi.model.MovieDb;
-import com.omertron.themoviedbapi.results.TmdbResultsList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,33 +31,7 @@ public class Video {
 	public enum StateType {OK, BROKEN, LOST};
 	
     public static Finder find = new Finder(Long.class, Video.class);
-    private static String key = "c589965ca14962d100212f66a6a2b1c5";
-
-    
-    // Get method
-    public String getHTML(String urlToRead) {
-        URL url;
-        HttpURLConnection conn;
-        BufferedReader rd;
-        String line;
-        String result = "";
-        try {
-           url = new URL(urlToRead);
-           conn = (HttpURLConnection) url.openConnection();
-           conn.setRequestMethod("GET");
-           rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-           while ((line = rd.readLine()) != null) {
-              result += line;
-           }
-           rd.close();
-        } catch (IOException e) {
-           e.printStackTrace();
-        } catch (Exception e) {
-           e.printStackTrace();
-        }
-        return result;
-     }
-
+  
     public static List<MovieInfo> getMatchingTitles(String title) {
     	String URL = "";
     	
@@ -161,10 +131,7 @@ public class Video {
 	@Constraints.Required
     private StateType state;
 	private Long minimumAge;
-    
-    private static TheMovieDbApi api = null;
-
-	
+    	
 	public Long getId() {
 		return id;
 	}
@@ -225,10 +192,11 @@ public class Video {
 	
 	
 	public static String getKey() {
-		return key;
+		//return key;
+		return null;
 	}
 	public static void setKey(String key) {
-		Video.key = key;
+		//Video.key = key;
 	}
 	public Date getRentalDate() {
 		return rentalDate;
@@ -236,21 +204,7 @@ public class Video {
 	public void setRentalDate(Date rentalDate) {
 		this.rentalDate = rentalDate;
 	}
-	public static TheMovieDbApi getApi() {
-		if (api == null) {
-			try {
-				return new TheMovieDbApi(key);
-			} catch (Exception e){
-				e.printStackTrace();
-				return null;
-			}
-		}
-		else
-			return api;
-	}
-	public static void setApi(TheMovieDbApi api) {
-		Video.api = api;
-	}
+	
 	
 	public Long getMinimumAge() {
 		return minimumAge;

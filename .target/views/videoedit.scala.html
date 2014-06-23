@@ -5,63 +5,69 @@
 <script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
     <script>
     
-    function buildModal(data) {
-				var modal = document.getElementById("modalBody");
+    function clearModal() {
+				console.log("clearing modal");
+				var modal = document.getElementById("titlesModalBody");
 				
 				while (modal.firstChild != null) {
 					modal.removeChild(modal.firstChild);
 				}
-				if (data.length == 0) {
-					document.getElementById("modalButtonOK").disabled = true;
-					// No video found
-					var p = document.createElement("div");
-					p.setAttribute("class", "text-danger lead");
-					p.innerHTML = "Aucune vidéo trouvée avec ce critère";
-					modal.appendChild(p);
+	}
+	function buildModal(data) {
+		console.log("building modal with data " + data);
+		var modal = document.getElementById("titlesModalBody");
+		clearModal();
+		if (data.length == 0) {
+			document.getElementById("modalButtonOK").disabled = true;
+			// No video found
+			var p = document.createElement("div");
+			p.setAttribute("class", "text-danger lead");
+			p.innerHTML = "Aucune vidéo trouvée avec ce critère";
+			modal.appendChild(p);
 					
-				} else {
-					document.getElementById("modalButtonOK").disabled = false;
-				}
-				// Visible button 
-				
-				
-				for(var i = 0; i < data.length;++i) {
-					var radio = document.createElement("input");
-
-					if (i != 0) {
-						var br = document.createElement("br");
-						modal.appendChild(br);
-					} else {
-						radio.setAttribute("checked", "true");
-					}					
-					radio.setAttribute("type", "radio");
-					radio.setAttribute("name", "chooseVid");
-					radio.setAttribute("id",  data[i]['id']);
-					radio.setAttribute("value",  data[i]['id'] + " - " + data[i]['inputTitle']);
-					modal.appendChild(radio);
-					var span = document.createElement("span");
-					span.innerHTML = data[i]['id'] + " - " + data[i]['inputTitle']
-					modal.appendChild(span);
-				}
-			}
-		function queryTMDB() {
-    		var title = document.getElementById("inputTitle").value;
-    		console.log("Calling TMDB with title " + title);
-    		if (title == null) {
-    			return;
-    		}
-    		// query ajax for movie titles		
-    		console.log("Calling TMDB with title " + title);
-			//newDataRequest = $.ajax({url: "/tmdb?title=" + title});						
-			newDataRequest = $.ajax({url: "/tmdb?title=" + title});
-			newDataRequest.done(function(data){
-				//console.log(data);
-			});
-    	}
+		} else {
+			document.getElementById("modalButtonOK").disabled = false;
+		}
+		// Visible button 
+		
+		
+		for(var i = 0; i < data.length;++i) {
+			var radio = document.createElement("input");
+			if (i != 0) {
+				var br = document.createElement("br");
+				modal.appendChild(br);
+			} else {
+				radio.setAttribute("checked", "true");
+			}					
+			radio.setAttribute("type", "radio");
+			radio.setAttribute("name", "chooseVid");
+			radio.setAttribute("id",  data[i]['id']);
+			
+			modal.appendChild(radio);
+			var label = document.createElement("label");
+			label.setAttribute("for",  data[i]['id']);
+			label.textContent = "  " + data[i]['title'] + "(" + data[i]['id'] + ")";
+			modal.appendChild(label);
+		}
+	}
+	
+	function queryTMDB() {
+   		var title = document.getElementById("inputTitle").value;
+   		console.log("Calling TMDB with title " + title);
+   		if (title == null) {
+   			return;
+   		}
+   		// query ajax for movie titles		
+   		console.log("Calling TMDB with title " + title);
+		newDataRequest = $.ajax({url: "/tmdb?title=" + title});
+		newDataRequest.done(function(data){
+			buildModal(data['results']);
+		});
+   	}
     </script>
     
 <!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="titlesModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -69,7 +75,7 @@
         <h4 class="modal-title" id="myModalLabel">Sélectionnez le titre correspondant</h4>
       </div>
 	<form action="" >       
-		<div class="modal-body" id="modalBody">
+		<div class="modal-body" id="titlesModalBody">
 
 
 		</div>
@@ -115,7 +121,7 @@
     		@helper.inputText(videoForm("movieId"), '_label-> "themoviedb.org ID", '_showConstraints -> false, 'readonly -> true,  'class -> "form-input")
     		</div>
     		<div class="col-lg-2">
-    		<button class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="queryTMDB();">
+    		<button class="btn btn-primary" data-toggle="modal" data-target="#titlesModal" onclick="queryTMDB();">
 	  			Launch demo modal
 			</button>
 			</div>

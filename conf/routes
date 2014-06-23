@@ -22,7 +22,7 @@ GET		/borrow						controllers.Videos.borrow()
 POST	/borrow						controllers.Videos.validateBorrow()
 
 # Video edition page
-GET		/videos						controllers.Videos.index()
+#GET		/videos						controllers.Videos.index()
 GET		/videoedit					controllers.Videos.editVideo(id: Long)
 POST	/videoedit					controllers.Videos.validateVideo()
 GET		/videoinfo					controllers.Videos.videoInfo(id: Long)

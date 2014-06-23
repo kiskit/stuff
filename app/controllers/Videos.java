@@ -6,25 +6,19 @@ import models.Rental;
 import models.User;
 import models.Video;
 import models.Video.StateType;
+import models.tmdb.BasicMovieInfo;
+import models.tmdb.TmdbApi;
+import models.tmdb.BasicMovieInfoSearch;
 
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
-import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.H2Platform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.omertron.themoviedbapi.model.MovieDb;
 
 import controllers.Application.Login;
 
 import play.data.Form;
 import play.libs.Json;
-import play.libs.Yaml;
 import views.html.*;
 
 import java.util.ArrayList;
@@ -308,32 +302,34 @@ public class Videos extends Controller {
 			}
 
 			//return ok(videolist.render(Video.find.findList(), new User()));
-			return ok(videolist.render(Video.find.findList().size(), new User()));
+			return ok(videoclub.render(Video.find.findList().size(), new User()));
 		}
 
 	}
 	public static Result videoInfo(Long id) {
 		Video v = Ebean.find(Video.class, id);
 		String idVideo = v.getMovieId();
-		MovieDb info = Video.getInfo(idVideo);
+		/*MovieDb info = Video.getInfo(idVideo);
 		try {
 			System.out.println("Info path: " + info.getPosterPath());
 			System.out.println("Image path: " + v.getApi().createImageUrl(info.getPosterPath(), "w185"));
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
-		return ok(videoinfo.render(v, info, new User()));
+		}*/
+		//return ok(videoinfo.render(v, info, new User()));
+//TODO
+return null;
 	}
 	public static Result validateVideoInfo() {
 		//return ok(videolist.render(Video.find.findList(), new User()));
-		return ok(videolist.render(Video.find.findList().size(), new User()));
+		return ok(videoclub.render(Video.find.findList().size(), new User()));
 	}
 	public static Result borrow() {
 		Form<UserChoice> bForm = Form.form(UserChoice.class);
 		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
 		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		return ok(videolist.render(Video.find.findList().size(), new User()));
+		return ok(videoclub.render(Video.find.findList().size(), new User()));
 		//return ok(videolist.render(Video.find.findList(), new User()));
 	}
 	public static Result validateBorrow() {
@@ -342,7 +338,7 @@ public class Videos extends Controller {
 		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(videolist.render(Video.find.findList(), new User()));
-		return ok(videolist.render(Video.find.findList().size(), new User()));
+		return ok(videoclub.render(Video.find.findList().size(), new User()));
 	}
 	
 	
@@ -495,6 +491,14 @@ public class Videos extends Controller {
 		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
+	
+	// Fetch movie identity on TMDB. Returns the jSon directly because there is no need to do otherwise
+	public static Result getTMDBTitles(String title) {
+		BasicMovieInfoSearch search = TmdbApi.searchByTitle(title);
+		//return ok(response==null?"":response);
+		return ok(Json.toJson(search));
+	}	
+	
 	// *********** END AJAX CALLS ****************
 	
 	public static Result checkout() {
@@ -534,16 +538,5 @@ public class Videos extends Controller {
 		}
 		return ok(checkin.render(User.find.findList(), new User()));
 	}
-	
-	// Fetch movie identity on TMDB
-	public static Result getTMDBTitles(String title) {
-		List<MovieDb> list = Video.getMatchingTitles(title);
-		System.out.println("In Videos, getting list with " + list.size() + " elements");
-		for (int i = 0; i < list.size(); ++i) {
-			System.out.println(list.get(i).getId() + " - " + list.get(i).getTitle());
-			System.out.println(list.get(i).toString());
-			
-		}
-		return ok(Json.toJson(list));
-	}
+
 }
