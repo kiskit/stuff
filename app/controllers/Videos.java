@@ -493,7 +493,7 @@ public class Videos extends Controller {
 			}
 		}
 		//return ok(checkout.render(User.find.findList(), new User()));
-		return redirect("/admin");
+		return redirect("/");
 	}
 	@Security.Authenticated(Secured.class)
 	public static Result checkin() {
@@ -514,6 +514,6 @@ public class Videos extends Controller {
 			}
 		}
 		//return ok(checkin.render(User.find.findList(), new User()));
-		return redirect("/admin");
+		return redirect("/");
 	}
 }

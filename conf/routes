@@ -3,8 +3,8 @@
 # ~~~~
 
 # Where the menu for the admin is located
-GET 	/admin						controllers.Application.index()
-POST 	/admin						controllers.Application.admin()
+#GET 	/admin						controllers.Application.index()
+#POST 	/admin						controllers.Application.admin()
 GET     /login                  	controllers.Application.login()
 POST    /login                  	controllers.Application.authenticate()
 GET     /logout                  	controllers.Application.logout()
@@ -20,6 +20,8 @@ GET     /                           controllers.Videos.index()
 # Video related page
 GET		/videoedit					controllers.Videos.editVideo(id: Long)
 POST	/videoedit					controllers.Videos.validateVideo()
+GET		/checkin					controllers.Videos.checkin()
+GET		/checkout					controllers.Videos.checkout()
 GET		/doCheckin					controllers.Videos.doCheckin(list: String)
 GET		/doCheckout					controllers.Videos.doCheckout(userId: Long, list: String)
 

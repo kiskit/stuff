@@ -1,13 +1,8 @@
 @(users: List[User], admin: User)
-<html>
-	<header>
-		<link href="bootstrap.css" rel="stylesheet" type="text/css">
-		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
-		
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
-		
-		
-		<script>
+@main("Liste des vidéos", admin, "menuItemCheckin") {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+<script>
+
 			
 			var newDataRequest;
 			
@@ -141,17 +136,17 @@
 				
 			;
 			</script>
-	</header>
-	<body>
-		<div class="panel panel-default">
-	  	<div class="panel-heading">Rendre des vidéos</div>
-  		<div class="panel-body">
+		<div class="panel panel-primary">
+ 			<div class="panel-heading">Retour vidéo</div>
+ 			<div class="panel-body">
+ 		
+
  		<!-- search zone -->
- 		<div class="panel panel-primary">
+ 		<div class="panel panel-default">
  			<div class="panel-heading">Rechercher par...</div>
  			<div class="panel-body">
  				<div>
-					<input type="text" id="nameFilterInput" placeholder="Nom" label="Filter"></input>
+					<input type="text" id="nameFilterInput" placeholder="Nom d'abonné" label="Filter"></input>
 					<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
 					<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
 				</div>
@@ -171,7 +166,8 @@
  		</div>
  
 		<!-- form  -->
-		<form class="form-horizontal panel panel-primary" role="form">
+		<form class="form-horizontal panel panel-default" role="form">
+		<div class="panel panel-default">
 		<div class="panel-heading">Vidéos à rendre</div>
 		<div class="panel-body">
 		<div class="row">
@@ -181,13 +177,15 @@
 		</div> <!--  row -->
 		
 		</div>  <!-- panel body -->
-		</div class="row">
+		<div>
 			<div>
-				<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
-				<button type="button" class="btn btn-success" onclick="doCheckin();">Enregistrer</button>
+				<a href="/" class="btn btn-danger active" role="button">Annuler</a>
+				<button type="button" class="btn btn-primary" onclick="doCheckin();">Enregistrer</button>
 			</div>
-		</div> <!-- row -->	
+		</div> 
+		</div>	
 		</form>
+		</div>
+		</div>
 		<p id="parag"></p>
-	</body>
-</html>
+}

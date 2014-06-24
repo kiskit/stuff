@@ -1,11 +1,7 @@
 @(users: List[User], admin: User)
-<html>
-	<header>
-		<link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
-		<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap-responsive.js")'></script>
-		
+@main("Liste des vidéos", admin, "menuItemCheckout") {
+<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+
 		<script>
 			// TODO: when no users, when no videos for a user
 			
@@ -136,18 +132,20 @@
 				var div = document.createElement("div");
 				var span = document.createElement("span");
 				var input = document.createElement("button");
-				div.setAttribute("class", "input-group");
+				div.setAttribute("class", "row col-lg-8");
 				div.setAttribute("id", "vid"+id);
 				div.setAttribute("value", id);
-				span.setAttribute("class", "input-group-addon");
+				//span.setAttribute("class", "input-group-addon");
+				span.setAttribute("class", "col-lg-2");
 				input.setAttribute("type", "button");
-				input.setAttribute("class", "btn btn-danger");
+				input.setAttribute("class", "btn btn-danger btn-xs");
 				input.setAttribute("onclick", "removeItem(\"" + id + "\");");
 				input.innerHTML="&times;";
 				var spantxt = document.createElement("span");
 				spantxt.innerHTML=title;
 				spantxt.value=id;
-				spantxt.setAttribute("class", "input-group-addon");
+				//spantxt.setAttribute("class", "input-group-addon");
+				spantxt.setAttribute("class", "col-lg-6");
 				div.appendChild(span);
 				div.appendChild(spantxt);
 				
@@ -224,7 +222,7 @@
 					buildModal(data);
 				});
 			}
-			
+			/*
 			function newSelectedVideo(id, title) {
 				var newDiv = document.createElement("div");
 				var newLabel = document.createElement("p");
@@ -233,7 +231,7 @@
 				newDiv.appendChild(newLabel);
 				newDiv.appendChild(newButton);
 				return newDiv;
-			}
+			}*/
 
 			function populateSelectedVideos(data) {
 				clearSelectedVideos();
@@ -267,7 +265,6 @@
 			;
 			</script>
 	</header>
-	<body>
 
 			<!-- Modal -->
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -294,19 +291,17 @@
 			
 
 
-		<div class="panel panel-default">
+		<div class="panel panel-primary">
 	  	<div class="panel-heading">Emprunter des vidéos</div>
-	  	
-	  	
-	  	
   		<div class="panel-body">
+
  		<!-- search zone -->
- 			<div class="panel panel-primary">
+ 			<div class="panel panel-default">
  				<div class="panel-heading">Rechercher utilisateur</div>
  				<div class="panel-body">
 	 				<div>
 						<input type="text" id="userFilterInput" placeholder="Nom" label="Filter"></input>
-						<button type="button" class ="btn btn-primary btn-sm" onclick="applyUserFilter()">Filtrer</button>
+						<button type="button" class ="btn btn-info btn-sm" onclick="applyUserFilter()">Filtrer</button>
 						<button type="button" class ="btn btn-warning btn-sm" onclick="clearUserFilter()">Effacer filtre</button>
 					</div>
 					<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
@@ -318,7 +313,7 @@
 				</div>
 			</div>
 	
-			<div class="panel panel-primary">
+			<div class="panel panel-default">
 				<div class="panel-heading">Rechercher vidéo par...</div>
  				<div class="panel-body">
 					<div id="videoSearchGroup">
@@ -329,16 +324,10 @@
 
 				</div>
 			</div>
-			
-			
 			<div class="input-group col-lg-6" id="errorDiv">
-
-				
 			</div>
-
-		
 		<!-- form  -->
-		<div class="form-horizontal panel panel-primary">
+		<div class="form-horizontal panel panel-default">
 		<div class="panel-heading">Vidéos empruntées</div>
 		<div class="panel-body">
 		<div class="row">
@@ -351,12 +340,11 @@
 		</div>  <!-- panel body -->
 		</div class="row">
 			<div>
-				<a href="/admin" class="btn btn-danger active" role="button">Annuler</a>
-				<button type="button" class="btn btn-success" onclick="doCheckout();">Enregistrer</button>
+				<a href="/" class="btn btn-danger active" role="button">Annuler</a>
+				<button type="button" class="btn btn-primary" onclick="doCheckout();">Enregistrer</button>
 			</div>
 		</div> <!-- row -->
 			
 		</form>
 		<p id="parag"></p>
-	</body>
-</html>
+}

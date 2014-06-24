@@ -1,7 +1,7 @@
 @(userForm: Form[User], admin: User)
 @import helper.twitterBootstrap._
 
-@main("Modifier un utilisateur", admin) {
+@main("Modifier un utilisateur", admin, "menuItemUsers") {
 
 	@helper.form(action = routes.Users.validateUser(), 'class -> "form-horizontal") {
 		<h2 >Edition Utilisateur</h2>	

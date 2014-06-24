@@ -70,10 +70,7 @@ public class Application extends Controller {
 	/** 
 	 * Administration index
 	*/
-	//@Security.Authenticated(Secured.class)
-	public static Result index() {
-		return ok(index.render("Your new application is ready."));
-	}
+	/*
 	public static Result admin() {
 
 		String[] postAction = request().body().asFormUrlEncoded().get("action");
@@ -105,7 +102,7 @@ public class Application extends Controller {
 			}
 		}
 		//return ok(index.render("Your new application is ready."));
-	}
+	}*/
 	
 	
 

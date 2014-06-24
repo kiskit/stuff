@@ -1,4 +1,4 @@
-@(title: String, admin: User)(content: Html)
+@(title: String, admin: User, activeItem: String)(content: Html)
 
 <!DOCTYPE html>
 
@@ -10,27 +10,43 @@
         <link rel="stylesheet" type="text/css" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.css")">        
         
         <script type="text/javascript" src='@routes.Assets.at("javascripts/jquery.js")'></script>
-        
-        
-        
 <!-- <script type="text/javascript" src='@routes.Assets.at("javascripts/css3-mediaqueries.js")'></script>  -->  		
         
     </head>
-    <body>
+    <body onload="onLoadMenu();">
     	<header>
+	    <script>
+    	    function onLoadMenu() {
+    	    	var id = '@activeItem';
+    	    	document.getElementById(id).setAttribute("class","active");
+    	    }
+		</script>
 			
     	</header>
-    	<div class="navbar navbar-default">
-			<div class="navbar-inner">
-				<div class="container">
-					<ul class="nav navbar-nav navbar-left">
-						<li><img class="navbar-btn" src='@routes.Assets.at("images/film_roll 40px.png")' alt="Smiley face" height="32px"></li>
-						<li><p class="navbar-text"><big style="color: #F5b000;"><strong>Orange Labs Vidéo Club</strong></big></p></li>
-					</ul>
+    	<div class="navbar navbar-default" role="navigation">
+			<div class="container-fluid">
+				<!-- Brand and toggle get grouped for better mobile display -->
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+      				<a class="navbar-brand">Orange Vidéo Club</a>
+    			</div>
+    	
+    	    <div class="collapse navbar-collapse" id="navbar-collapse">
 					@if(admin != null) {
+					<ul class="nav navbar-nav">
+						<li id="menuItemHome"><a href="/">Accueil</a></li>
+						<li id="menuItemUsers"><a href="/users">Gestion des abonnés</a></li>
+						<li id="menuItemCheckin"><a href="/checkin">Retour vidéo</a></li>
+						<li id="menuItemCheckout"><a href="/checkout">Emprunt vidéo</a></li>
+					</ul>
 					<ul class="nav navbar-nav navbar-right">
 						<li><p class="navbar-text">Bienvenue @admin.getFirstName() <span>(@admin.getEmail())</span></p></li>
-						<li><a class="btn btn-primary navbar-btn btn-sm" href="@routes.Application.logout()">Se déconnecter</a></li>
+						<li><a href="@routes.Application.logout()">Se déconnecter</a></li>
       				</ul>
       				}
 				</div>
