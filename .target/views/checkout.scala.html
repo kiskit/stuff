@@ -291,19 +291,24 @@
 			
 
 
-		<div class="panel panel-primary">
+		 <!-- <div class="panel panel-primary">
 	  	<div class="panel-heading">Emprunter des vidéos</div>
-  		<div class="panel-body">
+  		<div class="panel-body">-->
 
  		<!-- search zone -->
- 			<div class="panel panel-default">
+ 			<div class="panel panel-info">
  				<div class="panel-heading">Rechercher utilisateur</div>
  				<div class="panel-body">
-	 				<div>
-						<input type="text" id="userFilterInput" placeholder="Nom" label="Filter"></input>
-						<button type="button" class ="btn btn-info btn-sm" onclick="applyUserFilter()">Filtrer</button>
-						<button type="button" class ="btn btn-warning btn-sm" onclick="clearUserFilter()">Effacer filtre</button>
+	 				<div class="row">
+	 				<div class="col-lg-6">
+	 				<div class="input-group">
+						<input class="form-control" type="text" id="userFilterInput" placeholder="Nom" label="Filter"></input>
+						<span class="input-group-btn"><button type="button" class ="btn btn-default" onclick="applyUserFilter()">Filtrer</button></span>
 					</div>
+					</div>
+					<button type="button" class ="btn btn-warning" onclick="clearUserFilter()">Reset</button>
+					</div>
+					<div><p></p></div>
 					<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
 						<option value="">-- Selectionnez un utilisateur --</option>
 						@for(u <- users) {
@@ -313,7 +318,7 @@
 				</div>
 			</div>
 	
-			<div class="panel panel-default">
+			<div class="panel panel-info">
 				<div class="panel-heading">Rechercher vidéo par...</div>
  				<div class="panel-body">
 					<div id="videoSearchGroup">
@@ -327,24 +332,21 @@
 			<div class="input-group col-lg-6" id="errorDiv">
 			</div>
 		<!-- form  -->
-		<div class="form-horizontal panel panel-default">
-		<div class="panel-heading">Vidéos empruntées</div>
-		<div class="panel-body">
-		<div class="row">
-			<!-- Elements of video (id, title) with a minus button -->
-			<div class="input-group col-lg-8" id="selectedVideos">
-				
-			</div> <!-- /input-group -->
-		</div> <!--  row -->
-		
-		</div>  <!-- panel body -->
-		</div class="row">
-			<div>
-				<a href="/" class="btn btn-danger active" role="button">Annuler</a>
-				<button type="button" class="btn btn-primary" onclick="doCheckout();">Enregistrer</button>
-			</div>
-		</div> <!-- row -->
+		<div class="form-horizontal panel panel-primary">
+			<div class="panel-heading">Vidéos empruntées</div>
+			<div class="panel-body">
+				<div class="row">
+					<!-- Elements of video (id, title) with a minus button -->
+					<div class="input-group col-lg-8" id="selectedVideos">
 			
-		</form>
+					</div> <!-- /input-group -->
+				</div> <!--  row -->
+			</div>  <!-- panel body -->
+		</div>
+		<div>
+			<a href="/" class="btn btn-danger active" role="button">Annuler</a>
+			<button type="button" class="btn btn-primary" onclick="doCheckout();">Enregistrer</button>
+		</div>
+	
 		<p id="parag"></p>
 }

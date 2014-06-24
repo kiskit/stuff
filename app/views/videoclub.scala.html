@@ -1,12 +1,10 @@
 @(listSize: Integer, admin: User)
 
-        
-
 @main("Liste des vidéos", admin, "menuItemHome") {
 <script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
         <script>        
         	// Must be at least 3
-        	var pageSize = 4;
+        	var pageSize = 10;
         	var currentPage = 1;
         	var lastPage = Math.ceil(@listSize / pageSize); 
         
@@ -76,6 +74,7 @@
         	
 			// Page number management        	
         	function setPagerSize(size) {
+        		console.log("in pager size " + size);
         		var oldId = "pagerSize" + pageSize;
         		document.getElementById(oldId).innerHTML = pageSize;
         		pageSize = size;
@@ -484,16 +483,16 @@
                 </button>
                 <ul class="dropdown-menu" id="pagerSizeID" role="menu">
                   <li>
-                    <a id="pagerSize4" onclick="setPagerSize('10');">10</a>
+                    <a id="pagerSize10" onclick="setPagerSize('10');">10</a>
                   </li>
                   <li>
-                    <a id="pagerSize8" onclick="setPagerSize('25');">25</a>
+                    <a id="pagerSize25" onclick="setPagerSize('25');">25</a>
                   </li>
                   <li>
-                    <a id="pagerSize16" onclick="setPagerSize('50');">50</a>
+                    <a id="pagerSize50" onclick="setPagerSize('50');">50</a>
                   </li>
                   <li>
-                    <a id="pagerSize32" onclick="setPagerSize('100');">100</a>
+                    <a id="pagerSize100" onclick="setPagerSize('100');">100</a>
                   </li>
                 </ul>
               </div>

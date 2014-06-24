@@ -1,13 +1,19 @@
 TODO
 
-Admin menu
+* Critical
+TV stuff
+Img to replace when there is no img
+MySQL db
+IE8 compat
+Virer les console.log
+
+* Major
 Fix path stuff
+Logging
+
+* Minor
 History recordings
 History page
 Late vids page
-MySQL db
 Icons to redo
 Banner: transparent
-Results per page inactive
-Logging
-

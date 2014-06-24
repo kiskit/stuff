@@ -136,29 +136,43 @@
 				
 			;
 			</script>
-		<div class="panel panel-primary">
+			<!--<div class="panel panel-primary">
  			<div class="panel-heading">Retour vidéo</div>
- 			<div class="panel-body">
+ 			<div class="panel-body">-->
  		
 
  		<!-- search zone -->
- 		<div class="panel panel-default">
+ 		<div class="panel panel-info">
  			<div class="panel-heading">Rechercher par...</div>
  			<div class="panel-body">
- 				<div>
-					<input type="text" id="nameFilterInput" placeholder="Nom d'abonné" label="Filter"></input>
-					<button type="button" class ="btn btn-primary btn-sm" onclick="applyFilter()">Filtrer</button>
-					<button type="button" class ="btn btn-warning btn-sm" onclick="clearFilter()">Effacer filtre</button>
+ 			<div class="well">
+ 				<div class="row">
+ 					
+ 					<div class="col-lg-6">
+ 						<div class="input-group">
+							<input class="form-control" type="text" id="nameFilterInput" placeholder="Nom d'abonné" label="Filter"></input>
+							<span class="input-group-btn"><button class="btn btn-default" type="button"  onclick="applyFilter()">Filtrer</button></span>
+						</div>
+					</div>
+					<div class="col-lg-2">
+						<button class ="btn btn-warning" onclick="clearFilter()">Reset</button>
+					</div>
 				</div>
-				<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
-					<option value="">-- Selectionnez un utilisateur --</option>
-					@for(u <- users) {
-						<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
-					} 
-				</select>
-				<div id="vidInputGroup">
+				<div class="row"><p></p></div>
+				<div class="row">
+					<div class="col-lg-8">
+						<select id="usersListSelect" class="form-control" onchange="changeUserSelect(this.value);">
+							<option value="">-- Selectionnez un utilisateur --</option>
+							@for(u <- users) {
+								<option value="@u.getId()">@u.getId() - @u.getFullName()</option>
+							} 
+						</select>
+					</div>
+				</div>
+</div> <!-- well -->				
+				<div id="vidInputGroup" class="well">
 					<input id="vidInput" label="Identifiant Video" placeholder="Identifiant video"> </input>
-					<button type="button" class="btn btn-info" onclick="changeVideoSelect();">Retrouver utilisateur</button>
+					<button type="button" class="btn btn-default" onclick="changeVideoSelect();">Retrouver utilisateur</button>
 					<p class="text-danger" id="vidError"> </p>
 				</div>
 
@@ -166,26 +180,26 @@
  		</div>
  
 		<!-- form  -->
-		<form class="form-horizontal panel panel-default" role="form">
-		<div class="panel panel-default">
+		<!-- <form class="form-horizontal panel panel-default" role="form">  -->
+		<div class="panel panel-primary">
 		<div class="panel-heading">Vidéos à rendre</div>
 		<div class="panel-body">
 		<div class="row">
-			<div class="input-group col-lg-6" id="videosSelect">
+			<!-- <div class="col-lg-1"></div> -->
+			<div class="input-group col-lg-12" id="videosSelect">
 				
 			</div> <!-- /input-group -->
 		</div> <!--  row -->
 		
 		</div>  <!-- panel body -->
-		<div>
-			<div>
-				<a href="/" class="btn btn-danger active" role="button">Annuler</a>
-				<button type="button" class="btn btn-primary" onclick="doCheckin();">Enregistrer</button>
-			</div>
-		</div> 
+		 
 		</div>	
-		</form>
+		<div>
+			<a href="/" class="btn btn-danger active" role="button">Annuler</a>
+			<button type="button" class="btn btn-primary" onclick="doCheckin();">Enregistrer</button>
 		</div>
-		</div>
+		  <!--</form>  -->
+		 <!--</div>
+		</div>-->
 		<p id="parag"></p>
 }
