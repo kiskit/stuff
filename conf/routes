@@ -2,7 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-
+# Where the menu for the admin is located
 GET 	/admin						controllers.Application.index()
 POST 	/admin						controllers.Application.admin()
 GET     /login                  	controllers.Application.login()
@@ -13,20 +13,20 @@ GET     /logout                  	controllers.Application.logout()
 # Home page for all users
 GET     /                           controllers.Videos.index()
 
-# Where the menu for the admin is located
-#GET 	/admin						controllers.Application.admin()
 
-# Where the history is located
+# Where the history is located - for future use
 #GET 	/history					controllers.Application.history()
-GET		/borrow						controllers.Videos.borrow()
-POST	/borrow						controllers.Videos.validateBorrow()
 
-# Video edition page
-#GET		/videos						controllers.Videos.index()
+# Video related page
 GET		/videoedit					controllers.Videos.editVideo(id: Long)
 POST	/videoedit					controllers.Videos.validateVideo()
-GET		/videoinfo					controllers.Videos.videoInfo(id: Long)
-#POST	/videoedit/:id				controllers.Videos.validateVideoInfo(id: Long)
+GET		/doCheckin					controllers.Videos.doCheckin(list: String)
+GET		/doCheckout					controllers.Videos.doCheckout(userId: Long, list: String)
+
+# Users related  page
+GET		/users						controllers.Users.index()
+GET		/useredit					controllers.Users.editUser(id: Long)
+POST	/useredit					controllers.Users.validateUser()
 
 
 
@@ -41,14 +41,6 @@ GET		/tmdbId						controllers.Videos.getTMDBId(id: String)
 # End Ajax methods
 
 
-
-GET		/doCheckin					controllers.Videos.doCheckin(list: String)
-GET		/doCheckout					controllers.Videos.doCheckout(userId: Long, list: String)
-
-# Video edition page
-GET		/users						controllers.Users.index()
-GET		/useredit					controllers.Users.editUser(id: Long)
-POST	/useredit					controllers.Users.validateUser()
 
 
 # Map static resources from the /public folder to the /assets URL path

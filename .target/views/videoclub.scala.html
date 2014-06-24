@@ -252,7 +252,7 @@
 						td.appendChild(img);
 						tr.appendChild(td);
 						// If logged in as admin, we've got privileges						
-						
+						@if(admin != null){
 							// Edit button 
 							td = document.createElement('td');
 							var form = document.createElement('form');
@@ -266,7 +266,7 @@
 							form.appendChild(button);
 							td.appendChild(form);
 							tr.appendChild(td);
-						
+						}
 
 						tableBody.appendChild(tr);
 					}
@@ -274,18 +274,56 @@
         	}
         	// END Table Management functions 
         	
+        	function updateAttributeOrHide(fieldName, attribute, data, div) {
+        		if (data != null && data != "") {
+        			document.getElementById(fieldName).setAttribute(attribute, data);
+        			document.getElementById(fieldName).hidden = false;
+        			if (div == true) {
+            			document.getElementById(fieldName + "Div").hidden = false;
+            		} 
+        		} else {
+        			document.getElementById(fieldName).hidden = true;
+        			if (div == true) {
+            			document.getElementById(fieldName + "Div").hidden = true;
+            		}
+        		}
+        		
+        	}
+        	function updateOrHide(fieldName, data, div) {
+        		if (data != null && data != "") {
+        			document.getElementById(fieldName).innerHTML = data;
+        			document.getElementById(fieldName).hidden = false;
+        			if (div == true) {
+            			document.getElementById(fieldName + "Div").hidden = false;
+            		} 
+        		} else {
+        			document.getElementById(fieldName).hidden = true;
+        			if (div == true) {
+            			document.getElementById(fieldName + "Div").hidden = true;
+            		} 
+        		}
+        	
+        	}
         	// Modal management
         	function showMovie(id) {
         		newDataRequest = $.ajax({url: "/videobyid?id="+id});
 				newDataRequest.done(function(data){
+					console.log("Movie data : " + data);
 					document.getElementById("movieModalBackDrop").setAttribute("src", data["backdropPath"]);
 					document.getElementById("movieModalTitle").innerHTML = data["inputTitle"] + " (" + data["year"] + ")";
-					document.getElementById("movieModalOriginalTitle").innerHTML = data["originalTitle"];
+					//document.getElementById("movieModalOriginalTitle").innerHTML = data["originalTitle"];
+					updateOrHide("movieModalOriginalTitle", data["originalTitle"], true);
+					updateOrHide("movieModalTagline", data["tagline"], true);
 					document.getElementById("movieModalPoster").setAttribute("src", data["posterPath"]);
 					document.getElementById("movieModalSummary").innerHTML = data["summary"];
-					document.getElementById("movieModalRating").innerHTML = data["rating"];
-					document.getElementById("movieModalRuntime").innerHTML = data["runtime"];
-					document.getElementById("movieModalYear").innerHTML = data["year"];
+					//document.getElementById("movieModalRating").innerHTML = data["rating"];
+					updateOrHide("movieModalRating", data["rating"], false);
+					//document.getElementById("movieModalRuntime").innerHTML = data["runtime"];
+					updateOrHide("movieModalRuntime", data["runtime"], false);
+					//document.getElementById("movieModalYear").innerHTML = data["year"];
+					updateOrHide("movieModalYear", data["year"], false);
+					updateOrHide("movieModalGenres", data["genres"], true);
+					updateOrHide("movieModalPG", data["minimumAge"]);
 				});			
         	}
         	
@@ -306,43 +344,75 @@
     	    	<h4 class="modal-title" id="movieModalTitle"></h4>
 			</div>
 			<div class="modal-body" id="movieModalBody">
-				<div class="row">
+				<div class="row well well-sm" id="movieModalTaglineDiv">
 					<div class="col-lg-12">
-						<img id="movieModalBackDrop">
+						<h4 id="movieModalTagline" class="text-justify"></h4>
 					</div>
 				</div>
 				<div class="row">
-					<h4>
-					<div class="col-lg-3">
-						<p for="movieModalOriginalTitle">Titre original: </p>
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="col-lg-10" style="align=center;">
+								<img id="movieModalBackDrop">
+							</div>	
+						</div>
 					</div>
-					<div class="col-lg-9">
-						<p id="movieModalOriginalTitle"></p>
-					</div>
-					</h4>
 				</div>
+				<div class="row" id="movieModalOriginalTitleDiv">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<h4>
+								<div class="col-lg-4">
+									<label for="movieModalOriginalTitle">Titre original: </label>
+								</div>
+								<div class="col-lg-8">
+									<p id="movieModalOriginalTitle"></p>
+								</div>
+							</h4>
+						</div>
+					</div>
+				</div>
+				<div class="row well" id="movieModalGenresDiv">
+					<div class="col-lg-2">
+						<label for="movieModalGenres">Genres: </label>
+					</div>
+					<div class="col-lg-10">
+						<p id="movieModalGenres" class="text-justify"></p>
+					</div>
+				</div>
+				
+				
 				<div class="row">
-					<div class="col-lg-4">
+					<div class="col-lg-6">
 						<a class="thumbnail">
-						<img id="movieModalPoster">
+							<img id="movieModalPoster">
 						</a>
 					</div>
-					<div class="col-lg-6">
-						<p id="movieModalSummary"></p>
+					<div class="col-lg-6  well">
+						<p id="movieModalSummary" class="text-justify"></p>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-lg-2">
-						<p id="movieModalRating"></p>
-					</div>
-					<div class="col-lg-2">
-						<p id="movieModalRuntime"></p>
-					</div>
-					<div class="col-lg-2">
-						<p id="movieModalYear"></p>
-					</div>
-					<div class="col-lg-2">
-						<p id="movieModalPG"></p>
+				<div class="row panel panel-default">
+					<div class="panel-body">
+						<div class="col-lg-2">
+							<label for="movieModalRating">Note</label>
+							<button id="movieModalRating" class="active"></button>
+						</div>
+						<div class="col-lg-1"></div>
+						<div class="col-lg-2">
+							<label for="movieModalRuntime">Durée</label>
+								<button id="movieModalRuntime" class="active"></button>
+						</div>
+						<div class="col-lg-1"></div>
+						<div class="col-lg-2">
+							<label for="movieModalYear">Sortie</label>
+							<button id="movieModalYear" class="active"></button>
+						</div>
+						<div class="col-lg-1"></div>
+						<div class="col-lg-3">
+							<label for="movieModalPG">A partir de</label>
+							<button id="movieModalPG" class="active"></button>
+						</div>
 					</div>
 				</div>
 			</div>

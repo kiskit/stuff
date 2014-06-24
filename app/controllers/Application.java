@@ -1,22 +1,10 @@
 package controllers;
 
 import models.User;
-import models.Video;
+
 import play.mvc.*;
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.H2Platform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
-
 import play.data.Form;
-import play.libs.Yaml;
 import views.html.*;
-import views.html.helper.form;
-
-import java.util.Date;
-import play.data.*;
 
 public class Application extends Controller {
 	
@@ -31,13 +19,14 @@ public class Application extends Controller {
 	    Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
 	    if (loginForm.hasErrors()) {
 	    	System.out.println("Form still has errors");
+	    	System.out.println(loginForm.toString());
 	        return badRequest(login.render(loginForm));
 	    } else {
 	        session().clear();
 	        session("email", loginForm.get().email);
-	        System.out.println("Got the right login");
+	        System.out.println("Got the right login " + loginForm.get().email);
 	        return redirect(
-	            routes.Application.index()
+	            routes.Videos.index()
 	        );
 	    }
 	}
@@ -57,7 +46,7 @@ public class Application extends Controller {
 				return "Utilisateur ou mot de passe erroné";
 			}
 			System.out.println("authenticated");
-			return "success";
+			return null;
 		}
 		public Login() {
 			

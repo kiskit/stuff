@@ -1,6 +1,7 @@
 package models.tmdb;
 
 import java.util.Date;
+import java.util.List;
 
 //import com.fasterxml.jackson.*;
 
@@ -17,7 +18,8 @@ public class MovieInfo {
 	private Date release_date;
 	private double vote_average;
 	private int runtime;
-	
+	private List<Genre> genres;
+	String tagline;
 	
 	public MovieInfo () {
 		
@@ -25,6 +27,30 @@ public class MovieInfo {
 	
 	
 	
+	public String getTagline() {
+		return tagline;
+	}
+
+
+
+	public void setTagline(String tagline) {
+		this.tagline = tagline;
+	}
+
+
+
+	public List<Genre> getGenres() {
+		return genres;
+	}
+
+
+
+	public void setGenres(List<Genre> genres) {
+		this.genres = genres;
+	}
+
+
+
 	public int getRuntime() {
 		return runtime;
 	}
@@ -90,8 +116,12 @@ public class MovieInfo {
 				+ poster_path + ", overview=" + overview + ", original_title="
 				+ original_title + ", release_date=" + release_date
 				+ ", vote_average=" + vote_average + ", runtime=" + runtime
-				+ "]";
+				+ ", genres=" + genres + ", tagline=" + tagline + "]";
 	}
+
+
+
+	
 
 	
 	

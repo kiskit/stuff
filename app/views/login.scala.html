@@ -19,11 +19,7 @@
             		@loginForm.globalError.message
         		</p>
     		}
-    		@if(flash.contains("success")){
-    			<p class="success text-success">
-        			@flash.get("success")
-    			</p>
-    		}
+    		
     		<p>
         		<label for ="emailID">Adresse email</label>
         		<input id="emailID" type="email" class="form-control" name="email" placeholder="Votre adresse email" value="@loginForm("email").value">

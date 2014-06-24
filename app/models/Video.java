@@ -12,6 +12,7 @@ import javax.persistence.Lob;
 
 import models.tmdb.MovieInfo;
 
+import com.avaje.ebean.Ebean;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.BufferedReader;
@@ -71,9 +72,33 @@ public class Video {
 	private String backdropPath;
 	@Lob
 	private String summary;
+	private String tagline;
+	private int runtime;
 
-
-
+	public String getRentalString() {
+		String rentalString = null;
+		if (rentedTo != null) {
+			User u = Ebean.find(User.class, rentedTo);
+			if (u != null)
+				rentalString = u.getFullName() + " (" + rentalDate.toLocaleString() + ")";
+		}
+		return rentalString;
+	}
+	public User getRentedToUser() {
+		return rentedTo == null?null:Ebean.find(User.class, rentedTo);
+	}
+	public int getRuntime() {
+		return runtime;
+	}
+	public void setRuntime(int runtime) {
+		this.runtime = runtime;
+	}
+	public String getTagline() {
+		return tagline;
+	}
+	public void setTagline(String tagline) {
+		this.tagline = tagline;
+	}
 	public String getSummary() {
 		return summary;
 	}
@@ -145,7 +170,14 @@ public class Video {
 		return rentedTo;
 	}
 	public void setRentedTo(Long rentedTo) {
-		this.rentedTo = rentedTo;
+		if ((rentedTo != null) && (rentedTo < 0)) {
+			this.rentedTo = null;
+			this.rentalDate = null;
+		} else {
+			System.out.println("In setter setting to " + rentedTo);
+			this.rentedTo = rentedTo;	
+		}
+		
 	}
 
 

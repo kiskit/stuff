@@ -240,14 +240,16 @@ public class Videos extends Controller {
 			Ebean.save(u);
 			
 		}
-
+		//System.out.println("Request for index: " + request());
+		//System.out.println("Session "  + session("email"));
+		//System.out.println("User for index: " + request().username() + " " + User.getByEmail(request().username()));
 		return ok(videoclub.render(
 						Video.find.findList().size(), 
-						User.getByEmail(request().username())
+						User.getByEmail(session("email"))
 				)
 		);
 	}
-	//@Security.Authenticated(Secured.class)
+	@Security.Authenticated(Secured.class)
 	public static Result editVideo(Long id) {
 		System.out.println("Editing video " + id);
 		/**
@@ -272,76 +274,51 @@ public class Videos extends Controller {
 		v.setUpdateDate(new Date());
 
 		videoForm = videoForm.fill(v);
-		return ok(videoedit.render(videoForm, User.getByEmail(request().username())));
+		return ok(videoedit.render(videoForm, v.getRentedToUser(), User.getByEmail(request().username())));
 	}
+	
+	@Security.Authenticated(Secured.class)
 	public static Result validateVideo() {
 		Form<Video> videoForm = Form.form(Video.class).bindFromRequest();
-
 		if(videoForm.hasErrors()) {
-			System.out.println("Bad request Validating video");
-			return badRequest(videoedit.render(videoForm, User.getByEmail(request().username())));
+			Video v = Ebean.find(Video.class, Long.parseLong(videoForm.field("id").value()));
+			return badRequest(videoedit.render(videoForm, v.getRentedToUser(), User.getByEmail(request().username())));
 		} else {
-			
-			String[] postAction = request().body().asFormUrlEncoded().get("action");
-			if (postAction == null || postAction.length == 0) {
-				return badRequest("You must provide a valid action");
+			if ((Ebean.find(Video.class, videoForm.get().getId())) != null) {
+				Ebean.update(videoForm.get());
 			} else {
-				String action = postAction[0];
-
-				if ("Cancel".equals(action)) {
-					// Returns to main videolist page
-					return index();
-				}
-			}
-			
-			if (Ebean.find(Video.class, videoForm.get().getId()) != null) {
-				System.out.println("Updating video " + videoForm.toString());
-				Ebean.update(videoForm.get());	
-			} else {
-				System.out.println("Inserting video" + videoForm.toString());
 				Ebean.save(videoForm.get());
 			}
-
-			//return ok(videolist.render(Video.find.findList(), new User()));
-			return ok(videoclub.render(Video.find.findList().size(), new User()));
+			return redirect("/");
 		}
+	}
 
-	}
-	public static Result videoInfo(Long id) {
-		Video v = Ebean.find(Video.class, id);
-		String idVideo = v.getMovieId();
-		/*MovieDb info = Video.getInfo(idVideo);
-		try {
-			System.out.println("Info path: " + info.getPosterPath());
-			System.out.println("Image path: " + v.getApi().createImageUrl(info.getPosterPath(), "w185"));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}*/
-		//return ok(videoinfo.render(v, info, new User()));
-//TODO
-return null;
-	}
-	public static Result validateVideoInfo() {
+/*	public static Result validateVideoInfo() {
 		//return ok(videolist.render(Video.find.findList(), new User()));
 		return ok(videoclub.render(Video.find.findList().size(), new User()));
 	}
+	*/
+	/*
 	public static Result borrow() {
 		Form<UserChoice> bForm = Form.form(UserChoice.class);
 		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
 		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		return ok(videoclub.render(Video.find.findList().size(), new User()));
+		//return ok(videoclub.render(Video.find.findList().size(), new User()));
 		//return ok(videolist.render(Video.find.findList(), new User()));
-	}
+		return redirect("/");
+	}*/
+	/*
 	public static Result validateBorrow() {
 		Form<UserChoice> bForm = Form.form(UserChoice.class);
 		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
 		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
 		//return ok(videolist.render(Video.find.findList(), new User()));
-		return ok(videoclub.render(Video.find.findList().size(), new User()));
+		//return ok(videoclub.render(Video.find.findList().size(), new User()));
+		return redirect("/");
 	}
-	
+	*/
 	
 	
 	// ****************** AJAX CALLS ************************
@@ -445,16 +422,16 @@ return null;
 			query.setParameter("name", "%" + nameFilter.toLowerCase() + "%");
 		query.setParameter("minAge", 12);
 		
-		System.out.println("QueryString " + query.getGeneratedSql());
+		//System.out.println("QueryString " + query.getGeneratedSql());
 		
 		JSonVideoList list = new JSonVideoList();
 		double rowCount = (double) query.findRowCount();
-		System.out.println("Would return " + rowCount);
+		//System.out.println("Would return " + rowCount);
 		list.list = query.findPagingList(pageSize).getPage(pageNumber - 1).getList();
 		
 		list.pages = (int)Math.ceil(rowCount / pageSize);
-		System.out.println("List size " + list.list.size());
-		System.out.println("List pages " + list.pages);
+		//System.out.println("List size " + list.list.size());
+		//System.out.println("List pages " + list.pages);
 		return ok(Json.toJson(list));
 	}
 	public static Result getVideoByTitle(String title) {
@@ -497,10 +474,11 @@ return null;
 		return ok(Json.toJson(info));
 	}
 	// *********** END AJAX CALLS ****************
-	
+	@Security.Authenticated(Secured.class)
 	public static Result checkout() {
-		return ok(checkout.render(User.find.findList(), new User()));
+		return ok(checkout.render(User.find.findList(), User.getByEmail(request().username())));
 	}
+	@Security.Authenticated(Secured.class)
 	public static Result doCheckout(Long userId, String list) {
 		String[] parts = list.split(",");
 		for (int i = 0; i < parts.length; ++i) {
@@ -514,12 +492,14 @@ return null;
 				System.out.println("Video " + parts[i] + " not found");
 			}
 		}
-		return ok(checkout.render(User.find.findList(), new User()));
+		//return ok(checkout.render(User.find.findList(), new User()));
+		return redirect("/admin");
 	}
-	
+	@Security.Authenticated(Secured.class)
 	public static Result checkin() {
-		return ok(checkin.render(User.find.findList(), new User()));
+		return ok(checkin.render(User.find.findList(), User.getByEmail(request().username())));
 	}
+	@Security.Authenticated(Secured.class)
 	public static Result doCheckin(String list) {
 		String[] parts = list.split(",");
 		for (int i = 0; i < parts.length; ++i) {
@@ -533,6 +513,7 @@ return null;
 				System.out.println("Video " + parts[i] + " not found");
 			}
 		}
-		return ok(checkin.render(User.find.findList(), new User()));
+		//return ok(checkin.render(User.find.findList(), new User()));
+		return redirect("/admin");
 	}
 }

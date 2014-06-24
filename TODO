@@ -1,23 +1,13 @@
 TODO
 
-Global layout
-home page
-login page
-checkout page
-history page
-late vids page
-movie info page
-movie info populate page
 
-Filters on video list
-Sorting on video list
-Carousel of new videos
 
-admin login on every page
-video populate from the movie db
-key from the movie db
-
-differentiate video list for customers and admins
-users management icons
-helpers (?)
+Admin Home page
+Authentication to work
+History recordings
+History page
+Late vids page
 MySQL db
+Icons to redo
+Banner: transparent
+Results per page inactive

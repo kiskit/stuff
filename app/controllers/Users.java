@@ -19,11 +19,11 @@ import java.util.Date;
 
 public class Users extends Controller {
 
-
+	@Security.Authenticated(Secured.class)
 	public static Result index() {    	
 		return ok(userlist.render(User.find.findList(), User.getByEmail(request().username())));
 	}
-
+	@Security.Authenticated(Secured.class)
 	public static Result editUser(Long id) {
 		System.out.println("Editing user " + id);
 		/**
@@ -52,9 +52,11 @@ public class Users extends Controller {
 		u.setUpdateDate(new Date());
 
 		userForm = userForm.fill(u);
+		System.out.println("Username " + request().username());
 		return ok(useredit.render(userForm, User.getByEmail(request().username())));
+		
 	}
-
+	@Security.Authenticated(Secured.class)
 	public static Result validateUser() {
 		Form<User> userForm = Form.form(User.class).bindFromRequest();
 		if(userForm.hasErrors()) {
@@ -78,14 +80,6 @@ public class Users extends Controller {
 					return index();
 				}
 			}
-			/*if (userForm.field("isAdmin").value().equals("true")) {
-				System.out.println("setting to true");
-				userForm.get().setAdmin(true);
-			} else {
-				System.out.println("setting to false");
-				userForm.get().setAdmin(false);
-			}*/
-			System.out.println("Admin after correction: " + userForm.get().isAdmin());
 			// If user exists, update
 			if (Ebean.find(User.class, userForm.get().getId()) != null) {	
 				System.out.println("Updating user " + userForm.toString());
@@ -95,7 +89,8 @@ public class Users extends Controller {
 				System.out.println("Inserting user" + userForm.toString());
 				Ebean.save(userForm.get());
 			}
-			return ok(userlist.render(User.find.findList(), User.getByEmail(request().username())));
+			//return ok(userlist.render(User.find.findList(), User.getByEmail(request().username())));
+			return redirect("/users");
 		}
 
 	}
