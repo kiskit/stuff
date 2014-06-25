@@ -8,6 +8,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
+import models.Video;
+
 
 
 
@@ -60,14 +62,20 @@ public class TmdbApi {
 		return responseStr;
 	}
 
-	public static BasicMovieInfoSearch searchByTitle(String title) {
+	public static BasicVideoInfoSearch searchByTitle(String title, String type) {
 		String response = null;
-		BasicMovieInfoSearch search = null;
+		BasicVideoInfoSearch search = null;
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		String url = "http://api.themoviedb.org/3/search/";
+		if ("TV".equals(type)) {
+			url += "tv";
+		} else {
+			url += "movie";
+		}
 		try {
-			String url = "http://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + URLEncoder.encode(title, "UTF-8");
+			url += "?api_key="+key+"&query=" + URLEncoder.encode(title, "UTF-8");
 			response = getContent(url);
-			search = mapper.readValue(response, BasicMovieInfoSearch.class);
+			search = mapper.readValue(response, BasicVideoInfoSearch.class);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Dang, an exception");
@@ -75,14 +83,26 @@ public class TmdbApi {
 		}
 		return (search);
 	}
-	public static MovieInfo searchById(String id) {
+	public static VideoInfo searchById(String id, String type) {
 		String response = null;
-		MovieInfo info = null;
+		VideoInfo info = null;
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		String url = "http://api.themoviedb.org/3/";
+		if ("TV".equals(type)) {
+			url += "tv";
+		} else {
+			url += "movie";
+		}
 		try {
-			String url = "http://api.themoviedb.org/3/movie/" + id + "?api_key=" + key+"&language=fr";
+			url += "/" + id + "?api_key=" + key+"&language=fr";
 			response = getContent(url);
-			info = mapper.readValue(response, MovieInfo.class);
+			if ("TV".equals(type)) {
+				System.out.println("Trying to return tv info");
+				info = mapper.readValue(response, TVInfo.class);
+			} else {
+				System.out.println("Trying to return movie info");
+				info = mapper.readValue(response, MovieInfo.class);
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			System.out.println("Dang, an exception");

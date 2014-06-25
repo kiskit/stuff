@@ -2,13 +2,13 @@ package models.tmdb;
 
 import java.util.List;
 
-public class BasicMovieInfoSearch {
+public class BasicVideoInfoSearch {
 	private int page;
-	private List <BasicMovieInfo> results;
+	private List <BasicVideoInfo> results;
 	private int total_pages;
 	private int total_results;
 
-	BasicMovieInfoSearch () {
+	BasicVideoInfoSearch () {
 
 	}
 
@@ -20,12 +20,13 @@ public class BasicMovieInfoSearch {
 		this.page = page;
 	}
 
-	public List<BasicMovieInfo> getResults() {
+	public List<BasicVideoInfo> getResults() {
 		return results;
 	}
-	public void setResults(List<BasicMovieInfo> results) {
+	public void setResults(List<BasicVideoInfo> results) {
 		this.results = results;
 	}
+	
 	public int getTotal_pages() {
 		return total_pages;
 	}

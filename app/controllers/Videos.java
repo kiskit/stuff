@@ -9,7 +9,8 @@ import models.Video.StateType;
 import models.tmdb.BasicMovieInfo;
 import models.tmdb.MovieInfo;
 import models.tmdb.TmdbApi;
-import models.tmdb.BasicMovieInfoSearch;
+import models.tmdb.BasicVideoInfoSearch;
+import models.tmdb.VideoInfo;
 
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
@@ -465,12 +466,12 @@ public class Videos extends Controller {
 	}
 
 	// Fetch movie identity on TMDB. Returns the jSon directly because there is no need to do otherwise
-	public static Result getTMDBTitles(String title) {
-		BasicMovieInfoSearch search = TmdbApi.searchByTitle(title);
+	public static Result getTMDBTitles(String title, String type) {
+		BasicVideoInfoSearch search = TmdbApi.searchByTitle(title, type);
 		return ok(Json.toJson(search));
 	}	
-	public static Result getTMDBId(String id) {
-		MovieInfo info = TmdbApi.searchById(id);
+	public static Result getTMDBId(String id, String type) {
+		VideoInfo info = TmdbApi.searchById(id, type);
 		return ok(Json.toJson(info));
 	}
 	// *********** END AJAX CALLS ****************

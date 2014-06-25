@@ -61,7 +61,7 @@
    		}
    		// query ajax for movie titles		
    		console.log("Calling TMDB with title " + title);
-		newDataRequest = $.ajax({url: "/tmdbSearch?title=" + title});
+		newDataRequest = $.ajax({url: "/tmdbSearch?title=" + title + "&type=" + document.getElementById("contentType").value});
 		newDataRequest.done(function(data){
 			buildModal(data['results']);
 		});
@@ -91,9 +91,16 @@
 		var id = document.getElementById("movieId");
 		if (id == null)
 			return;
-		newDataRequest = $.ajax({url: "/tmdbId?id=" + id.value});
+		newDataRequest = $.ajax({url: "/tmdbId?id=" + id.value + "&type=" + document.getElementById("contentType").value});
 		newDataRequest.done(function(data){
-			var date = new Date(data["release_date"]);
+			var type = document.getElementById("contentType").value;
+			var date = null;
+			var field = "";
+			if (type === "TV") {
+				date = new Date(data["first_air_date"]);
+			} else {
+				date = new Date(data["release_date"]);
+			}
 			document.getElementById("rating").value = data["vote_average"];
 			document.getElementById("posterPath").value = data["poster_path"];
 			document.getElementById("backdropPath").value = data["backdrop_path"];
@@ -101,10 +108,19 @@
 			if (data["overview"] != null && data["overview"] != "") {
 				document.getElementById("summary").value = data["overview"];	
 			}
-			if (data["original_title"] != null && data["original_title"] != "") {
-				document.getElementById("originalTitle").value = data["original_title"];	
+			if (type === "TV") {
+				field = "original_name";
+			} else {
+				field = "original_title";
 			}
-			document.getElementById("runtime").value = data["runtime"];
+			if (data[field] != null && data[field] != "") {
+				document.getElementById("originalTitle").value = data[field];	
+			}
+			if (type === "TV") {
+				document.getElementById("runtime").value = data["episode_run_time"]["0"];
+			} else {
+				document.getElementById("runtime").value = data["runtime"];
+			}
 			if (data["tagline"] != null && data["tagline"] != "") {
 				document.getElementById("tagline").value = data["tagline"];	
 			}

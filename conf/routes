@@ -36,8 +36,8 @@ GET		/rentals					controllers.Videos.getUserRentals(userId: Long ?= 0, videoId: 
 GET		/videolist					controllers.Videos.getVideoList(pageNumber: Integer, pageSize: Integer, old: Boolean ?= true, dvd: Boolean ?= true, br: Boolean ?= true, pg: Boolean ?= true, available: Boolean ?= true, nameFilter: String ?= null)
 GET		/videobytitleorid			controllers.Videos.getVideoByTitleOrId(titleOrId: String)
 GET		/videobyid					controllers.Videos.getVideoById(id: Long)
-GET		/tmdbSearch					controllers.Videos.getTMDBTitles(title: String)
-GET		/tmdbId						controllers.Videos.getTMDBId(id: String)
+GET		/tmdbSearch					controllers.Videos.getTMDBTitles(title: String, type: String)
+GET		/tmdbId						controllers.Videos.getTMDBId(id: String, type: String)
 # End Ajax methods
 
 
