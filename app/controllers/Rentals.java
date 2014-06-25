@@ -1,0 +1,84 @@
+package controllers;
+
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.Properties;
+
+import models.Rental;
+import models.User;
+import models.Video;
+import play.libs.Json;
+import play.mvc.*;
+import views.html.*;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import com.avaje.ebean.Ebean;
+
+public class Rentals extends Controller {
+	@Security.Authenticated(Secured.class)
+	public static Result index() {
+		return ok(
+				laterentals.render(
+						Rental.getAllRentals(), 
+						User.getByEmail(request().username())
+				)
+		);
+	}
+	
+	public static Result sendEmail(Long userId, Long videoId) {
+		Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+        //
+        Video v = Ebean.find(Video.class, videoId);
+        if (v == null) {
+        	return internalServerError("Vidéo non trouvée. Contactez l'admin du site svp");
+        }
+        User u = Ebean.find(User.class, userId);
+        if (u == null) {
+        	return internalServerError("Abonné non trouvé. Contactez l'admin du site svp");	
+        }
+        
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.setTime(v.getRentalDate());
+        String msgBody = "Bonjour M. " + u.getName();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+        msgBody += "Selon notre système, vous avez en votre possession la vidéo " + v.getInputTitle() + " depuis le " + sdf.format(v.getRentalDate()) + ".";
+        msgBody += "\nMerci de bien vouloir faire le nécessaire pour contacter le vidéo club et de restituer la vidéo concernée au plus vite.";
+        msgBody += "\nCordialement";
+        msgBody += "\nVotre vidéo club.";
+
+        try {
+            Message msg = new MimeMessage(session);
+            // TODO
+            msg.setFrom(new InternetAddress("admin@example.com", "Example.com Admin"));
+            msg.addRecipient(Message.RecipientType.TO,
+                             new InternetAddress(u.getEmail(), "Mr. User"));
+            // Mailing list for the admins of the VC
+            msg.addRecipient(Message.RecipientType.BCC,
+                    new InternetAddress("admin@videoclub", "Mr. Admin"));
+            msg.setSubject("Vous avez des vidéos en retard");
+            msg.setText(msgBody);
+            Transport.send(msg); 
+
+        } catch (AddressException e) {
+        	return ok("Problème d'adresse. Contactez l'admin du site svp");
+        } catch (MessagingException e) {
+        	return ok("Problème avec le message. Contactez l'admin du site svp");
+        } catch (UnsupportedEncodingException e) {
+        	e.printStackTrace();
+        	return ok("Problème d'encodage. Contactez l'admin du site svp");
+		} catch (Exception e) {
+			return ok("Problème avec le mail. Contactez l'admin du site svp");
+		}
+		return ok(Json.toJson(""));
+	}
+
+}

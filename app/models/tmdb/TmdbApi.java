@@ -6,11 +6,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
-
-import models.Video;
-
-
 
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -19,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class TmdbApi {
 	private static String key = "c589965ca14962d100212f66a6a2b1c5";
 
-	private static final String baseURL = "";
+	private static final String baseURL = "http://api.themoviedb.org/3/";
 	private static ObjectMapper mapper = new ObjectMapper();
 
 
@@ -37,10 +32,8 @@ public class TmdbApi {
 
 			//add request header
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-
+			// TODO: do something with it
 			int responseCode = con.getResponseCode();
-			//System.out.println("\nSending 'GET' request to URL : " + url);
-			//System.out.println("Response Code : " + responseCode);
 
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(con.getInputStream()));
@@ -57,7 +50,6 @@ public class TmdbApi {
 		} catch (Exception e) {
 			throw (new TmdbException(e));
 		}
-		//System.out.println("Returning : " + responseCode);
 
 		return responseStr;
 	}
@@ -66,7 +58,7 @@ public class TmdbApi {
 		String response = null;
 		BasicVideoInfoSearch search = null;
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		String url = "http://api.themoviedb.org/3/search/";
+		String url = baseURL + "search/";
 		if ("TV".equals(type)) {
 			url += "tv";
 		} else {
@@ -87,14 +79,14 @@ public class TmdbApi {
 		String response = null;
 		VideoInfo info = null;
 		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		String url = "http://api.themoviedb.org/3/";
+		String url = baseURL;
 		if ("TV".equals(type)) {
-			url += "tv";
+			url += "tv/";
 		} else {
-			url += "movie";
+			url += "movie/";
 		}
 		try {
-			url += "/" + id + "?api_key=" + key+"&language=fr";
+			url += id + "?api_key=" + key+"&language=fr";
 			response = getContent(url);
 			if ("TV".equals(type)) {
 				System.out.println("Trying to return tv info");
@@ -110,119 +102,4 @@ public class TmdbApi {
 		}
 		return (info);
 	}
-	
-	
-	
-/*	public static List<BasicMovieInfo> searchByTitle(String key, String title) {
-		String url = "https://api.themoviedb.org/3/search/movie?api_key="+key+"&query=" + title;
-		List<BasicMovieInfo> movies = null;
-		System.out.println("Mapping objects");                  
-		BasicMovieInfoSearch search = null;
-
-		try {
-			String response = getContent(url);
-			search = mapper.readValue(response.toString(), BasicMovieInfoSearch.class);
-			movies = search.getResults();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Dang, an exception");
-			e.printStackTrace();
-		}
-		return (movies);
-	}
-*/
-
-
 }
-/*
-import java.net.Socket;
-import java.io.IOException;
-import java.net.UnknownHostException;
-
-import org.apache.http.HttpException;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.protocol.RequestExpectContinue;
-import org.apache.http.impl.DefaultBHttpClientConnection;
-import org.apache.http.message.BasicHttpRequest;
-import org.apache.http.protocol.HttpCoreContext;
-import org.apache.http.protocol.HttpProcessor;
-import org.apache.http.protocol.HttpProcessorBuilder;
-import org.apache.http.protocol.HttpRequestExecutor;
-import org.apache.http.protocol.RequestConnControl;
-import org.apache.http.protocol.RequestContent;
-import org.apache.http.protocol.RequestTargetHost;
-import org.apache.http.protocol.RequestUserAgent;
-import org.apache.http.util.EntityUtils;
-
-public String getContent() throws TmdbException {
-
-	String content = null;
-
-	HttpProcessor httpproc = HttpProcessorBuilder.create()
-			.add(new RequestContent())
-			.add(new RequestTargetHost())
-			.add(new RequestConnControl())
-			.add(new RequestUserAgent())
-			.add(new RequestExpectContinue()).build();
-
-	HttpRequestExecutor httpexecutor = new HttpRequestExecutor();
-
-	HttpCoreContext coreContext = HttpCoreContext.create();
-	HttpHost host = new HttpHost("localhost", 8080);
-	coreContext.setTargetHost(host);
-
-	DefaultBHttpClientConnection conn = new DefaultBHttpClientConnection(8 * 1024);
-
-	try {
-
-		String[] targets = {
-				"/",
-				"/servlets-examples/servlet/RequestInfoExample",
-		"/somewhere%20in%20pampa"};
-
-		for (int i = 0; i < targets.length; i++) {
-			if (!conn.isOpen()) {
-				Socket socket = null;
-				try {
-					socket = new Socket(host.getHostName(), host.getPort());
-					conn.bind(socket);
-				} catch (UnknownHostException e) {
-					throw (new TmdbException("Unknown host" ,e));
-				} catch (IOException e) {
-					throw (new TmdbException("IO Exception" ,e));
-				}
-			}
-			BasicHttpRequest request = new BasicHttpRequest("GET", targets[i]);
-			System.out.println(">> Request URI: " + request.getRequestLine().getUri());
-
-			try {
-				httpexecutor.preProcess(request, httpproc, coreContext);
-			} catch (HttpException e) {
-				throw (new TmdbException("Http Exception" ,e));
-			} catch (IOException e) {
-				throw (new TmdbException("IO Exception" ,e));
-			}
-			HttpResponse response;
-			try {
-				response = httpexecutor.execute(request, conn, coreContext);
-				httpexecutor.postProcess(response, httpproc, coreContext);
-				//System.out.println("<< Response: " + response.getStatusLine());
-				content = EntityUtils.toString(response.getEntity());
-
-			} catch (IOException e) {
-				throw (new TmdbException("IO Exception" ,e));
-			} catch (HttpException e) {
-				throw (new TmdbException("Http Exception" ,e));
-			}
-		}
-	} finally {
-		try {
-			conn.close();
-		} catch (IOException e) {
-			throw (new TmdbException("IO Exception" ,e));
-		}
-	}		
-	return content;
-}
- */

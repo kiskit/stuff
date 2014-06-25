@@ -6,15 +6,12 @@
     <script>
     
     function clearModal() {
-				console.log("clearing modal");
 				var modal = document.getElementById("titlesModalBody");
-				
 				while (modal.firstChild != null) {
 					modal.removeChild(modal.firstChild);
 				}
 	}
 	function buildModal(data) {
-		console.log("building modal with data " + data);
 		var modal = document.getElementById("titlesModalBody");
 		clearModal();
 		if (data.length == 0) {
@@ -55,14 +52,12 @@
 	
 	function queryTmdb() {
    		var title = document.getElementById("inputTitle").value;
-   		console.log("Calling TMDB with title " + title);
    		if (title == null) {
    			return;
    		}
    		// query ajax for movie titles		
-   		console.log("Calling TMDB with title " + title);
-		newDataRequest = $.ajax({url: "/tmdbSearch?title=" + title + "&type=" + document.getElementById("contentType").value});
-		newDataRequest.done(function(data){
+		newDataRequest = $.ajax({url: "/tmdbSearch?title=" + title + "&type=" + document.getElementById("contentType").value, async: false});
+		newDataRequest.success(function(data){
 			buildModal(data['results']);
 		});
    	}
@@ -87,12 +82,11 @@
 		return string;
 	}
 	function updateTmdbInfo() {
-		console.log("Getting tmdb info");
 		var id = document.getElementById("movieId");
 		if (id == null)
 			return;
-		newDataRequest = $.ajax({url: "/tmdbId?id=" + id.value + "&type=" + document.getElementById("contentType").value});
-		newDataRequest.done(function(data){
+		newDataRequest = $.ajax({url: "/tmdbId?id=" + id.value + "&type=" + document.getElementById("contentType").value, async: false});
+		newDataRequest.success(function(data){
 			var type = document.getElementById("contentType").value;
 			var date = null;
 			var field = "";
@@ -129,8 +123,7 @@
 			updateSummary();
 		});
 	}
-	
-	
+
 ;
     </script>
     
@@ -146,7 +139,7 @@
 				<div class="modal-body" id="titlesModalBody"></div>
 			</form>		
 			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+				<button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
 				<button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="assignTmdbId();">Mettre à jour</button>
 			</div>
 		</div>

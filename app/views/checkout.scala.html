@@ -50,17 +50,15 @@
 				zone.appendChild(errorMessage);
 				var errorDiv = document.getElementById("errorDiv");
 				errorDiv.appendChild(zone);
-				console.log("Done erroring");
 			}
 			
 			function changeUserSelect(index) {
 				if (index > 0) {
 					clearUserFilter();
-					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
-					newDataRequest.done(function(data){
-						console.log(data);
+					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0", async: false, dataType: "json"});						
+					newDataRequest.success(function(data){
 						// the user may already have videos checked out
-						if (data['videos'] != null) {
+						if (data.length != null) {
 							populateBorrowedVideos(data);
 						} else {
 							clearBorrowedVideos();
@@ -73,9 +71,7 @@
 			}
 			function clearBorrowedVideos() {
 				var videos = document.getElementById("borrowedVideosDiv");
-				console.log("Clearing video div");
 				if (videos != null) {
-				console.log("Found the borrowed video div");
 					while (videos.firstChild != null) {
 						  videos.removeChild(videos.firstChild);
 					}
@@ -83,20 +79,18 @@
 				}
 			}
 			function clearAllVideos() {
-			console.log("Clearing all video");
 				clearBorrowedVideos();
 			}
 			function populateBorrowedVideos(data) {
 				clearBorrowedVideos();
 				var text = document.createElement("div");
 				var info = document.createElement("ul");
-
 				info.innerHTML="Cet abonné a des vidéos non rendues";
 				text.appendChild(info);
-				for(var i = 0; i < data['videos'].length;++i) {
+				for(var i = 0; i < data.length;++i) {
 					var newP = document.createElement("li");
-					var date = new Date(data['videos'][i]['rentalDate']);
-					var newText = document.createTextNode(data['videos'][i]['id'] + " - " + data['videos'][i]['title'] + " (" + date.toLocaleDateString() + ")");
+					var date = new Date(data[i]['when']);
+					var newText = document.createTextNode(data[i]['whatId'] + " - " + data[i]['what'] + " (" + date.toLocaleDateString() + ")");
 					newP.appendChild(newText);
 					text.appendChild(newP);
 				}
@@ -107,8 +101,7 @@
 			function addItem() {
 				document.getElementById("videoSearchInput").value="";
 				// get selected radio
-				console.log("In add item");
-				var modal = document.getElementById("modalBody");
+				var modal = document.getElementById("videosModalBody");
 				while (modal.firstChild != null) {
 					radio = modal.firstChild;
 					if (radio.type == "radio") {
@@ -118,7 +111,6 @@
 					}	
 					modal.removeChild(modal.firstChild);
 				}
-				console.log("Adding " + radio.id + " - " + radio.value);
 				// Look for the same item already added
 				// Add item with minus button
 				while (modal.firstChild != null) {
@@ -128,7 +120,6 @@
 			}
 			
 			function createSelectedVideo(id, title) {
-			console.log("creating div");
 				var div = document.createElement("div");
 				var span = document.createElement("span");
 				var input = document.createElement("button");
@@ -165,7 +156,6 @@
 				var i = 0;
 				for (; i < videos.children.length; ++i) {
 					if (videos.children[i].id === "vid"+id) {
-						console.log("Analyzing "+ videos.children[i].id + " against vid" + id); 
 						break;
 					}
 				}
@@ -176,7 +166,7 @@
 			}
 			
 			function buildModal(data) {
-				var modal = document.getElementById("modalBody");
+				var modal = document.getElementById("videosModalBody");
 				
 				while (modal.firstChild != null) {
 					modal.removeChild(modal.firstChild);
@@ -217,21 +207,15 @@
 			
 			function searchVideoByTitleOrId() {
 				var input = document.getElementById("videoSearchInput");
+				if (input.value.length == 0) {
+					return;
+				}
 				newDataRequest = $.ajax({url: "/videobytitleorid?titleOrId=" + input.value});						
 				newDataRequest.done(function(data){
 					buildModal(data);
+					$('#videosModal').modal("show");
 				});
 			}
-			/*
-			function newSelectedVideo(id, title) {
-				var newDiv = document.createElement("div");
-				var newLabel = document.createElement("p");
-				var newButton = document.createElement("button");
-				newButton.innerHTML="-";
-				newDiv.appendChild(newLabel);
-				newDiv.appendChild(newButton);
-				return newDiv;
-			}*/
 
 			function populateSelectedVideos(data) {
 				clearSelectedVideos();
@@ -259,23 +243,22 @@
 					}
 					queryString += videos.children[i].id.replace("vid", "");
 				}
-				console.log("query string " + queryString);
 				window.location.href = "/doCheckout"+queryString;
 			}				
 			;
 			</script>
 	</header>
 
-			<!-- Modal -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<!-- Modal -->
+<div class="modal fade" id="videosModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title" id="myModalLabel">Sélectionnez la vidéo</h4>
+        <h4 class="modal-title" id="videosModalLabel">Sélectionnez la vidéo</h4>
       </div>
 	<form action="" >       
-		<div class="modal-body" id="modalBody">
+		<div class="modal-body" id="videosModalBody">
 
 
 		</div>
@@ -323,7 +306,7 @@
  				<div class="panel-body">
 					<div id="videoSearchGroup">
 						<input id="videoSearchInput" label="Identifiant Video" placeholder="Identifiant ou Titre"> </input>
-						<button type="button" class="btn btn-info" onclick="searchVideoByTitleOrId();" data-toggle="modal" data-target="#myModal">Chercher par identifiant</button>
+						<button type="button" class="btn btn-info" onclick="searchVideoByTitleOrId();" >Chercher</button>
 
 					</div>
 
@@ -344,7 +327,7 @@
 			</div>  <!-- panel body -->
 		</div>
 		<div>
-			<a href="/" class="btn btn-danger active" role="button">Annuler</a>
+			<a href="/checkout" class="btn btn-danger active" role="button">Réinitialiser</a>
 			<button type="button" class="btn btn-primary" onclick="doCheckout();">Enregistrer</button>
 		</div>
 	

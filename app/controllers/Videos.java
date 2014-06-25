@@ -6,7 +6,6 @@ import models.Rental;
 import models.User;
 import models.Video;
 import models.Video.StateType;
-import models.tmdb.BasicMovieInfo;
 import models.tmdb.MovieInfo;
 import models.tmdb.TmdbApi;
 import models.tmdb.BasicVideoInfoSearch;
@@ -159,7 +158,7 @@ public class Videos extends Controller {
 			vid.setYear(2006L);
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
-			vid.setRentalDate(new Date());
+			vid.setRentalDate(new Date(1371737656));
 			vid.setRentedTo(1L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);		
@@ -172,7 +171,7 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
-			vid.setRentalDate(new Date());
+			vid.setRentalDate(new Date(1403273656));
 			vid.setYear(2000L);
 			vid.setState(StateType.LOST);
 			Ebean.save(vid);
@@ -185,7 +184,7 @@ public class Videos extends Controller {
 			vid.setCreationDate(new Date());
 			vid.setUpdateDate(new Date());
 			vid.setRentedTo(1L);
-			vid.setRentalDate(new Date());
+			vid.setRentalDate(new Date(1403273656));
 			vid.setYear(1950L);
 			vid.setState(StateType.BROKEN);
 			Ebean.save(vid);
@@ -241,9 +240,6 @@ public class Videos extends Controller {
 			Ebean.save(u);
 			
 		}
-		//System.out.println("Request for index: " + request());
-		//System.out.println("Session "  + session("email"));
-		//System.out.println("User for index: " + request().username() + " " + User.getByEmail(request().username()));
 		return ok(videoclub.render(
 						Video.find.findList().size(), 
 						User.getByEmail(session("email"))
@@ -324,12 +320,14 @@ public class Videos extends Controller {
 	
 	// ****************** AJAX CALLS ************************
 	public static Result getUserRentals(Long userId, Long videoId) {
-		List<Video> list = null;
+		//List<Video> list = null;
 		System.out.println("In get user rentals");
+		List<Rental> rentals = null; 
 		if (userId != 0) {
 			System.out.println("got a user id of " + userId);
 			// Get all videos rented by this user
-			list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+			//list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+			rentals = Rental.getRentalsByUserId(userId);
 			
 		} else if (videoId != 0) {
 			System.out.println("got a video id of " + userId);
@@ -339,23 +337,14 @@ public class Videos extends Controller {
 			if (v != null)
 				userId = v.getRentedTo();
 			else userId = null;
-			if (userId == null) {
-				list = null;
-			} else {
+			if (userId != null) {
 				// Get all videos rented by this user
-				list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+				//list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+				rentals = Rental.getRentalsByUserId(userId);
 			}
 		}
-		Rental rental = new Rental();
-		rental.setUserId(userId);
-		if (list != null) {
-			for (Video rv: list) {
-				System.out.println("Adding rental " + userId + " for video " + rv.getId());
-				rental.addVideo(rv.getId(), rv.getInputTitle(), rv.getRentalDate());
-			}
-		}
-		System.out.println("Jason:" + Json.toJson(rental));
-		return ok(Json.toJson(rental));
+		System.out.println("Jason:" + Json.toJson(rentals));
+		return ok(Json.toJson(rentals));
 	}
 	
 	// Used to get more than the bare video list from the ajax call in getVideoList

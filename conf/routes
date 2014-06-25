@@ -28,7 +28,8 @@ GET		/users						controllers.Users.index()
 GET		/useredit					controllers.Users.editUser(id: Long)
 POST	/useredit					controllers.Users.validateUser()
 
-
+# Late rentals
+GET		/laterentals				controllers.Rentals.index()
 
 
 # Ajax methods
@@ -38,6 +39,7 @@ GET		/videobytitleorid			controllers.Videos.getVideoByTitleOrId(titleOrId: Strin
 GET		/videobyid					controllers.Videos.getVideoById(id: Long)
 GET		/tmdbSearch					controllers.Videos.getTMDBTitles(title: String, type: String)
 GET		/tmdbId						controllers.Videos.getTMDBId(id: String, type: String)
+GET		/sendemail					controllers.Rentals.sendEmail(userId: Long, videoId: Long)
 # End Ajax methods
 
 

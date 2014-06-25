@@ -4,89 +4,109 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import play.data.format.Formats;
+import com.avaje.ebean.Ebean;
 
 public class Rental {
 	
-	private Long userId;
-	private List<RentedVideo> videos = null;
-		
-	public void addVideo(Long id, String title, Date date) {
-		RentedVideo v = new RentedVideo();
-		v.setId(id);
-		v.setTitle(title);
-		v.setRentalDate(date);
-		if (videos == null) {
-			videos = new ArrayList<RentedVideo>();
+	public Rental() {
+	
+	
+	}
+	
+	public static List<Rental> getAllRentals() {
+		List<Rental> rentals = new ArrayList<Rental>();
+		List<Video> videos = Ebean.find(Video.class).where().isNotNull("rentedTo").findList();
+		Ebean.sort(videos, "rentalDate asc");
+		Rental rental = null;
+		User user = null;
+		for (Video v : videos) {
+			rental = new Rental();
+			rental.setWhatId(v.getId());
+			rental.setWhat(v.getInputTitle());
+			user = Ebean.find(User.class, v.getRentedTo());
+			rental.setWho(user.getFullName());
+			rental.setWhoId(v.getRentedTo());
+			rental.setEmail(user.getEmail());
+			rental.setWhen(v.getRentalDate());
+			rentals.add(rental);
 		}
-		videos.add(v);
+		return rentals;
 	}
-	public Long getUserId() {
-		return userId;
+	public static List<Rental> getRentalsByUserId(Long userId) {
+		List<Rental> rentals = new ArrayList<Rental>();
+		List<Video> videos = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
+		Rental rental = null;
+		User user = null;
+		for (Video v : videos) {
+			rental = new Rental();
+			rental.setWhatId(v.getId());
+			rental.setWhat(v.getInputTitle());
+			user = Ebean.find(User.class, v.getRentedTo());
+			rental.setWho(user.getFullName());
+			rental.setWhoId(v.getRentedTo());
+			rental.setEmail(user.getEmail());
+			rental.setWhen(v.getRentalDate());
+			rentals.add(rental);
+		}
+		return rentals;
+	}
+	private Long whoId;
+	private Long whatId;
+	private String who;
+	private String what;
+	private Date when;
+	private String email;
+	
+	
+	public Long getWhoId() {
+		return whoId;
 	}
 
-
-
-	public void setUserId(Long userId) {
-		this.userId = userId;
+	public void setWhoId(Long whoId) {
+		this.whoId = whoId;
 	}
 
-
-
-	public List<RentedVideo> getVideos() {
-		return videos;
+	public Long getWhatId() {
+		return whatId;
 	}
 
-
-
-	public void setVideos(List<RentedVideo> videos) {
-		this.videos = videos;
+	public void setWhatId(Long whatId) {
+		this.whatId = whatId;
 	}
 
-
-
+	public String getWho() {
+		return who;
+	}
+	public void setWho(String who) {
+		this.who = who;
+	}
+	public String getWhat() {
+		return what;
+	}
+	public void setWhat(String what) {
+		this.what = what;
+	}
+	public Date getWhen() {
+		return when;
+	}
+	public void setWhen(Date when) {
+		this.when = when;
+	}
+	public String getEmail() {
+		return email;
+	}
+	public void setEmail(String email) {
+		this.email = email;
+	}
 
 	@Override
 	public String toString() {
-		return "Rental [userId=" + userId + ", videos=" + videos
+		return "Rental [whoId=" + whoId + ", whatId=" + whatId + ", who=" + who
+				+ ", what=" + what + ", when=" + when + ", email=" + email
 				+ "]";
 	}
 
 
-
-	public class RentedVideo {
-		public RentedVideo() {
-			
-		}
-		private Long id;
-		private String title;
-		@Formats.DateTime(pattern = "dd/MM/yyyy")
-		private Date rentalDate;
-		
-		public Long getId() {
-			return id;
-		}
-		public void setId(Long id) {
-			this.id = id;
-		}
-		public String getTitle() {
-			return title;
-		}
-		public void setTitle(String title) {
-			this.title = title;
-		}
-		public Date getRentalDate() {
-			return rentalDate;
-		}
-		public void setRentalDate(Date rentalDate) {
-			this.rentalDate = rentalDate;
-		}
-
-		@Override
-		public String toString() {
-			return "RentedVideo [id=" + id + ", title=" + title + ", rentalDate=" + rentalDate + "]";
-		}
-		
-	}
+	
 	
 }

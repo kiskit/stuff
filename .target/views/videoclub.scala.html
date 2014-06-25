@@ -74,7 +74,6 @@
         	
 			// Page number management        	
         	function setPagerSize(size) {
-        		console.log("in pager size " + size);
         		var oldId = "pagerSize" + pageSize;
         		document.getElementById(oldId).innerHTML = pageSize;
         		pageSize = size;
@@ -90,7 +89,6 @@
         	
 			// Pager buttons 
        		function updatePage() {
-        		console.log("Updating page. Currentpage: " + currentPage + ". Lastpage: " + lastPage);
         		if (lastPage < 1) lastPage = 1;
        			document.getElementById("pageNumberP").innerHTML=currentPage + " sur " + lastPage;
        		}
@@ -141,11 +139,9 @@
         		if (document.getElementById("inputTitleFilter").value != '') {
         			filterString += "&nameFilter=" + document.getElementById("inputTitleFilter").value;
         		}
-        		newDataRequest = $.ajax({url: "/videolist?pageNumber="+currentPage+"&pageSize=" + pageSize + filterString});
+        		newDataRequest = $.ajax({url: "/videolist?pageNumber="+currentPage+"&pageSize=" + pageSize + filterString, async: false});
 				newDataRequest.done(function(dataWithPage){
-					//console.log("updating last page before " + lastPage);
 					lastPage = dataWithPage['pages'];
-					//console.log("updating last page after " + lastPage);
 	        		updatePage();
 
 					var data=dataWithPage['list'];
@@ -159,7 +155,6 @@
 					}
 					span.style.visibility="hidden";
 					for (var i = 0; i < data.length; i++) {
-						//console.log("Populating table loop " + i);
 						var tr = document.createElement('tr');
 						var td;
 						// Id 
@@ -202,9 +197,9 @@
 						img.setAttribute("width", "24px");
 						td.setAttribute("align","center");
 						if (data[i]['supportType'] === "DVD") {
-							img.setAttribute("src", '@routes.Assets.at("images/dvd-256px.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/dvd-black.png")');
 						} else {
-							img.setAttribute("src", '@routes.Assets.at("images/blu-ray-48px.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/icon_blu-ray.png")');
 						}
 						td.appendChild(img);
 						tr.appendChild(td);
@@ -231,9 +226,9 @@
 						img.setAttribute("width", "24px");
 						td.setAttribute("align","center");
 						if (data[i]['contentType'] === "MOVIE") {
-							img.setAttribute("src", '@routes.Assets.at("images/movie-256px.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/movie.png")');
 						} else {
-							img.setAttribute("src", '@routes.Assets.at("images/tv-300px.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/TV.png")');
 						}
 						td.appendChild(img);
 						tr.appendChild(td);
@@ -244,9 +239,9 @@
 						img.setAttribute("width", "24px");
 						td.setAttribute("align","center");
 						if (data[i]['rentedTo'] == null) {
-							img.setAttribute("src", '@routes.Assets.at("images/tick.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/basic-tick.png")');
 						} else {
-							img.setAttribute("src", '@routes.Assets.at("images/error.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/cross.png")');
 						}
 						td.appendChild(img);
 						tr.appendChild(td);
@@ -307,14 +302,27 @@
         	function showMovie(id) {
         		newDataRequest = $.ajax({url: "/videobyid?id="+id});
 				newDataRequest.done(function(data){
-					console.log("Movie data : " + data);
-					document.getElementById("movieModalBackDrop").setAttribute("src", data["backdropPath"]);
+					if (data["backdropPath"] === "") {
+						document.getElementById("movieModalBackDrop").setAttribute("src", '@routes.Assets.at("images/backdrop_placeholder.png")');	
+					} else {
+						document.getElementById("movieModalBackDrop").setAttribute("src", data["backdropPath"]);
+					}
+					
 					document.getElementById("movieModalTitle").innerHTML = data["inputTitle"] + " (" + data["year"] + ")";
 					//document.getElementById("movieModalOriginalTitle").innerHTML = data["originalTitle"];
 					updateOrHide("movieModalOriginalTitle", data["originalTitle"], true);
 					updateOrHide("movieModalTagline", data["tagline"], true);
-					document.getElementById("movieModalPoster").setAttribute("src", data["posterPath"]);
-					document.getElementById("movieModalSummary").innerHTML = data["summary"];
+					if (data["posterPath"] === "") {
+						document.getElementById("movieModalPoster").setAttribute("src", '@routes.Assets.at("images/poster_placeholder.png")');
+					} else {
+						document.getElementById("movieModalPoster").setAttribute("src", data["posterPath"]);
+					}
+					if (data["summary"] === "") {
+						document.getElementById("movieModalSummary").innerHTML = "Pas de résumé disponible";
+					} else {
+						document.getElementById("movieModalSummary").innerHTML = data["summary"];
+					}
+					
 					//document.getElementById("movieModalRating").innerHTML = data["rating"];
 					updateOrHide("movieModalRating", data["rating"], false);
 					//document.getElementById("movieModalRuntime").innerHTML = data["runtime"];
@@ -388,7 +396,7 @@
 						</a>
 					</div>
 					<div class="col-lg-6  well">
-						<p id="movieModalSummary" class="text-justify"></p>
+						<p id="movieModalSummary" class="text-justify" placeholder="Pas d'information"></p>
 					</div>
 				</div>
 				<div class="row panel panel-default">
@@ -506,6 +514,9 @@
         <div class="panel panel-primary">
           <div class="panel-heading">Liste des vidéos</div>
           <div class="panel-body">
+          	<div><p class="text-info">
+				<i><strong>Pour plus d'informations sur un film, cliquez sur son titre</strong></i><br>
+              </p></div>
             <div id="listTableDiv">
 				<div id="noDataDiv">
 					<p class="text text-danger">Aucune vidéo trouvée</p>
@@ -542,17 +553,19 @@
             </div>
             <div class="panel-footer">
               <p class="text-info">
-				<i><strong>Pour plus d'informations sur un film, cliquez sur son titre</strong></i><br>
 				<i>(*) à titre indicatif seulement</i>
               </p>
             </div>
 		</div>
         <!-- /Movie list table -->
 		@if(admin != null){
+			
 			<form action="videoedit" method="get" style="margin: 0px; padding: 0px;">
-				<button type="button" class="btn btn-danger" name="action" value="Cancel" onclick="window.location.href = '/';">Retour</button>
+				
 				<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter une vidéo</button>
+				
 			</form>
+			
 		}
 	<script>
 	onLoad();
