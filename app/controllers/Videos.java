@@ -386,7 +386,7 @@ public class Videos extends Controller {
 				rentals = Rental.getRentalsByUserId(userId);
 			}
 		}
-		Logger.debug("Requested rentals: " + Json.toJson(rentals));
+		//Logger.debug("Requested rentals: " + Json.toJson(rentals));
 		return ok(Json.toJson(rentals));
 	}
 	

@@ -6,7 +6,60 @@
 			// TODO: when no users, when no videos for a user
 			
 			var newDataRequest;
+			var selectSave = [];
 			
+			
+			function saveSelect() {
+				var selectObject=document.getElementById("usersListSelect");
+				var object = document.createElement("option");
+				for (var i = 0; i < selectObject.length; i++) {
+					object = document.createElement("option");
+					object.text = selectObject[i].text;
+					object.value = selectObject[i].value;
+					selectSave[selectSave.length] = object;
+				}
+			}
+
+			function clearSelect() {
+				if (selectSave.length == 0) {
+					saveSelect();
+				}
+				$('#usersListSelect').empty();
+
+			}
+
+			function restoreSelect() {
+				var selectObject = document.getElementById("usersListSelect");
+				for (var i = 0; i < selectSave.length; i++){
+					var option = document.createElement("option");
+					option.value = selectSave[i].value;
+					option.text = selectSave[i].text;
+					selectObject.add(option);
+				}
+			}
+			
+			function applyUserFilter() {
+				// go through the select elements
+				var selectObject=document.getElementById("usersListSelect");
+				var pattern = new RegExp(".*" + document.getElementById("userFilterInput").value + ".*", "i");
+				clearAllVideos();
+				clearSelect();
+				var option = document.createElement("option");
+				option.value = selectSave[0].value;
+				option.text = selectSave[0].text;
+				selectObject.add(option);
+				for (var i = 1; i < selectSave.length; i++){
+					// if regexp matches, add option
+					if (pattern.exec(selectSave[i].text) != null) {
+						var option = document.createElement("option");
+						option.value = selectSave[i].value;
+						option.text = selectSave[i].text;
+						selectObject.add(option);
+					} 
+				}
+				document.getElementById("usersListSelect").selectedIndex = 0;
+			}
+			/*
 			function applyUserFilter() {
 				// go through the select elements
 				var selectObject=document.getElementById("usersListSelect");
@@ -22,12 +75,16 @@
 				}
 				document.getElementById("usersListSelect").selectedIndex = 0;
 			}
+			*/
 			function clearUserFilter() {
 				document.getElementById("userFilterInput").value = "";
-				var selectObject=document.getElementById("usersListSelect");
+				/*var selectObject=document.getElementById("usersListSelect");
 				for (var i = 0; i < selectObject.length; i++){
 					selectObject.options[i].removeAttribute('style');
 				}
+				*/
+				clearSelect();
+				restoreSelect();
 			}
  
 			function displayErrorZone(errorMessage, id) {

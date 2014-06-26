@@ -5,28 +5,64 @@
 
 			
 			var newDataRequest;
+			var selectSave = [];
 			
+			
+			function saveSelect() {
+				var selectObject=document.getElementById("usersListSelect");
+				var object = document.createElement("option");
+				for (var i = 0; i < selectObject.length; i++) {
+					object = document.createElement("option");
+					object.text = selectObject[i].text;
+					object.value = selectObject[i].value;
+					selectSave[selectSave.length] = object;
+				}
+			}
+
+			function clearSelect() {
+				if (selectSave.length == 0) {
+					saveSelect();
+				}
+				$('#usersListSelect').empty();
+
+			}
+
+			function restoreSelect() {
+				var selectObject = document.getElementById("usersListSelect");
+				for (var i = 0; i < selectSave.length; i++){
+					var option = document.createElement("option");
+					option.value = selectSave[i].value;
+					option.text = selectSave[i].text;
+					selectObject.add(option);
+				}
+			}
+
 			function applyFilter() {
 				// go through the select elements
 				var selectObject=document.getElementById("usersListSelect");
 				var pattern = new RegExp(".*" + document.getElementById("nameFilterInput").value + ".*", "i");
 				clearVideoSearch();
-				for (var i = 1; i < selectObject.length; i++){
-					// if regexp matches, enables, else disables
-					if (pattern.exec(selectObject[i].text) == null) {
-						selectObject.options[i].setAttribute('style', 'display:none;');
-					} else {
-						selectObject.options[i].removeAttribute('style');
-					}
+				clearSelect();
+				var option = document.createElement("option");
+				option.value = selectSave[0].value;
+				option.text = selectSave[0].text;
+				selectObject.add(option);
+				for (var i = 1; i < selectSave.length; i++){
+					// if regexp matches, add option
+					if (pattern.exec(selectSave[i].text) != null) {
+						var option = document.createElement("option");
+						option.value = selectSave[i].value;
+						option.text = selectSave[i].text;
+						selectObject.add(option);
+						
+					} 
 				}
 				selectUserById(0);
 			}
 			function clearFilter() {
 				document.getElementById("nameFilterInput").value = "";
-				var selectObject=document.getElementById("usersListSelect");
-				for (var i = 0; i < selectObject.length; i++){
-					selectObject.options[i].removeAttribute('style');
-				}
+				clearSelect();
+				restoreSelect();
 			}
  
 			function clearVideoSearch() {
@@ -37,7 +73,7 @@
 				//*  */document.getElementById("parag").innerHTML=index;
 				clearVideoSearch();
 				if (index > 0) {
-					clearFilter();
+					document.getElementById("nameFilterInput").value = "";
 					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0"});						
 					newDataRequest.done(function(data){
 						populateVideosSelect(data);
