@@ -2,7 +2,7 @@
 @import helper.twitterBootstrap._
 
 @main("Edition d'une vidéo", admin, "menuItemHome") {
-<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+
     <script>
     
     function clearModal() {
@@ -42,7 +42,9 @@
 			modal.appendChild(radio);
 			var label = document.createElement("label");
 			label.setAttribute("for",  data[i]['id']);
-			label.textContent = "  " + data[i]['title'] + " (" + new Date(data[i]['release_date']).getFullYear() + ")";
+			label.setAttribute("style", "margin-left: 5px;");
+			label.innerHTML = data[i]['title'] + " (" + new Date(data[i]['release_date']).getFullYear() + ")";
+			
 			modal.appendChild(label);
 		}
 	}

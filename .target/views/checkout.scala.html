@@ -58,7 +58,7 @@
 					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0", async: false, dataType: "json"});						
 					newDataRequest.success(function(data){
 						// the user may already have videos checked out
-						if (data.length != null) {
+						if (data.length != 0) {
 							populateBorrowedVideos(data);
 						} else {
 							clearBorrowedVideos();
@@ -126,8 +126,8 @@
 				div.setAttribute("class", "row col-lg-8");
 				div.setAttribute("id", "vid"+id);
 				div.setAttribute("value", id);
-				//span.setAttribute("class", "input-group-addon");
-				span.setAttribute("class", "col-lg-2");
+				
+				span.setAttribute("class", "col-lg-1");
 				input.setAttribute("type", "button");
 				input.setAttribute("class", "btn btn-danger btn-xs");
 				input.setAttribute("onclick", "removeItem(\"" + id + "\");");
@@ -135,7 +135,7 @@
 				var spantxt = document.createElement("span");
 				spantxt.innerHTML=title;
 				spantxt.value=id;
-				//spantxt.setAttribute("class", "input-group-addon");
+				
 				spantxt.setAttribute("class", "col-lg-6");
 				div.appendChild(span);
 				div.appendChild(spantxt);
@@ -199,9 +199,15 @@
 					radio.setAttribute("id",  data[i]['id']);
 					radio.setAttribute("value",  data[i]['id'] + " - " + data[i]['inputTitle']);
 					modal.appendChild(radio);
-					var span = document.createElement("span");
-					span.innerHTML = data[i]['id'] + " - " + data[i]['inputTitle']
+					var label = document.createElement("label");
+					label.setAttribute("for",  data[i]['id']);
+					label.setAttribute("style", "margin-left: 5px;");
+					label.innerHTML = data[i]['id'] + " - " + data[i]['inputTitle'];
+					modal.appendChild(label);
+					/*var span = document.createElement("span");
+					span.innerHTML = data[i]['id'] + " - " + data[i]['inputTitle'];
 					modal.appendChild(span);
+					*/
 				}
 			}
 			
@@ -264,7 +270,7 @@
 		</div>
       </form>		
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
         <button type="button" id="modalButtonOK" class="btn btn-primary" data-dismiss="modal" onclick="addItem();">Ajouter</button>
       </div>
     </div>

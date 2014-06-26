@@ -318,6 +318,7 @@ public class Videos extends Controller {
 			if (v != null) {
 				v.setRentedTo(userId);
 				v.setRentalDate(new Date());
+				Logger.info("Checkout of video " + v.getId() + " by user " + userId);
 				Ebean.save(v);
 			} else {
 				// TODO: redirect to a page where the error is visible
@@ -348,12 +349,13 @@ public class Videos extends Controller {
 		for (int i = 0; i < parts.length; ++i) {
 			Video v = Ebean.find(Video.class, Long.parseLong(parts[i]));
 			if (v != null) {
+				Logger.info("Checkin of video " + v.getId() + " by user " + v.getRentedTo());
 				v.setRentedTo(null);
 				v.setRentalDate(null);
 				Ebean.save(v);
 			} else {
 				// TODO: redirect to a page where the error is visible
-				Logger.warn("Checkout could not be completed because the video " + Long.parseLong(parts[i]) +  "was not found");
+				Logger.warn("Checkin could not be completed because the video " + Long.parseLong(parts[i]) +  "was not found");
 			}
 		}
 		return redirect("/");
@@ -384,6 +386,7 @@ public class Videos extends Controller {
 				rentals = Rental.getRentalsByUserId(userId);
 			}
 		}
+		Logger.debug("Requested rentals: " + Json.toJson(rentals));
 		return ok(Json.toJson(rentals));
 	}
 	

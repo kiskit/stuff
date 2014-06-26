@@ -1,7 +1,7 @@
 @(listSize: Integer, admin: User)
 
 @main("Liste des vidéos", admin, "menuItemHome") {
-<script type="text/javascript" src='@routes.Assets.at("javascripts/bootstrap.js")'></script>
+
         <script>        
         	// Must be at least 3
         	var pageSize = 10;
@@ -55,7 +55,7 @@
 				document.getElementById("cbBR").checked = true;
 				document.getElementById("cbPG").checked = true;
 				document.getElementById("cbAvail").checked = true;
-				document.getElementById("inputTitleFilter").value = null;
+				document.getElementById("inputTitleFilter").value = "";
         	}
  
         	function setFilterByName() {
@@ -175,7 +175,11 @@
 						
 						// Original title 
 						td = document.createElement('td');
-						td.innerHTML=data[i]['originalTitle'];
+						if (data[i]['originalTitle'] == null) {
+							td.innerHTML="";
+						} else {
+							td.innerHTML=data[i]['originalTitle'];
+						}
 						tr.appendChild(td);
 						
 						// Year  
@@ -205,12 +209,18 @@
 						tr.appendChild(td);
 						// Genre 
 						td = document.createElement('td');
-						td.innerHTML=data[i]['genres'];
+						if (data[i]['genres'] == null) {
+							td.innerHTML="";
+						} else {
+							td.innerHTML=data[i]['genres'];
+						}
 						tr.appendChild(td);
 						
 						// Rating 
 						td = document.createElement('td');
-						td.innerHTML=data[i]['rating'];
+						if (data[i]['rating'] != 0) {
+							td.innerHTML=data[i]['rating'];
+						}
 						tr.appendChild(td);
 						
 						// PG 
@@ -228,7 +238,7 @@
 						if (data[i]['contentType'] === "MOVIE") {
 							img.setAttribute("src", '@routes.Assets.at("images/movie.png")');
 						} else {
-							img.setAttribute("src", '@routes.Assets.at("images/TV.png")');
+							img.setAttribute("src", '@routes.Assets.at("images/TV-small.png")');
 						}
 						td.appendChild(img);
 						tr.appendChild(td);
@@ -249,16 +259,21 @@
 						@if(admin != null){
 							// Edit button 
 							td = document.createElement('td');
-							var form = document.createElement('form');
+//							var form = document.createElement('form');
+//							form.setAttribute('action', 'videoedit');
+//							form.setAttribute('method', 'get');
+
 							var button = document.createElement('button');
 							button.setAttribute('class', 'btn btn-primary btn-sm');
-							form.setAttribute('action', '/videoedit');
 							button.setAttribute("value", data[i]['id']);
+							button.setAttribute("type", "button");
 							button.setAttribute("name", "id")
 							button.innerHTML="Edit";
+							button.setAttribute("onclick", "clickEditButton(" + data[i]['id'] + ")");
 							
-							form.appendChild(button);
-							td.appendChild(form);
+//							form.appendChild(button);
+//							td.appendChild(form);
+td.appendChild(button);
 							tr.appendChild(td);
 						}
 
@@ -338,7 +353,12 @@
 					document.getElementById("movieModalPG").innerHTML += ' ans';
 				});			
         	}
-        	
+        	function clickEditButton(data) {
+				// I know this is ugly, but IE8 won't let me add buttons in js that would actually submit the form 
+				// So this is my workaround 
+        		document.getElementById("buttonThatWorks").value = data;
+        		document.getElementById("myForm").submit();
+        	}
         	function onLoad() {
         		initFilters();
         		populateTable();
@@ -347,6 +367,8 @@
         	; 
         </script>
 
+<div class="row">
+<div class="col-lg-6">
 <!-- Modal -->
 <div class="modal fade" id="movieModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
@@ -434,11 +456,12 @@
 		</div>
 	</div>
 </div> <!--  end modal -->
+</div>
+</div>
 
 
 
-
-
+<form id="myForm" action="videoedit" method="get">
        <!-- Filters bar -->
         <div class="panel panel-info">
           <div class="panel-heading">Filtres</div>
@@ -476,6 +499,7 @@
               <!-- /.col-lg-3 -->
               <div class="col-lg-4">
                 <div class="input-group">
+                  <!-- <input type="text" class="form-control" id="inputTitleFilter" placeholder="Chercher un mot dans le titre">	<span class="input-group-btn"><button class="btn btn-default" type="button" onclick="setFilterByName();">Filtrer!</button></span> -->
                   <input type="text" class="form-control" id="inputTitleFilter" placeholder="Chercher un mot dans le titre">	<span class="input-group-btn"><button class="btn btn-default" type="button" onclick="setFilterByName();">Filtrer!</button></span>
 
                 </div>
@@ -562,13 +586,14 @@
               </p>
             </div>
 			@if(admin != null){
-			<form action="videoedit" method="get" style="margin: 0px; padding: 0px;">
-				<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter une vidéo</button>
-			</form>
+				
+				<button class="btn btn-primary" type="button" onclick="clickEditButton(0);">Ajouter une vidéo</button>
+				<!--  IE8 workaround -->
+				<input id="buttonThatWorks" name="id" value="0" hidden> 
 			}
 		</div>
         <!-- /Movie list table -->
-
+</form>
 
 }
 

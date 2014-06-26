@@ -2,13 +2,15 @@ TODO
 
 * Critical
 MySQL db
-IE8 compat
+IE8 compat filters
 Error management in ajax
 Error management in java
 Check form errors
 
 * Major
 OnLoad end of page
+Icons for users
+Pages for movie titles
 User guide
 Logging
 Late vids page email to work
