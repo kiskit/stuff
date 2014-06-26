@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -72,174 +73,300 @@ public class Video {
 	
 
 	
+	/**
+	 * @return a readable string of who rented the video and when
+	 */
 	public String getRentalString() {
 		String rentalString = null;
 		if (rentedTo != null) {
 			User u = Ebean.find(User.class, rentedTo);
-			if (u != null)
-				rentalString = u.getFullName() + " (" + rentalDate.toLocaleString() + ")";
+			if (u != null) {
+		        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+				rentalString = u.getFullName() + " (" + sdf.format(rentalDate) + ")";
+			}
 		}
 		return rentalString;
 	}
+	/**
+	 * @return the user object corresponding to the user to whom the video was rented
+	 */
 	public User getRentedToUser() {
 		return rentedTo == null?null:Ebean.find(User.class, rentedTo);
 	}
-	public int getRuntime() {
-		return runtime;
-	}
-	public void setRuntime(int runtime) {
-		this.runtime = runtime;
-	}
-	public String getTagline() {
-		return tagline;
-	}
-	public void setTagline(String tagline) {
-		this.tagline = tagline;
-	}
-	public String getSummary() {
-		return summary;
-	}
-	public void setSummary(String summary) {
-		this.summary = summary;
-	}
-	public String getBackdropPath() {
-		return backdropPath;
-	}
-	public void setBackdropPath(String backdropPath) {
-		this.backdropPath = backdropPath;
-	}
-	public double getRating() {
-		return rating;
-	}
-	public void setRating(double rating) {
-		this.rating = rating;
-	}
-	public String getPosterPath() {
-		return posterPath;			
-	}
-	public void setPosterPath(String posterPath) {
-		this.posterPath = posterPath;
-	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public SupportType getSupportType() {
-		return supportType;
-	}
-	public void setSupportType(SupportType supportType) {
-		this.supportType = supportType;
-	}
-	public ContentType getContentType() {
-		return contentType;
-	}
-	public void setContentType(ContentType contentType) {
-		this.contentType = contentType;
-	}
-	public String getMovieId() {
-		return movieId;
-	}
-	public void setMovieId(String movieId) {
-		this.movieId = movieId;
-	}
-	public String getInputTitle() {
-		return inputTitle;
-	}
-	public void setInputTitle(String inputTitle) {
-		this.inputTitle = inputTitle;
-	}
-	public Date getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(Date creationDate) {
-		this.creationDate = creationDate;
-	}
-	public Date getUpdateDate() {
-		return updateDate;
-	}
-	public void setUpdateDate(Date updateDate) {
-		this.updateDate = updateDate;
-	}
-
-	public Long getRentedTo() {
-		return rentedTo;
-	}
-	public void setRentedTo(Long rentedTo) {
-		if ((rentedTo != null) && (rentedTo < 0)) {
-			this.rentedTo = null;
-			this.rentalDate = null;
-		} else {
-			System.out.println("In setter setting to " + rentedTo);
-			this.rentedTo = rentedTo;	
-		}
-		
-	}
 
 
-	public StateType getState() {
-		return state;
-	}
-	public void setState(StateType state) {
-		this.state = state;
-	}
-
-
-	public static String getKey() {
-		//return key;
-		return null;
-	}
-	public static void setKey(String key) {
-		//Video.key = key;
-	}
-	public Date getRentalDate() {
-		return rentalDate;
-	}
-	public void setRentalDate(Date rentalDate) {
-		this.rentalDate = rentalDate;
-	}
-
-
-	public Long getMinimumAge() {
-		return minimumAge;
-	}
-
-	public void setMinimumAge(Long minimumAge) {
-		this.minimumAge = minimumAge;
-	}
-
-	public Long getYear() {
-		return year;
-	}
-
-	public void setYear(Long year) {
-		this.year = year;
-	}
-
-	public String getOriginalTitle() {
-		return originalTitle;
-	}
-
-	public void setOriginalTitle(String originalTitle) {
-		this.originalTitle = originalTitle;
-	}
-
-	public String getGenres() {
-		return genres;
-	}
-
-	public void setGenres(String genres) {
-		this.genres = genres;
-	}
-
+	
+	/**
+	 * @return the path to the pictures on themoviedb.org
+	 */
 	public String getPicturePath() {
 		return tmdbPicturesPath;
-		//return picturePath;
 	}
+	/**
+	 * @param picturePath
+	 * This method sets the picture path in the object. However the getter will return the constant value of the path to the pictures on themoviedb.org 
+	 */
 	public void setPicturePath(String picturePath) {
 		this.picturePath = picturePath;
 	}
+
+	
+	
+	/**
+	 * @return the tmdbPicturesPath
+	 */
+	public static String getTmdbPicturesPath() {
+		return tmdbPicturesPath;
+	}
+	/**
+	 * @param tmdbPicturesPath the tmdbPicturesPath to set
+	 */
+	public static void setTmdbPicturesPath(String tmdbPicturesPath) {
+		Video.tmdbPicturesPath = tmdbPicturesPath;
+	}
+	/**
+	 * @return the id
+	 */
+	public Long getId() {
+		return id;
+	}
+	/**
+	 * @param id the id to set
+	 */
+	public void setId(Long id) {
+		this.id = id;
+	}
+	/**
+	 * @return the supportType
+	 */
+	public SupportType getSupportType() {
+		return supportType;
+	}
+	/**
+	 * @param supportType the supportType to set
+	 */
+	public void setSupportType(SupportType supportType) {
+		this.supportType = supportType;
+	}
+	/**
+	 * @return the contentType
+	 */
+	public ContentType getContentType() {
+		return contentType;
+	}
+	/**
+	 * @param contentType the contentType to set
+	 */
+	public void setContentType(ContentType contentType) {
+		this.contentType = contentType;
+	}
+	/**
+	 * @return the movieId
+	 */
+	public String getMovieId() {
+		return movieId;
+	}
+	/**
+	 * @param movieId the movieId to set
+	 */
+	public void setMovieId(String movieId) {
+		this.movieId = movieId;
+	}
+	/**
+	 * @return the inputTitle
+	 */
+	public String getInputTitle() {
+		return inputTitle;
+	}
+	/**
+	 * @param inputTitle the inputTitle to set
+	 */
+	public void setInputTitle(String inputTitle) {
+		this.inputTitle = inputTitle;
+	}
+	/**
+	 * @return the year
+	 */
+	public Long getYear() {
+		return year;
+	}
+	/**
+	 * @param year the year to set
+	 */
+	public void setYear(Long year) {
+		this.year = year;
+	}
+	/**
+	 * @return the originalTitle
+	 */
+	public String getOriginalTitle() {
+		return originalTitle;
+	}
+	/**
+	 * @param originalTitle the originalTitle to set
+	 */
+	public void setOriginalTitle(String originalTitle) {
+		this.originalTitle = originalTitle;
+	}
+	/**
+	 * @return the creationDate
+	 */
+	public Date getCreationDate() {
+		return creationDate;
+	}
+	/**
+	 * @param creationDate the creationDate to set
+	 */
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+	/**
+	 * @return the updateDate
+	 */
+	public Date getUpdateDate() {
+		return updateDate;
+	}
+	/**
+	 * @param updateDate the updateDate to set
+	 */
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
+	}
+	/**
+	 * @return the genres
+	 */
+	public String getGenres() {
+		return genres;
+	}
+	/**
+	 * @param genres the genres to set
+	 */
+	public void setGenres(String genres) {
+		this.genres = genres;
+	}
+	/**
+	 * @return the rentalDate
+	 */
+	public Date getRentalDate() {
+		return rentalDate;
+	}
+	/**
+	 * @param rentalDate the rentalDate to set
+	 */
+	public void setRentalDate(Date rentalDate) {
+		this.rentalDate = rentalDate;
+	}
+	/**
+	 * @return the rentedTo
+	 */
+	public Long getRentedTo() {
+		return rentedTo;
+	}
+	/**
+	 * @param rentedTo the rentedTo to set
+	 */
+	public void setRentedTo(Long rentedTo) {
+		this.rentedTo = rentedTo;
+	}
+	/**
+	 * @return the state
+	 */
+	public StateType getState() {
+		return state;
+	}
+	/**
+	 * @param state the state to set
+	 */
+	public void setState(StateType state) {
+		this.state = state;
+	}
+	/**
+	 * @return the minimumAge
+	 */
+	public Long getMinimumAge() {
+		return minimumAge;
+	}
+	/**
+	 * @param minimumAge the minimumAge to set
+	 */
+	public void setMinimumAge(Long minimumAge) {
+		this.minimumAge = minimumAge;
+	}
+	/**
+	 * @return the rating
+	 */
+	public double getRating() {
+		return rating;
+	}
+	/**
+	 * @param rating the rating to set
+	 */
+	public void setRating(double rating) {
+		this.rating = rating;
+	}
+	/**
+	 * @return the posterPath
+	 */
+	public String getPosterPath() {
+		return posterPath;
+	}
+	/**
+	 * @param posterPath the posterPath to set
+	 */
+	public void setPosterPath(String posterPath) {
+		this.posterPath = posterPath;
+	}
+	/**
+	 * @return the backdropPath
+	 */
+	public String getBackdropPath() {
+		return backdropPath;
+	}
+	/**
+	 * @param backdropPath the backdropPath to set
+	 */
+	public void setBackdropPath(String backdropPath) {
+		this.backdropPath = backdropPath;
+	}
+	/**
+	 * @return the summary
+	 */
+	public String getSummary() {
+		return summary;
+	}
+	/**
+	 * @param summary the summary to set
+	 */
+	public void setSummary(String summary) {
+		this.summary = summary;
+	}
+	/**
+	 * @return the tagline
+	 */
+	public String getTagline() {
+		return tagline;
+	}
+	/**
+	 * @param tagline the tagline to set
+	 */
+	public void setTagline(String tagline) {
+		this.tagline = tagline;
+	}
+	/**
+	 * @return the runtime
+	 */
+	public int getRuntime() {
+		return runtime;
+	}
+	/**
+	 * @param runtime the runtime to set
+	 */
+	public void setRuntime(int runtime) {
+		this.runtime = runtime;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Video [id=" + id + ", supportType=" + supportType
@@ -252,7 +379,7 @@ public class Video {
 				+ ", rating=" + rating + ", posterPath=" + posterPath
 				+ ", backdropPath=" + backdropPath + ", summary=" + summary
 				+ ", tagline=" + tagline + ", runtime=" + runtime
-				+ ", picturePath=" + getPicturePath() + "]";
+				+ ", picturePath=" + picturePath + "]";
 	}
-	
+
 }

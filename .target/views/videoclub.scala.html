@@ -305,8 +305,6 @@
         	function showMovie(id) {
         		newDataRequest = $.ajax({url: "/videobyid?id="+id});
 				newDataRequest.done(function(data){
-					console.log(data);
-					
 					if (data["backdropPath"] == null) {
 						
 						document.getElementById("movieModalBackDrop").setAttribute("src", '@routes.Assets.at("images/backdrop_placeholder.png")');	

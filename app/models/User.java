@@ -42,140 +42,151 @@ public class User {
 	private boolean admin;
     public static Finder find = new Finder(Long.class, User.class);
 
-
-	public String validate() {
-		return null;
+	public User() {
+		
 	}
-	// Not sure what it does
-	//public static Finder<String,User> find = new Finder<String,User>(String.class, User.class); 
+	
+	/**
+	 * @param email
+	 * @param password
+	 * @return whether the user is authenticated by the email and password provided
+	 */
 	public static User authenticate(String email, String password) {
 		User user = Ebean.find(User.class).where().ieq("email", email).eq("password", password).findUnique();
 		return user;
 	}
-    
+
+	/**
+	 * @param email
+	 * @return the user corresponding to the email provided
+	 */
 	public static User getByEmail(String email) {
 		return Ebean.find(User.class).where().ieq("email", email).findUnique();
 	}
-	
-	public User() {
-		
+
+	/**
+	 * @return the user's full name
+	 */
+	public String getFullName() {
+		return getFirstName() + " " + getName();
 	}
+	/**
+	 * @return the id
+	 */
 	public Long getId() {
 		return id;
 	}
-
-
-
+	/**
+	 * @param id the id to set
+	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-
-
+	/**
+	 * @return the name
+	 */
 	public String getName() {
 		return name;
 	}
-
-
-
+	/**
+	 * @param name the name to set
+	 */
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
-
+	/**
+	 * @return the firstName
+	 */
 	public String getFirstName() {
 		return firstName;
 	}
-
-
-
+	/**
+	 * @param firstName the firstName to set
+	 */
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-
-
-
+	/**
+	 * @return the email
+	 */
 	public String getEmail() {
 		return email;
 	}
-
-
-
+	/**
+	 * @param email the email to set
+	 */
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
-
+	/**
+	 * @return the password
+	 */
 	public String getPassword() {
 		return password;
 	}
-
-
-
+	/**
+	 * @param password the password to set
+	 */
 	public void setPassword(String password) {
 		this.password = password;
 	}
-
-
-
+	/**
+	 * @return the status
+	 */
 	public StatusType getStatus() {
 		return status;
 	}
-
-
-
+	/**
+	 * @param status the status to set
+	 */
 	public void setStatus(StatusType status) {
 		this.status = status;
 	}
-
-
-
+	/**
+	 * @return the creationDate
+	 */
 	public Date getCreationDate() {
 		return creationDate;
 	}
-
-
-
+	/**
+	 * @param creationDate the creationDate to set
+	 */
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
-
-
-
+	/**
+	 * @return the updateDate
+	 */
 	public Date getUpdateDate() {
 		return updateDate;
 	}
-
-
-
+	/**
+	 * @param updateDate the updateDate to set
+	 */
 	public void setUpdateDate(Date updateDate) {
 		this.updateDate = updateDate;
 	}
-
+	/**
+	 * @return the admin
+	 */
 	public boolean isAdmin() {
 		return admin;
 	}
-
-
-
+	/**
+	 * @param admin the admin to set
+	 */
 	public void setAdmin(boolean admin) {
 		this.admin = admin;
 	}
-
-
-
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", name=" + name + ", firstName=" + firstName
 				+ ", email=" + email + ", password=" + password + ", status="
 				+ status + ", creationDate=" + creationDate + ", updateDate="
-				+ updateDate + ", isAdmin=" + admin + "]";
-	}
-	
-	public String getFullName() {
-		return getFirstName() + " " + getName();
+				+ updateDate + ", admin=" + admin + "]";
 	}
 	
 

@@ -65,7 +65,7 @@ public class Rentals extends Controller {
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(v.getRentalDate());
         String msgBody = "Bonjour M. " + u.getName();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         msgBody += "Selon notre système, vous avez en votre possession la vidéo " + v.getInputTitle() + " depuis le " + sdf.format(v.getRentalDate()) + ".";
         msgBody += "\nMerci de bien vouloir faire le nécessaire pour contacter le vidéo club et de restituer la vidéo concernée au plus vite.";
         msgBody += "\nCordialement";

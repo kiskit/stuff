@@ -1,7 +1,5 @@
 package controllers;
 
-import models.Borrowing;
-
 import models.Rental;
 import models.User;
 import models.Video;
