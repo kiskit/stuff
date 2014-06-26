@@ -2,109 +2,107 @@ package controllers;
 
 import models.User;
 
+import play.Logger;
 import play.mvc.*;
 import play.data.Form;
 import views.html.*;
 
+/**
+ * @author nicolas
+ * The Application class deals with high level application things, like logging in 
+ *
+ */
 public class Application extends Controller {
 	
 
 	// ----------- Authentication stuff -----------------
 	
+	/**
+	 * The main page for admin login
+	 * @return the web page for login
+	 */
 	public static Result login(){
 		return ok(login.render(Form.form(Login.class)));
 	}
 	
+	/**
+	 * The validation for the login form
+	 * @return The video list web page if validation ok, if not goes back to the login page
+	 */
 	public static Result authenticate() {
 	    Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
 	    if (loginForm.hasErrors()) {
-	    	System.out.println("Form still has errors");
-	    	System.out.println(loginForm.toString());
+	        Logger.warn("Administrator authentication form validation failed: " + loginForm.get().email);
 	        return badRequest(login.render(loginForm));
 	    } else {
 	        session().clear();
 	        session("email", loginForm.get().email);
-	        System.out.println("Got the right login " + loginForm.get().email);
+	        Logger.info("Administrator connected: " + loginForm.get().email);
 	        return redirect(
 	            routes.Videos.index()
 	        );
 	    }
 	}
 	
+	/**
+	 * Logs the user out
+	 * @return The login web page 
+	 */
 	public static Result logout() {
 		session().clear();
+		// That just doesn't do anything
 		flash("success", "You've been logged out");
 		return redirect(routes.Application.login());
 	}
 	
+	/**
+	 * @author nicolas
+	 * Internal class that holds login information
+	 *
+	 */
 	public static class Login{
 		public String email;
 		public String password;
 		public String validate(){
-			System.out.println("authenticating with email=" + email + " and password=" + password);
 			if (User.authenticate(email, password) == null){
+		        Logger.warn("Administrator authentication failed: " + email);
 				return "Utilisateur ou mot de passe erroné";
 			}
-			System.out.println("authenticated");
 			return null;
 		}
 		public Login() {
 			
 		}
+		/**
+		 * Getter for email
+		 * @return email
+		 */
 		public String getEmail() {
 			return email;
 		}
+		/**
+		 * Setter for email
+		 * @param email
+		 */
 		public void setEmail(String email) {
 			this.email = email;
 		}
+		/**
+		 * Getter for password
+		 * @return the password
+		 */
 		public String getPassword() {
 			return password;
 		}
+		/**
+		 * Setter for password
+		 * @param password
+		 */
 		public void setPassword(String password) {
 			this.password = password;
 		}
 		
 	}
 	// ----------- END of authentication -----------------
-	
-	/** 
-	 * Administration index
-	*/
-	/*
-	public static Result admin() {
-
-		String[] postAction = request().body().asFormUrlEncoded().get("action");
-		if (postAction == null || postAction.length == 0) {
-			return badRequest("You must provide a valid action");
-		} else {
-			String action = postAction[0];
-
-			if ("Users".equals(action)) {
-				// Returns to main videolist page
-				return Users.index();
-
-			} else if ("Videos".equals(action)) {
-				return Videos.index();
-
-			} else if ("Late".equals(action)) {
-				return ok(index.render("Your new application is ready."));
-				
-			} else if ("Checkin".equals(action)) {
-				return Videos.checkin();
-				
-			} else if ("Checkout".equals(action)) {
-				return Videos.checkout();
-				
-			} else {
-				// TODO: major problem, someone clicked on a non existent button
-				return ok(index.render("Your new application is ready."));
-
-			}
-		}
-		//return ok(index.render("Your new application is ready."));
-	}*/
-	
-	
-
 }
 

@@ -6,17 +6,25 @@ import play.mvc.Http.*;
 
 import models.*;
 
+/**
+ * @author nicolas
+ *
+ */
 public class Secured extends Security.Authenticator {
 
+    /* (non-Javadoc)
+     * @see play.mvc.Security.Authenticator#getUsername(play.mvc.Http.Context)
+     */
     @Override
     public String getUsername(Context ctx) {
-    	System.out.println("In getusername");
         return ctx.session().get("email");
     }
 
+    /* (non-Javadoc)
+     * @see play.mvc.Security.Authenticator#onUnauthorized(play.mvc.Http.Context)
+     */
     @Override
     public Result onUnauthorized(Context ctx) {
-    	System.out.println("In onunauthorized");
         return redirect(routes.Application.login());
     }
 }

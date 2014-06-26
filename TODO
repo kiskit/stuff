@@ -4,11 +4,14 @@ TODO
 Img to replace when there is no img
 MySQL db
 IE8 compat
+Error management in ajax
+Error management in java
 
 * Major
 Fix path stuff
 Logging
 Late vids page email to work
+Checkout failed action
 
 * Minor
 History recordings

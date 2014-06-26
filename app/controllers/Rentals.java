@@ -22,7 +22,17 @@ import javax.mail.internet.MimeMessage;
 
 import com.avaje.ebean.Ebean;
 
+/**
+ * The Rentals class is a utility class used mainly for displaying the late rentals and for the AJAX call that will email users who are late with giving back videos
+ * @author nicolas
+ *
+ */
 public class Rentals extends Controller {
+
+	/**
+	 * Web page for the late users
+	 * @return the web page for the list of users who have checked out videos
+	 */
 	@Security.Authenticated(Secured.class)
 	public static Result index() {
 		return ok(
@@ -33,17 +43,23 @@ public class Rentals extends Controller {
 		);
 	}
 	
+	/**
+	 * @param userId the user to whom the email shall be sent
+	 * @param videoId the video about which the user should be reminded
+	 * @return a message indicating whether the email could be sent
+	 * For now this method returns ok. It should probably return some server error instead, but that was easier to catch in the returning ajax
+	 * TODO: change the emails of the admins and admin mailing list
+	 */
 	public static Result sendEmail(Long userId, Long videoId) {
 		Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);
-        //
         Video v = Ebean.find(Video.class, videoId);
         if (v == null) {
-        	return internalServerError("Vidéo non trouvée. Contactez l'admin du site svp");
+        	return ok("Vidéo non trouvée. Contactez l'admin du site svp");
         }
         User u = Ebean.find(User.class, userId);
         if (u == null) {
-        	return internalServerError("Abonné non trouvé. Contactez l'admin du site svp");	
+        	return ok("Abonné non trouvé. Contactez l'admin du site svp");	
         }
         
         Calendar cal = GregorianCalendar.getInstance();
@@ -78,7 +94,7 @@ public class Rentals extends Controller {
 		} catch (Exception e) {
 			return ok("Problème avec le mail. Contactez l'admin du site svp");
 		}
-		return ok(Json.toJson(""));
+		return ok("");
 	}
 
 }

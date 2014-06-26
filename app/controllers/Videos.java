@@ -11,6 +11,7 @@ import models.tmdb.TmdbApi;
 import models.tmdb.BasicVideoInfoSearch;
 import models.tmdb.VideoInfo;
 
+import play.Logger;
 import play.mvc.*;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -30,24 +31,17 @@ import java.util.List;
 import java.lang.Math;
 
 
+/**
+ * @author nicolas
+ * This controller manages everything related to video lists and edition
+ */
 public class Videos extends Controller {
 
-	public static class UserChoice {
-		public UserChoice() {
-
-		}
-
-		public Long getId() {
-			return id;
-		}
-
-		public void setId(Long id) {
-			this.id = id;
-		}
-
-		public Long id;
-	}
-
+	/**
+	 * The main page for consulting the list of videos
+	 * @return the video list page
+	 * Note that it's not necessary to be logged in to view the page. However, admins will see much more
+	 */
 	public static Result index() {
 		// Call the video list with all the videos
 		//return ok(index.render(Video.find.all()));
@@ -240,15 +234,21 @@ public class Videos extends Controller {
 			Ebean.save(u);
 			
 		}
+		// we should use the method request().username() but we're not sure it works without the @Security pragma
 		return ok(videoclub.render(
 						Video.find.findList().size(), 
 						User.getByEmail(session("email"))
 				)
 		);
 	}
+	/**
+	 * This is the video edition method
+	 * @param id the id of the video to edit. 0 in case of a video creation
+	 * @return the page to the video edition form
+	 * Note: one must be authentified to access this page
+	 */
 	@Security.Authenticated(Secured.class)
 	public static Result editVideo(Long id) {
-		System.out.println("Editing video " + id);
 		/**
 		 * If the Video already exists, we can look for it in the database
 		 * We will populate all the fields with it
@@ -260,11 +260,11 @@ public class Videos extends Controller {
 			// Video not found, creating
 			v = new Video();
 			v.setCreationDate(new Date());
+			// We implement manually the id increment. It should be a self increment but since we need to display it before actually writing it in the database, we have to do it
+			// It could fail if two admins are creating a user at the exact same time, but the chances are low
 			String sql = "select max(id) from Video";
 			SqlRow bug = Ebean.createSqlQuery(sql).findUnique();
-			System.out.println("Bug :" + bug.toString());
 			String maxId = bug.getString("max(id)");
-			System.out.println("Max ID found : " + maxId);
 			v.setId(Long.decode(maxId) + 1L);
 		}
 		Form<Video> videoForm = Form.form(Video.class);
@@ -273,7 +273,13 @@ public class Videos extends Controller {
 		videoForm = videoForm.fill(v);
 		return ok(videoedit.render(videoForm, v.getRentedToUser(), User.getByEmail(request().username())));
 	}
+
 	
+	/**
+	 * The validation page for a video
+	 * @return if the validation succeeded, the video list page. If not, the same form with the errors to correct
+	 * Note: one must be authenticated to access this page
+	 */
 	@Security.Authenticated(Secured.class)
 	public static Result validateVideo() {
 		Form<Video> videoForm = Form.form(Video.class).bindFromRequest();
@@ -289,65 +295,104 @@ public class Videos extends Controller {
 			return redirect("/");
 		}
 	}
-
-/*	public static Result validateVideoInfo() {
-		//return ok(videolist.render(Video.find.findList(), new User()));
-		return ok(videoclub.render(Video.find.findList().size(), new User()));
+	/**
+	 * The method called when admins want to check out videos
+	 * @return the checkout web page
+	 * Note: one must be authenticated to access this page
+	 */
+	@Security.Authenticated(Secured.class)
+	public static Result checkout() {
+		return ok(checkout.render(User.find.findList(), User.getByEmail(request().username())));
 	}
-	*/
-	/*
-	public static Result borrow() {
-		Form<UserChoice> bForm = Form.form(UserChoice.class);
-		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
-		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		//return ok(videoclub.render(Video.find.findList().size(), new User()));
-		//return ok(videolist.render(Video.find.findList(), new User()));
-		return redirect("/");
-	}*/
-	/*
-	public static Result validateBorrow() {
-		Form<UserChoice> bForm = Form.form(UserChoice.class);
-		//Form<UserChoice> longForm =  Form.form(UserChoice.class);
-		//		return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		//return ok(borrowing.render(bForm, Ebean.find(User.class).findList(), null, new User()));
-		//return ok(videolist.render(Video.find.findList(), new User()));
-		//return ok(videoclub.render(Video.find.findList().size(), new User()));
+	
+	/**
+	 * The method called to validate the checkout
+	 * @param userId the user who checks the videos out
+	 * @param list the list of videos to check out, in the form of a comma separated String of id
+	 * @return the video list page. This could change since there is no particular reason
+	 * 
+	 */
+	@Security.Authenticated(Secured.class)
+	public static Result doCheckout(Long userId, String list) {
+		String[] parts = list.split(",");
+		for (int i = 0; i < parts.length; ++i) {
+			Video v = Ebean.find(Video.class, Long.parseLong(parts[i]));
+			if (v != null) {
+				v.setRentedTo(userId);
+				v.setRentalDate(new Date());
+				Ebean.save(v);
+			} else {
+				// TODO: redirect to a page where the error is visible
+				Logger.warn("Checkout could not be completed because the video " + Long.parseLong(parts[i]) +  "was not found");
+			}
+		}
 		return redirect("/");
 	}
-	*/
+	/**
+	 * The method called when admins want to check out videos
+	 * @return the checkout web page
+	 * Note: one must be authenticated to access this page
+	 */
+	@Security.Authenticated(Secured.class)
+	public static Result checkin() {
+		return ok(checkin.render(User.find.findList(), User.getByEmail(request().username())));
+	}
+	
+	
+	/**
+	 * The method called to validate the checkin
+	 * @param list the list of videos to check in, in the form of a comma separated String of id
+	 * @return the video list page. This could change since there is no particular reason
+	 */
+	@Security.Authenticated(Secured.class)
+	public static Result doCheckin(String list) {
+		String[] parts = list.split(",");
+		for (int i = 0; i < parts.length; ++i) {
+			Video v = Ebean.find(Video.class, Long.parseLong(parts[i]));
+			if (v != null) {
+				v.setRentedTo(null);
+				v.setRentalDate(null);
+				Ebean.save(v);
+			} else {
+				// TODO: redirect to a page where the error is visible
+				Logger.warn("Checkout could not be completed because the video " + Long.parseLong(parts[i]) +  "was not found");
+			}
+		}
+		return redirect("/");
+	}
 	
 	
 	// ****************** AJAX CALLS ************************
+	/**
+	 * Method that answers the Ajax call for rentals by a user, or by the user who has checked the video videoId out 
+	 * @param userId
+	 * @param videoId
+	 * @return
+	 */
 	public static Result getUserRentals(Long userId, Long videoId) {
-		//List<Video> list = null;
-		System.out.println("In get user rentals");
-		List<Rental> rentals = null; 
+
+		List<Rental> rentals = null;
+		// If the user id is given, then we search by user id
 		if (userId != 0) {
-			System.out.println("got a user id of " + userId);
-			// Get all videos rented by this user
-			//list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
 			rentals = Rental.getRentalsByUserId(userId);
-			
+		// else we search by video id
 		} else if (videoId != 0) {
-			System.out.println("got a video id of " + userId);
-			// Get the user who rented that video
 			Video v = Ebean.find(Video.class, videoId);
-			// TODO: test video not found
 			if (v != null)
+				// Get the user who rented that video
 				userId = v.getRentedTo();
 			else userId = null;
 			if (userId != null) {
-				// Get all videos rented by this user
-				//list = Ebean.find(Video.class).where().eq("rentedTo", userId).findList();
 				rentals = Rental.getRentalsByUserId(userId);
 			}
 		}
-		System.out.println("Jason:" + Json.toJson(rentals));
 		return ok(Json.toJson(rentals));
 	}
 	
-	// Used to get more than the bare video list from the ajax call in getVideoList
+	/**
+	 * @author nicolas
+	 * This internal working class is used to get more than the bare video list from the ajax call in getVideoList
+	 */
 	public static class JSonVideoList {
 		public JSonVideoList() {
 			
@@ -356,14 +401,23 @@ public class Videos extends Controller {
 		public List<Video> list;
 	}
 
+	/**
+	 * This method returns a list of videos consequently to an ajax call. This method implements a lot of filters so the users may see only certain videos
+	 * @param pageNumber the number of the page to return
+	 * @param pageSize the maximum number of items to return 
+	 * @param old indicator as to whether old videos should be included (by opposition to new only). Old is a matter of internal policy
+	 * @param dvd indicator as to whether DVDs should be included. Either DVDs or Blu Rays will be returned
+	 * @param br indicator as to whether Blu-rays should be included. Either DVDs or Blu Rays will be returned 
+	 * @param pg indicator as to whether videos not suitable for children should be included. Not suitable for children is a matter of internal policy
+	 * @param available indicator as to whether only videos that have not been checked out should be included 
+	 * @param nameFilter only videos who contain the string in this parameter will be returned. They may contain it either in the title or in the original title
+	 * @return the list of videos in json format 
+	 */
 	public static Result getVideoList(Integer pageNumber, Integer pageSize, Boolean old, Boolean dvd, Boolean br, Boolean pg, Boolean available, String nameFilter) {
-		System.out.println("In get video list");
 		String queryString = "find video ";
-
 		String conditions = "";
-		// TODO: test
 		if (old == false) {
-			// Looks back 6 months before
+			// Looks back 6 months before. This is our current policy for old 
 			conditions += "where creationDate > " + new Date(System.currentTimeMillis() - (365 / 2)* 24 * 3600 * 1000L);
 		}
 		// It's going to be dvd OR (inclusive) blu-ray. Can't be both false
@@ -374,7 +428,7 @@ public class Videos extends Controller {
 			conditions += "supportType = :support";
 			
 		}
-		
+		// Add a condition for age
 		if (pg == false) {
 			if (conditions == "")
 				conditions += " where ";
@@ -382,7 +436,7 @@ public class Videos extends Controller {
 				conditions += " and ";
 			conditions += "minimumAge < :minAge";
 		}
-		
+		// Add a filter on the name. Both on input and original title
 		if (nameFilter != null) {
 			if (conditions == "")
 				conditions += " where ";
@@ -390,7 +444,7 @@ public class Videos extends Controller {
 				conditions += " and ";
 			conditions += "lower(inputTitle) like :name or lower(originalTitle) like :name";
 		}
-		
+		// Filter on availability (only not checked out)
 		if (available == false) {
 			if (conditions == "")
 				conditions += " where ";
@@ -410,37 +464,50 @@ public class Videos extends Controller {
 		}
 		if (nameFilter != null)
 			query.setParameter("name", "%" + nameFilter.toLowerCase() + "%");
+		// Not suitable for children will mean 12 and under. This is our current policy
 		query.setParameter("minAge", 12);
-		
-		//System.out.println("QueryString " + query.getGeneratedSql());
-		
+	
 		JSonVideoList list = new JSonVideoList();
 		double rowCount = (double) query.findRowCount();
-		//System.out.println("Would return " + rowCount);
+	
 		list.list = query.findPagingList(pageSize).getPage(pageNumber - 1).getList();
 		
 		list.pages = (int)Math.ceil(rowCount / pageSize);
-		//System.out.println("List size " + list.list.size());
-		//System.out.println("List pages " + list.pages);
 		return ok(Json.toJson(list));
 	}
+	
+	
+	
+	/**
+	 * This method will answer a list of videos matching a given title. The match is based on a "contains" policy 
+	 * @param title
+	 * @return A list of videos matching a given title in Json format
+	 */
 	public static Result getVideoByTitle(String title) {
-		System.out.println("In get video list by title");
 		List<Video> videoList = Ebean.find(Video.class).where().ilike("inputTitle", "%" + title + "%").findList();
-		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
+	/**
+	 * This method will answer a video matching a given id
+	 * @param id
+	 * @return A Json formatted video
+	 */
 	public static Result getVideoById(Long id) {
 		return ok(Json.toJson(Ebean.find(Video.class, id)));
 	}
+	
+	
+	/**
+	 * Looks for videos either by title or by Id. The method decides itself whether it's a title, an id, or both (think "12 monkeys")
+	 * @param titleOrId
+	 * @return a Json formatted list of videos matching the parameter 
+	 */
 	public static Result getVideoByTitleOrId(String titleOrId) {
-		System.out.println("In get video list by title or ID " + titleOrId );
 		Video v = null;
 		try {
 			v = Ebean.find(Video.class, Long.parseLong(titleOrId));
 		} catch (Exception e) {
-			// not a number
-			System.out.println("Title but not id");
+			// not a number but we don't care
 		}
 		List<Video> videoList = null;
 		if (v != null) {
@@ -450,60 +517,28 @@ public class Videos extends Controller {
 		} else {
 			videoList = Ebean.find(Video.class).where().ilike("inputTitle", "%" + titleOrId + "%").findList();
 		}
-		System.out.println("List size " + videoList.size());
 		return ok(Json.toJson(videoList));
 	}
 
-	// Fetch movie identity on TMDB. Returns the jSon directly because there is no need to do otherwise
+	/**
+	 * Returns a list of titles from TMDB matching the title in parameter 
+	 * @param title title to match
+	 * @param type TV or MOVIE
+	 * @return the list of titles in Json format
+	 */
 	public static Result getTMDBTitles(String title, String type) {
 		BasicVideoInfoSearch search = TmdbApi.searchByTitle(title, type);
 		return ok(Json.toJson(search));
 	}	
+	/**
+	 * Returns the information on a particular video after reading it from TMDB
+	 * @param id the TMDB id of the video to look for
+	 * @param type TV or MOVIE
+	 * @return the information in Json format
+	 */
 	public static Result getTMDBId(String id, String type) {
 		VideoInfo info = TmdbApi.searchById(id, type);
 		return ok(Json.toJson(info));
 	}
 	// *********** END AJAX CALLS ****************
-	@Security.Authenticated(Secured.class)
-	public static Result checkout() {
-		return ok(checkout.render(User.find.findList(), User.getByEmail(request().username())));
-	}
-	@Security.Authenticated(Secured.class)
-	public static Result doCheckout(Long userId, String list) {
-		String[] parts = list.split(",");
-		for (int i = 0; i < parts.length; ++i) {
-			Video v = Ebean.find(Video.class, Long.parseLong(parts[i]));
-			if (v != null) {
-				v.setRentedTo(userId);
-				v.setRentalDate(new Date());
-				Ebean.save(v);
-			} else {
-				// TODO: error, a vid was not found
-				System.out.println("Video " + parts[i] + " not found");
-			}
-		}
-		//return ok(checkout.render(User.find.findList(), new User()));
-		return redirect("/");
-	}
-	@Security.Authenticated(Secured.class)
-	public static Result checkin() {
-		return ok(checkin.render(User.find.findList(), User.getByEmail(request().username())));
-	}
-	@Security.Authenticated(Secured.class)
-	public static Result doCheckin(String list) {
-		String[] parts = list.split(",");
-		for (int i = 0; i < parts.length; ++i) {
-			Video v = Ebean.find(Video.class, Long.parseLong(parts[i]));
-			if (v != null) {
-				v.setRentedTo(null);
-				v.setRentalDate(null);
-				Ebean.save(v);
-			} else {
-				// TODO: error, a vid was not found
-				System.out.println("Video " + parts[i] + " not found");
-			}
-		}
-		//return ok(checkin.render(User.find.findList(), new User()));
-		return redirect("/");
-	}
 }

@@ -68,8 +68,8 @@
 				clearVideosSelect();
 				newDataRequest = $.ajax({url: "/rentals?userId=0&videoId=" + document.getElementById("vidInput").value});						
 				newDataRequest.done(function(data){
-					selectUserById(data['userId']);
-					if (data['userId'] == null) {
+					selectUserById(data[0]['whoId']);
+					if (data[0]['whoId'] == null) {
 						document.getElementById("vidError").innerHTML="* Vidéo non sortie ou non trouvée";
 						window.setTimeout("clearVideoSearch();", 5000);
 					} else {
@@ -86,7 +86,7 @@
 			function populateVideosSelect(data) {
 				clearVideosSelect();				
 				var videos = document.getElementById("videosSelect");
-				for(var i = 0; i < data['videos'].length;++i) {
+				for(var i = 0; i < data.length;++i) {
 					
 					var newDiv = document.createElement("div");
 					newDiv.setAttribute("class", "input-group");
@@ -94,12 +94,12 @@
 					newSpan.setAttribute('class', 'input-group-addon');
 					var newSpanInput = document.createElement("input");
 					newSpanInput.setAttribute("type", "checkbox");
-					newSpanInput.value = data['videos'][i]['id'];
+					newSpanInput.value = data[i]['whatId'];
 					var newInput = document.createElement("input");
 					newInput.setAttribute("type", "text");
 					newInput.setAttribute("class", "form-control");
 					newInput.setAttribute("readonly", "true");
-					newInput.setAttribute("placeholder", data['videos'][i]['id'] + " - " + data['videos'][i]['title']);
+					newInput.setAttribute("placeholder", data[i]['whatId'] + " - " + data[i]['what']);
 					newSpan.appendChild(newSpanInput);
 					newDiv.appendChild(newSpan);
 					newDiv.appendChild(newInput);
