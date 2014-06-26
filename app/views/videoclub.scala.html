@@ -298,39 +298,46 @@
         		}
         	
         	}
+        	function runtimeInHHMM(data) {
+        		return Math.floor(data / 60) + ":" + data % 60;
+        	}
         	// Modal management
         	function showMovie(id) {
         		newDataRequest = $.ajax({url: "/videobyid?id="+id});
 				newDataRequest.done(function(data){
-					if (data["backdropPath"] === "") {
+					console.log(data);
+					
+					if (data["backdropPath"] == null) {
+						
 						document.getElementById("movieModalBackDrop").setAttribute("src", '@routes.Assets.at("images/backdrop_placeholder.png")');	
 					} else {
-						document.getElementById("movieModalBackDrop").setAttribute("src", data["backdropPath"]);
+						document.getElementById("movieModalBackDrop").setAttribute("src", data["picturePath"] + data["backdropPath"]);
 					}
 					
 					document.getElementById("movieModalTitle").innerHTML = data["inputTitle"] + " (" + data["year"] + ")";
-					//document.getElementById("movieModalOriginalTitle").innerHTML = data["originalTitle"];
+					
 					updateOrHide("movieModalOriginalTitle", data["originalTitle"], true);
 					updateOrHide("movieModalTagline", data["tagline"], true);
-					if (data["posterPath"] === "") {
+					if (data["posterPath"] == null) {
 						document.getElementById("movieModalPoster").setAttribute("src", '@routes.Assets.at("images/poster_placeholder.png")');
 					} else {
-						document.getElementById("movieModalPoster").setAttribute("src", data["posterPath"]);
+						document.getElementById("movieModalPoster").setAttribute("src", data["picturePath"] + data["posterPath"]);
 					}
-					if (data["summary"] === "") {
+					if ((data["summary"] == null) || (data["summary"] === "")) {
 						document.getElementById("movieModalSummary").innerHTML = "Pas de résumé disponible";
 					} else {
 						document.getElementById("movieModalSummary").innerHTML = data["summary"];
 					}
 					
-					//document.getElementById("movieModalRating").innerHTML = data["rating"];
+					
 					updateOrHide("movieModalRating", data["rating"], false);
-					//document.getElementById("movieModalRuntime").innerHTML = data["runtime"];
-					updateOrHide("movieModalRuntime", data["runtime"], false);
-					//document.getElementById("movieModalYear").innerHTML = data["year"];
+					
+					updateOrHide("movieModalRuntime", (data["runtime"] == "")?"":runtimeInHHMM(data["runtime"]), false);
+					
 					updateOrHide("movieModalYear", data["year"], false);
 					updateOrHide("movieModalGenres", data["genres"], true);
 					updateOrHide("movieModalPG", data["minimumAge"]);
+					document.getElementById("movieModalPG").innerHTML += ' ans';
 				});			
         	}
         	
@@ -405,12 +412,12 @@
 							<label for="movieModalRating">Note</label>
 							<button id="movieModalRating" class="active"></button>
 						</div>
-						<div class="col-lg-1"></div>
+						
 						<div class="col-lg-2">
-							<label for="movieModalRuntime">Durée</label>
+							<label for="movieModalRuntime">Durée  </label>
 								<button id="movieModalRuntime" class="active"></button>
 						</div>
-						<div class="col-lg-1"></div>
+						<div class="col-lg-2"></div>
 						<div class="col-lg-2">
 							<label for="movieModalYear">Sortie</label>
 							<button id="movieModalYear" class="active"></button>

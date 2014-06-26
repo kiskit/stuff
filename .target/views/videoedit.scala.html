@@ -6,28 +6,26 @@
     <script>
     
     function clearModal() {
-				var modal = document.getElementById("titlesModalBody");
-				while (modal.firstChild != null) {
-					modal.removeChild(modal.firstChild);
-				}
+		var modal = document.getElementById("titlesModalBody");
+		while (modal.firstChild != null) {
+			modal.removeChild(modal.firstChild);
+		}
 	}
 	function buildModal(data) {
 		var modal = document.getElementById("titlesModalBody");
 		clearModal();
 		if (data.length == 0) {
 			document.getElementById("modalButtonOK").disabled = true;
-			// No video found
+			// No video found 
 			var p = document.createElement("div");
 			p.setAttribute("class", "text-danger lead");
 			p.innerHTML = "Aucune vidéo trouvée avec ce critère";
 			modal.appendChild(p);
-					
 		} else {
 			document.getElementById("modalButtonOK").disabled = false;
 		}
+
 		// Visible button 
-		
-		
 		for(var i = 0; i < data.length;++i) {
 			var radio = document.createElement("input");
 			if (i != 0) {
@@ -44,7 +42,6 @@
 			modal.appendChild(radio);
 			var label = document.createElement("label");
 			label.setAttribute("for",  data[i]['id']);
-			//label.textContent = "  " + data[i]['title'] + "(" + data[i]['id'] + ")";
 			label.textContent = "  " + data[i]['title'] + " (" + new Date(data[i]['release_date']).getFullYear() + ")";
 			modal.appendChild(label);
 		}
@@ -66,7 +63,7 @@
 	}
 	
 	function updatePoster() {
-		document.getElementById("poster").src = "http://image.tmdb.org/t/p/w500" + document.getElementById("posterPath").value; 
+		document.getElementById("poster").src = document.getElementById("picturePath").value + document.getElementById("posterPath").value; 
 	}
 	function updateSummary() {
 		document.getElementById("summaryP").innerHTML = document.getElementById("summary").value;
@@ -271,7 +268,9 @@
 				@helper.input(videoForm("backdropPath")) { (id, name, value, args) =>
 					<input name="@name" id="@id" value="@value" @toHtmlArgs(args)>
 				}
-				
+				@helper.input(videoForm("picturePath")) { (id, name, value, args) =>
+					<input name="@name" id="@id" value="@value" @toHtmlArgs(args)>
+				}
 			</div>
 			<a type="button" class="btn btn-danger" name="action" value="Cancel" href="/";">Annuler</a>
         	<button type="submit" class="btn btn-primary" name="action" value="OK">Terminé</button>

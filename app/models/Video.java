@@ -26,7 +26,7 @@ import java.util.List;
 @Entity
 public class Video {
 	public Video() {
-
+		picturePath = tmdbPicturesPath;
 	}
 
 	public enum SupportType {DVD, BLURAY};
@@ -34,14 +34,7 @@ public class Video {
 	public enum StateType {OK, BROKEN, LOST};
 
 	public static Finder find = new Finder(Long.class, Video.class);
-	/*
-	public static List<MovieInfo> getMatchingTitles(String title) {
-		String URL = "";
-
-		//getHTML();
-		return null;
-	}
-*/
+	private static String tmdbPicturesPath = "http://image.tmdb.org/t/p/w500";
 
 	@Id
 	private Long id;
@@ -74,7 +67,11 @@ public class Video {
 	private String summary;
 	private String tagline;
 	private int runtime;
+	private String picturePath;
+	
+	
 
+	
 	public String getRentalString() {
 		String rentalString = null;
 		if (rentedTo != null) {
@@ -106,7 +103,7 @@ public class Video {
 		this.summary = summary;
 	}
 	public String getBackdropPath() {
-		return "http://image.tmdb.org/t/p/w500" + backdropPath;
+		return backdropPath;
 	}
 	public void setBackdropPath(String backdropPath) {
 		this.backdropPath = backdropPath;
@@ -118,7 +115,7 @@ public class Video {
 		this.rating = rating;
 	}
 	public String getPosterPath() {
-		return "http://image.tmdb.org/t/p/w500" + posterPath;
+		return posterPath;			
 	}
 	public void setPosterPath(String posterPath) {
 		this.posterPath = posterPath;
@@ -236,6 +233,13 @@ public class Video {
 		this.genres = genres;
 	}
 
+	public String getPicturePath() {
+		return tmdbPicturesPath;
+		//return picturePath;
+	}
+	public void setPicturePath(String picturePath) {
+		this.picturePath = picturePath;
+	}
 	@Override
 	public String toString() {
 		return "Video [id=" + id + ", supportType=" + supportType
@@ -245,6 +249,10 @@ public class Video {
 				+ creationDate + ", updateDate=" + updateDate + ", genres="
 				+ genres + ", rentalDate=" + rentalDate + ", rentedTo="
 				+ rentedTo + ", state=" + state + ", minimumAge=" + minimumAge
-				+ "]";
+				+ ", rating=" + rating + ", posterPath=" + posterPath
+				+ ", backdropPath=" + backdropPath + ", summary=" + summary
+				+ ", tagline=" + tagline + ", runtime=" + runtime
+				+ ", picturePath=" + getPicturePath() + "]";
 	}
+	
 }

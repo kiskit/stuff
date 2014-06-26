@@ -38,6 +38,7 @@ create table video (
   summary                   clob,
   tagline                   varchar(255),
   runtime                   integer,
+  picture_path              varchar(255),
   constraint ck_video_support_type check (support_type in (0,1)),
   constraint ck_video_content_type check (content_type in (0,1,2)),
   constraint ck_video_state check (state in (0,1,2)),
