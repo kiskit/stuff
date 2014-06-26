@@ -216,7 +216,7 @@
 						// PG 
 						td = document.createElement('td');
 						if (data[i].minimumAge != null)
-							td.innerHTML=data[i].minimumAge + ' ans';
+							td.innerHTML='>' + data[i].minimumAge + ' ans';
 						tr.appendChild(td);
 						
 						// Movie or TV 
@@ -512,11 +512,12 @@
         <!-- /Filters bar -->
         <!-- Movie list table -->
         <div class="panel panel-primary">
-          <div class="panel-heading">Liste des vidéos</div>
-          <div class="panel-body">
-          	<div><p class="text-info">
+			<div class="panel-heading">Liste des vidéos</div>
+			<div class="panel-body">
+			<div><p class="text-info">
 				<i><strong>Pour plus d'informations sur un film, cliquez sur son titre</strong></i><br>
-              </p></div>
+              </p>
+			</div>
             <div id="listTableDiv">
 				<div id="noDataDiv">
 					<p class="text text-danger">Aucune vidéo trouvée</p>
@@ -528,14 +529,13 @@
                     <th>Titre</th>
                     <th>Titre original</th>
                     <th>Année</th>
-                    <th>Date d'ajout</th>
+                    <th>Ajoutée</th>
                     <th>DVD</th>
                     <th>Genre</th>
                     <th>Note</th>
-                    <th>A partir de(*)</th>
+                    <th>Age min<i>(*)</i></th>
                     <th>TV/Film</th>
                     <th>Dispo</th>
-                    
                   </tr>
                 </tbody>
               </table>
@@ -553,21 +553,20 @@
             </div>
             <div class="panel-footer">
               <p class="text-info">
-				<i>(*) à titre indicatif seulement</i>
+				<i>(*) information donnée à titre indicatif seulement</i>
               </p>
             </div>
+			@if(admin != null){
+			<form action="videoedit" method="get" style="margin: 0px; padding: 0px;">
+				<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter une vidéo</button>
+			</form>
+			}
 		</div>
         <!-- /Movie list table -->
-		@if(admin != null){
-			
-			<form action="videoedit" method="get" style="margin: 0px; padding: 0px;">
-				
-				<button class="btn btn-primary" type="submit" name="id" value="0">Ajouter une vidéo</button>
-				
-			</form>
-			
-		}
+
+
+}
+
 	<script>
 	onLoad();
 	</script> 
-}
