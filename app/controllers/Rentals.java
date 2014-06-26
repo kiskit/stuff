@@ -9,6 +9,7 @@ import java.util.Properties;
 import models.Rental;
 import models.User;
 import models.Video;
+import play.Logger;
 import play.libs.Json;
 import play.mvc.*;
 import views.html.*;
@@ -55,10 +56,12 @@ public class Rentals extends Controller {
         Session session = Session.getDefaultInstance(props, null);
         Video v = Ebean.find(Video.class, videoId);
         if (v == null) {
+        	Logger.warn("Video " + videoId + " was not found in the database");
         	return ok("Vidéo non trouvée. Contactez l'admin du site svp");
         }
         User u = Ebean.find(User.class, userId);
         if (u == null) {
+        	Logger.warn("User " + userId + " was not found in the database");
         	return ok("Abonné non trouvé. Contactez l'admin du site svp");	
         }
         
@@ -85,13 +88,16 @@ public class Rentals extends Controller {
             Transport.send(msg); 
 
         } catch (AddressException e) {
+        	Logger.warn("Failed to send email. Reason: " + e.toString());
         	return ok("Problème d'adresse. Contactez l'admin du site svp");
         } catch (MessagingException e) {
+        	Logger.warn("Failed to send email. Reason: " + e.toString());
         	return ok("Problème avec le message. Contactez l'admin du site svp");
         } catch (UnsupportedEncodingException e) {
-        	e.printStackTrace();
+        	Logger.warn("Failed to send email. Reason: " + e.toString());
         	return ok("Problème d'encodage. Contactez l'admin du site svp");
 		} catch (Exception e) {
+			Logger.warn("Failed to send email. Reason: " + e.toString());
 			return ok("Problème avec le mail. Contactez l'admin du site svp");
 		}
 		return ok("");

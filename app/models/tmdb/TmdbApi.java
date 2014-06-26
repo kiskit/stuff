@@ -7,6 +7,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import play.Logger;
+
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,6 +20,11 @@ public class TmdbApi {
 	private static ObjectMapper mapper = new ObjectMapper();
 
 
+	/**
+	 * @param url
+	 * @return the content from the API on themoviedb.org as queried by the url parameter
+	 * @throws TmdbException
+	 */
 	public static String getContent(String url) throws TmdbException {
 		URL obj;
 		String responseStr = null;
@@ -32,9 +39,11 @@ public class TmdbApi {
 
 			//add request header
 			con.setRequestProperty("User-Agent", "Mozilla/5.0");
-			// TODO: do something with it
-			int responseCode = con.getResponseCode();
 
+			int responseCode = con.getResponseCode();
+			if (responseCode != 200) {
+				throw new TmdbException("Got error code from TMDB " + responseCode);
+			}
 			BufferedReader in = new BufferedReader(
 					new InputStreamReader(con.getInputStream()));
 			String inputLine;
@@ -46,7 +55,7 @@ public class TmdbApi {
 			
 			in.close();
 			responseStr = response.toString();
-			System.out.println(responseStr);
+			Logger.debug("Response from TMDB: " + responseStr);
 		} catch (Exception e) {
 			throw (new TmdbException(e));
 		}
@@ -54,6 +63,11 @@ public class TmdbApi {
 		return responseStr;
 	}
 
+	/**
+	 * @param title
+	 * @param type
+	 * @return the basic information extracted from a search by title from themoviedb.org
+	 */
 	public static BasicVideoInfoSearch searchByTitle(String title, String type) {
 		String response = null;
 		BasicVideoInfoSearch search = null;
@@ -66,15 +80,19 @@ public class TmdbApi {
 		}
 		try {
 			url += "?api_key="+key+"&query=" + URLEncoder.encode(title, "UTF-8");
+			Logger.debug("Querying title info from TMDB " + title);
 			response = getContent(url);
 			search = mapper.readValue(response, BasicVideoInfoSearch.class);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Dang, an exception");
-			e.printStackTrace();
+			Logger.warn("Search by title returned an exception: " + e.toString());
 		}
 		return (search);
 	}
+	/**
+	 * @param id
+	 * @param type
+	 * @return the basic information extracted from a search by ID from themoviedb.org
+	 */
 	public static VideoInfo searchById(String id, String type) {
 		String response = null;
 		VideoInfo info = null;
@@ -89,16 +107,14 @@ public class TmdbApi {
 			url += id + "?api_key=" + key+"&language=fr";
 			response = getContent(url);
 			if ("TV".equals(type)) {
-				System.out.println("Trying to return tv info");
+				Logger.debug("Querying TV info from TMDB " + id);
 				info = mapper.readValue(response, TVInfo.class);
 			} else {
-				System.out.println("Trying to return movie info");
+				Logger.debug("Querying movie info from TMDB " + id);
 				info = mapper.readValue(response, MovieInfo.class);
 			}
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Dang, an exception");
-			e.printStackTrace();
+			Logger.warn("Search by ID returned an exception: " + e.toString());
 		}
 		return (info);
 	}

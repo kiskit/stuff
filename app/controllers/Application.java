@@ -32,7 +32,8 @@ public class Application extends Controller {
 	public static Result authenticate() {
 	    Form<Login> loginForm = Form.form(Login.class).bindFromRequest();
 	    if (loginForm.hasErrors()) {
-	        Logger.warn("Administrator authentication form validation failed: " + loginForm.get().email);
+	        Logger.warn("Administrator failed to validate authentication form");
+
 	        return badRequest(login.render(loginForm));
 	    } else {
 	        session().clear();
@@ -49,6 +50,7 @@ public class Application extends Controller {
 	 * @return The login web page 
 	 */
 	public static Result logout() {
+		Logger.info("Administrator logged out: " + session("email"));
 		session().clear();
 		// That just doesn't do anything
 		flash("success", "You've been logged out");

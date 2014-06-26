@@ -65,8 +65,8 @@ public class Users extends Controller {
 		u.setUpdateDate(new Date());
 		// pre-fills the form with user data
 		userForm = userForm.fill(u);
+		Logger.debug(request().username() + " requested the edition page of user " + u.getId() + (u.getName() == null?" (new user)":" (" + u.getFullName() + ")"));
 		return ok(useredit.render(userForm, User.getByEmail(request().username())));
-		
 	}
 	/**
 	 * The method is called when the admin has finished editing the user. It will record the changes

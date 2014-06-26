@@ -5,6 +5,7 @@ MySQL db
 IE8 compat
 Error management in ajax
 Error management in java
+Check form errors
 
 * Major
 OnLoad end of page
@@ -13,6 +14,7 @@ Logging
 Late vids page email to work
 Checkout failed action
 Comment models.tmbd
+Repair user status
 
 * Minor
 Documents
