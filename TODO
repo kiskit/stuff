@@ -2,10 +2,9 @@ TODO
 
 * Critical
 MySQL db
-IE8 compat filters
 Error management in ajax
 Error management in java
-Check form errors
+Test/Check form errors
 
 * Major
 OnLoad end of page

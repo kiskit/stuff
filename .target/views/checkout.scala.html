@@ -111,7 +111,7 @@
 			
 			function changeUserSelect(index) {
 				if (index > 0) {
-					clearUserFilter();
+					document.getElementById("userFilterInput").value = "";
 					newDataRequest = $.ajax({url: "/rentals?userId=" + index + "&videoId=0", async: false, dataType: "json"});						
 					newDataRequest.success(function(data){
 						// the user may already have videos checked out
