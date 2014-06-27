@@ -13,10 +13,24 @@ import play.Logger;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * @author nicolas
+ * The internal API class to query the TMDB json API
+ */
 public class TmdbApi {
+	
+	/**
+	 * the TMDB key 
+	 */
 	private static String key = "c589965ca14962d100212f66a6a2b1c5";
 
+	/**
+	 * the base for all TMDB URL calls
+	 */
 	private static final String baseURL = "http://api.themoviedb.org/3/";
+	/**
+	 * the object mapper for Json decoding
+	 */
 	private static ObjectMapper mapper = new ObjectMapper();
 
 

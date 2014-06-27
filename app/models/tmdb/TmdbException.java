@@ -1,37 +1,51 @@
 package models.tmdb;
 
+/**
+ * @author nicolas
+ * Specialized exception class for TMDB calls
+ */
 public class TmdbException extends Exception {
 
 	/**
-	 * 
+	 * no idea
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Default constructor
+	 */
 	public TmdbException() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public TmdbException(String message, Throwable cause,
 			boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public TmdbException(String message, Throwable cause) {
 		super(message, cause);
-		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public TmdbException(String message) {
 		super(message);
-		// TODO Auto-generated constructor stub
+		
 	}
 
+	/**
+	 * Default constructor
+	 */
 	public TmdbException(Throwable cause) {
 		super(cause);
-		// TODO Auto-generated constructor stub
-	}
-	
 
+	}
 }
