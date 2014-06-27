@@ -538,7 +538,9 @@ public class Videos extends Controller {
 	 * @return the information in Json format
 	 */
 	public static Result getTMDBId(String id, String type) {
+		
 		VideoInfo info = TmdbApi.searchById(id, type);
+		Logger.debug("Returning JSON: " + Json.toJson(info));
 		return ok(Json.toJson(info));
 	}
 	// *********** END AJAX CALLS ****************

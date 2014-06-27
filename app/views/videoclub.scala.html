@@ -342,11 +342,12 @@ td.appendChild(button);
 						document.getElementById("movieModalSummary").innerHTML = data["summary"];
 					}
 					
+					document.getElementById("movieModalDirectors").innerHTML = data["directors"];
+					document.getElementById("movieModalActors").innerHTML = data["actors"];
+					document.getElementById("movieModalCountries").innerHTML = data["countries"];
 					
 					updateOrHide("movieModalRating", data["rating"], false);
-					
 					updateOrHide("movieModalRuntime", (data["runtime"] == "")?"":runtimeInHHMM(data["runtime"]), false);
-					
 					updateOrHide("movieModalYear", data["year"], false);
 					updateOrHide("movieModalGenres", data["genres"], true);
 					updateOrHide("movieModalPG", data["minimumAge"]);
@@ -426,6 +427,33 @@ td.appendChild(button);
 						<p id="movieModalSummary" class="text-justify" placeholder="Pas d'information"></p>
 					</div>
 				</div>
+				
+				<div class="row" id="movieModalAdditionalInfo">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="col-lg-4">
+								<label for="movieModalDirectors">Réalisateurs: </label>
+								<p id="movieModalDirectors"></p>
+							</div>
+							<div class="col-lg-4">
+								<label for="movieModalActors">Avec: </label>
+								<p id="movieModalActors"></p>
+							</div>
+							<div class="col-lg-4">
+								<label for="movieModalCountries">Pays: </label>
+								<p id="movieModalCountries"></p>
+							</div>
+							</h4>
+						</div>
+					</div>
+				</div>
+				
+				
+				
+				
+				
+				
+				
 				<div class="row panel panel-default">
 					<div class="panel-body">
 						<div class="col-lg-2">

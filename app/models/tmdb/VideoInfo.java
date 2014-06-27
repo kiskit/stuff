@@ -21,10 +21,6 @@ public class VideoInfo {
 	 */
 	private String overview;
 	/**
-	 * release date for this video
-	 */
-	private Date release_date;
-	/**
 	 * vote average (rating) for this video
 	 */
 	private double vote_average;
@@ -36,6 +32,13 @@ public class VideoInfo {
 	 * tagline for this video (in space, no one will hear you scream)
 	 */
 	String tagline;
+	/**
+	 *  who played in this movie
+	 *  Note: this is not directly given by the movie query on TMDB
+	 */
+	private String actors;
+
+	
 	
 	/**
 	 * Default constructor
@@ -86,19 +89,6 @@ public class VideoInfo {
 		this.overview = overview;
 	}
 
-	/**
-	 * @return the release_date
-	 */
-	public Date getRelease_date() {
-		return release_date;
-	}
-
-	/**
-	 * @param release_date the release_date to set
-	 */
-	public void setRelease_date(Date release_date) {
-		this.release_date = release_date;
-	}
 
 	/**
 	 * @return the vote_average
@@ -142,14 +132,28 @@ public class VideoInfo {
 		this.tagline = tagline;
 	}
 
+	/**
+	 * @return the actors
+	 */
+	public String getActors() {
+		return actors;
+	}
+
+	/**
+	 * @param actors the actors to set
+	 */
+	public void setActors(String actors) {
+		this.actors = actors;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
 		return "VideoInfo [backdrop_path=" + backdrop_path + ", poster_path="
-				+ poster_path + ", overview=" + overview + ", release_date="
-				+ release_date + ", vote_average=" + vote_average + ", genres="
+				+ poster_path + ", overview=" + overview 
+				+ ", vote_average=" + vote_average + ", genres="
 				+ genres + ", tagline=" + tagline + ", toString()="
 				+ super.toString() + "]";
 	}

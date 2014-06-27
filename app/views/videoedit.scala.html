@@ -65,12 +65,26 @@
 	}
 	
 	function updatePoster() {
-		document.getElementById("poster").src = document.getElementById("picturePath").value + document.getElementById("posterPath").value; 
+		if ((document.getElementById("posterPath").value == null) || (document.getElementById("posterPath").value === "")) {
+			document.getElementById("poster").src = "@routes.Assets.at("images/poster_placeholder.png")"; 
+		} else {
+			document.getElementById("poster").src = document.getElementById("picturePath").value + document.getElementById("posterPath").value;	
+		} 
 	}
 	function updateSummary() {
 		document.getElementById("summaryP").innerHTML = document.getElementById("summary").value;
 	}
 	function getGenresString(data) {
+		var string = "";
+		for(var i = 0; i < data.length;++i) {
+			if (string != "") {
+				string += ", ";
+			}
+			string += data[i]['name'];
+		}
+		return string;
+	}
+	function getNameString(data) {
 		var string = "";
 		for(var i = 0; i < data.length;++i) {
 			if (string != "") {
@@ -117,7 +131,19 @@
 			if (data["tagline"] != null && data["tagline"] != "") {
 				document.getElementById("tagline").value = data["tagline"];	
 			}
-			document.getElementById("genres").value = getGenresString(data['genres']);
+			document.getElementById("genres").value = getNameString(data['genres']);
+			if (type === "TV") {
+				document.getElementById("directors").value = getNameString(data['created_by']);
+				document.getElementById("countries").value = data['origin_country'][0];
+				if (document.getElementById("actors").value.length == 0)
+					document.getElementById("actors").value = "";
+			} else {
+				document.getElementById("directors").value = data['directors'];
+				document.getElementById("countries").value = getNameString(data['production_countries']);
+			}
+			document.getElementById("actors").value = data['actors'];
+			
+			
 			updatePoster();
 			updateSummary();
 		});
@@ -223,6 +249,18 @@
 				<div class="col-lg-10">
 					@helper.inputText(videoForm("genres"), '_label -> "Genres", '_showConstraints -> false, 'class -> "form-control")
 				</div>
+			</div>
+			<div class="row">
+				<div class="col-lg-4">
+					@helper.inputText(videoForm("directors"), '_label -> "Réalisateurs", '_showConstraints -> false, 'class -> "form-control")
+				</div>
+				<div class="col-lg-4">
+					@helper.inputText(videoForm("actors"), '_label -> "Avec", '_showConstraints -> false, 'class -> "form-control")
+				</div>
+				<div class="col-lg-4">
+					@helper.inputText(videoForm("countries"), '_label -> "Pays", '_showConstraints -> false, 'class -> "form-control")
+				</div>
+				
 			</div>
 			<div class="row">
   				<div class="col-lg-2">

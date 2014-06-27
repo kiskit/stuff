@@ -29,6 +29,16 @@ public class TVInfo extends VideoInfo {
 	 * the first time the series aired
 	 */
 	Date first_air_date;
+	
+	/**
+	 * the countries of origin of the series
+	 */
+	List<String> origin_country;
+	/**
+	 * the list of people who created the tv series it's actually not only id and name but that's all we need
+	 */
+	List<IdNamePair> created_by;
+	
 	/**
 	 * @return the episode_run_time
 	 */
@@ -77,6 +87,30 @@ public class TVInfo extends VideoInfo {
 	public void setFirst_air_date(Date first_air_date) {
 		this.first_air_date = first_air_date;
 	}
+	/**
+	 * @return the origin_country
+	 */
+	public List<String> getOrigin_country() {
+		return origin_country;
+	}
+	/**
+	 * @param origin_country the origin_country to set
+	 */
+	public void setOrigin_country(List<String> origin_country) {
+		this.origin_country = origin_country;
+	}
+	/**
+	 * @return the created_by
+	 */
+	public List<IdNamePair> getCreated_by() {
+		return created_by;
+	}
+	/**
+	 * @param created_by the created_by to set
+	 */
+	public void setCreated_by(List<IdNamePair> created_by) {
+		this.created_by = created_by;
+	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -84,7 +118,10 @@ public class TVInfo extends VideoInfo {
 	public String toString() {
 		return "TVInfo [episode_run_time=" + episode_run_time
 				+ ", original_name=" + original_name + ", name=" + name
-				+ ", first_air_date=" + first_air_date + ", toString()="
-				+ super.toString() + "]";
+				+ ", first_air_date=" + first_air_date + ", origin_country="
+				+ origin_country + ", created_by=" + created_by
+				+ ", toString()=" + super.toString() + "]";
 	}
+	
+	
 }

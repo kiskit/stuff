@@ -1,6 +1,7 @@
 package models.tmdb;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author nicolas
@@ -17,13 +18,23 @@ public class MovieInfo extends VideoInfo {
 	 */
 	private String original_title;
 	/**
-	 * the movie's release date
+	 * the release date for this movie
 	 */
 	private Date release_date;
 	/**
 	 * the movie's runtime in minutes
 	 */
 	private int runtime;
+	/**
+	 *  who directed this movie
+	 *  Note: this is not directly given by the movie query on TMDB
+	 */
+	private String directors;
+	/**
+	 * countries of origin for this movie
+	 */
+	private List<ProductionCountry> production_countries;
+	
 	
 	/**
 	 * Default constructor
@@ -61,20 +72,6 @@ public class MovieInfo extends VideoInfo {
 	}
 
 	/**
-	 * @return the release_date
-	 */
-	public Date getRelease_date() {
-		return release_date;
-	}
-
-	/**
-	 * @param release_date the release_date to set
-	 */
-	public void setRelease_date(Date release_date) {
-		this.release_date = release_date;
-	}
-
-	/**
 	 * @return the runtime
 	 */
 	public int getRuntime() {
@@ -88,6 +85,50 @@ public class MovieInfo extends VideoInfo {
 		this.runtime = runtime;
 	}
 
+	/**
+	 * @return the production_countries
+	 */
+	public List<ProductionCountry> getProduction_countries() {
+		return production_countries;
+	}
+
+	/**
+	 * @param production_countries the production_countries to set
+	 */
+	public void setProduction_countries(List<ProductionCountry> production_countries) {
+		this.production_countries = production_countries;
+	}
+
+	
+	/**
+	 * @return the directors
+	 */
+	public String getDirectors() {
+		return directors;
+	}
+
+	/**
+	 * @param directors the directors to set
+	 */
+	public void setDirectors(String directors) {
+		this.directors = directors;
+	}
+
+	/**
+	 * @return the release_date
+	 */
+	public Date getRelease_date() {
+		return release_date;
+	}
+
+	/**
+	 * @param release_date the release_date to set
+	 */
+	public void setRelease_date(Date release_date) {
+		this.release_date = release_date;
+	}
+
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
@@ -95,9 +136,11 @@ public class MovieInfo extends VideoInfo {
 	public String toString() {
 		return "MovieInfo [title=" + title + ", original_title="
 				+ original_title + ", release_date=" + release_date
-				+ ", runtime=" + runtime + ", toString()=" + super.toString()
-				+ "]";
+				+ ", runtime=" + runtime + ", directors=" + directors
+				+ ", production_countries=" + production_countries
+				+ ", toString()=" + super.toString() + "]";
 	}
+
 
 
 }

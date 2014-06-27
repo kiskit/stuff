@@ -102,6 +102,75 @@ public class TmdbApi {
 		}
 		return (search);
 	}
+	
+	
+	/**
+	 * Finds the casting for the tv show whose id is given
+	 * @return the cast for a tv show
+	 */
+	private static Credits getTVCredits(String id) {
+		String response = null;
+		Credits info = null;
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		String url = baseURL + "tv/" + id + "/season/1/episode/1/credits";
+		url += "?api_key="+key;
+		try {
+			response = getContent(url);
+			info = mapper.readValue(response, Credits.class);
+		} catch (Exception e) {
+			Logger.warn("Credits search by ID returned an exception: " + e.toString());
+		}
+		return info;		
+	}
+	
+	
+	/**
+	 * Finds the casting for the movie whose id is given
+	 * @return the cast for a movie
+	 */
+	private static Credits getMovieCredits(String id) {
+		String response = null;
+		Credits info = null;
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		String url = baseURL + "movie/" + id + "/credits";
+		url += "?api_key="+key;
+		try {
+			response = getContent(url);
+			info = mapper.readValue(response, Credits.class);
+		} catch (Exception e) {
+			Logger.warn("Credits search by ID returned an exception: " + e.toString());
+		}
+		return info;		
+	}
+	private static String getDirectors(Credits credits) {
+		String list = "";
+		for (CastItem c : credits.getCrew()) {
+			if ("director".equalsIgnoreCase(c.getJob())) {
+				if (!list.isEmpty())
+					list+=", ";
+				list += c.getName();
+			}
+		}
+		return list;
+	}
+	/**
+	 * @param credits the credits from which we want the actors extracted
+	 * @param max the maximum number of actors we want
+ 	 * @return a comma separated string with the names of actors
+	 */
+	private static String getActors(Credits credits, int max) {
+		String list = "";
+		int count = 0;
+		for (CastItem c : credits.getCast()) {
+			if (count == max) break;
+			if (!list.isEmpty())
+				list+=", ";
+			list += c.getName();
+			++count;
+		}
+		return list;
+	}
+	
 	/**
 	 * @param id
 	 * @param type
@@ -123,9 +192,16 @@ public class TmdbApi {
 			if ("TV".equals(type)) {
 				Logger.debug("Querying TV info from TMDB " + id);
 				info = mapper.readValue(response, TVInfo.class);
+				Credits credits = getTVCredits(id);
+				info.setActors(getActors(credits, 4));
 			} else {
 				Logger.debug("Querying movie info from TMDB " + id);
-				info = mapper.readValue(response, MovieInfo.class);
+				MovieInfo mInfo = mapper.readValue(response, MovieInfo.class);
+				// Query additional info for this movie
+				Credits credits = getMovieCredits(id);
+				mInfo.setDirectors(getDirectors(credits));
+				mInfo.setActors(getActors(credits, 4));
+				info = mInfo;
 			}
 		} catch (Exception e) {
 			Logger.warn("Search by ID returned an exception: " + e.toString());

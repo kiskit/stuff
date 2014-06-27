@@ -43,7 +43,7 @@ public class User {
     public static Finder find = new Finder(Long.class, User.class);
 
 	public User() {
-		
+		status = StatusType.ACTIVE;
 	}
 	
 	/**

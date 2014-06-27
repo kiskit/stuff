@@ -46,7 +46,10 @@ public class Video {
 	private String movieId;
 	@Constraints.Required
 	private String inputTitle;
-	Long year;
+	private Long year;
+	private String directors;
+	private String countries;
+	private String actors;
 	private String originalTitle;
 	@Formats.DateTime(pattern = "dd/MM/yyyy")
 	@Constraints.Required
@@ -96,6 +99,43 @@ public class Video {
 
 
 	
+	/**
+	 * @return the director
+	 */
+	public String getDirectors() {
+		return directors;
+	}
+	/**
+	 * @param director the director to set
+	 */
+	public void setDirectors(String directors) {
+		this.directors = directors;
+	}
+	
+	/**
+	 * @return the actors
+	 */
+	public String getActors() {
+		return actors;
+	}
+	/**
+	 * @param actors the actors to set
+	 */
+	public void setActors(String actors) {
+		this.actors = actors;
+	}
+	/**
+	 * @return the countries
+	 */
+	public String getCountries() {
+		return countries;
+	}
+	/**
+	 * @param countries the countries to set
+	 */
+	public void setCountries(String countries) {
+		this.countries = countries;
+	}
 	/**
 	 * @return the path to the pictures on themoviedb.org
 	 */
@@ -372,14 +412,16 @@ public class Video {
 		return "Video [id=" + id + ", supportType=" + supportType
 				+ ", contentType=" + contentType + ", movieId=" + movieId
 				+ ", inputTitle=" + inputTitle + ", year=" + year
-				+ ", originalTitle=" + originalTitle + ", creationDate="
-				+ creationDate + ", updateDate=" + updateDate + ", genres="
-				+ genres + ", rentalDate=" + rentalDate + ", rentedTo="
-				+ rentedTo + ", state=" + state + ", minimumAge=" + minimumAge
-				+ ", rating=" + rating + ", posterPath=" + posterPath
-				+ ", backdropPath=" + backdropPath + ", summary=" + summary
-				+ ", tagline=" + tagline + ", runtime=" + runtime
-				+ ", picturePath=" + picturePath + "]";
+				+ ", directors=" + directors + ", countries=" + countries
+				+ ", actors=" + actors + ", originalTitle=" + originalTitle
+				+ ", creationDate=" + creationDate + ", updateDate="
+				+ updateDate + ", genres=" + genres + ", rentalDate="
+				+ rentalDate + ", rentedTo=" + rentedTo + ", state=" + state
+				+ ", minimumAge=" + minimumAge + ", rating=" + rating
+				+ ", posterPath=" + posterPath + ", backdropPath="
+				+ backdropPath + ", summary=" + summary + ", tagline="
+				+ tagline + ", runtime=" + runtime + ", picturePath="
+				+ picturePath + "]";
 	}
 
 }

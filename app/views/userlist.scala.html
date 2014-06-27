@@ -29,8 +29,10 @@
 				<td>@u.getEmail()</td>
 				<td align="center">
 					@if(u.getStatus() == User.StatusType.ACTIVE) {
-						<img src="@routes.Assets.at("images/on_air.png")" alt="Admin" height="24" width="32">
-					} 
+						<img src="@routes.Assets.at("images/basic-tick.png")" alt="Admin" height="24" width="32">
+					}else{
+						<img src="@routes.Assets.at("images/cross.png")" alt="Admin" height="24" width="32">
+					}
 				</td> 
 				<td>@u.getCreationDate()</td>
 				<td>@u.getUpdateDate()</td>

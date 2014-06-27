@@ -5,17 +5,19 @@ MySQL db
 Error management in ajax
 Error management in java
 Test/Check form errors
+import DB
+Dicrector
+Countries
 
 * Major
+config file for site
+TODO in code
 OnLoad end of page
 Icons for users
 Pages for movie titles
 User guide
 Logging
 Late vids page email to work
-Checkout failed action
-Comment models.tmbd
-Repair user status
 
 * Minor
 Documents
