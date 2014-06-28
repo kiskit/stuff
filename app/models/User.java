@@ -1,19 +1,12 @@
 package models;
 
 import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.ExpressionList;
-
 import play.data.format.Formats;
 import play.data.validation.Constraints;
-import java.util.*;
-import javax.persistence.*;
-import play.db.ebean.*;
 import play.db.ebean.Model.Finder;
 
 @Entity
@@ -40,7 +33,8 @@ public class User {
 	private Date updateDate;
 	@Constraints.Required
 	private boolean admin;
-    public static Finder find = new Finder(Long.class, User.class);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Finder find = new Finder(Long.class, User.class);
 
 	public User() {
 		status = StatusType.ACTIVE;

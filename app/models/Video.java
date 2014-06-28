@@ -9,20 +9,9 @@ import play.db.ebean.Model.Finder;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-
-import models.tmdb.MovieInfo;
-
 import com.avaje.ebean.Ebean;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 @Entity
 public class Video {
@@ -34,6 +23,7 @@ public class Video {
 	public enum ContentType {UNKNOWN, TV, MOVIE};
 	public enum StateType {OK, BROKEN, LOST};
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Finder find = new Finder(Long.class, Video.class);
 	private static String tmdbPicturesPath = "http://image.tmdb.org/t/p/w500";
 

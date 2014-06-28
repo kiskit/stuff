@@ -14,6 +14,7 @@ GET     /                           controllers.Videos.index()
 
 # Where the history is located - for future use
 #GET 	/history					controllers.Application.history()
+GET		/autopopulate				controllers.Videos.autoPopulate()
 
 # Video related page
 GET		/videoedit					controllers.Videos.editVideo(id: Long)

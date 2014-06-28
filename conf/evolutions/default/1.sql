@@ -4,21 +4,21 @@
 # --- !Ups
 
 create table user (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   name                      varchar(255),
   first_name                varchar(255),
   email                     varchar(255),
   password                  varchar(255),
   status                    integer,
-  creation_date             timestamp,
-  update_date               timestamp,
-  admin                     boolean,
+  creation_date             datetime,
+  update_date               datetime,
+  admin                     tinyint(1) default 0,
   constraint ck_user_status check (status in (0,1)),
   constraint pk_user primary key (id))
 ;
 
 create table video (
-  id                        bigint not null,
+  id                        bigint auto_increment not null,
   support_type              integer,
   content_type              integer,
   movie_id                  varchar(255),
@@ -28,17 +28,17 @@ create table video (
   countries                 varchar(255),
   actors                    varchar(255),
   original_title            varchar(255),
-  creation_date             timestamp,
-  update_date               timestamp,
+  creation_date             datetime,
+  update_date               datetime,
   genres                    varchar(255),
-  rental_date               timestamp,
+  rental_date               datetime,
   rented_to                 bigint,
   state                     integer,
   minimum_age               bigint,
   rating                    double,
   poster_path               varchar(255),
   backdrop_path             varchar(255),
-  summary                   clob,
+  summary                   longtext,
   tagline                   varchar(255),
   runtime                   integer,
   picture_path              varchar(255),
@@ -48,24 +48,16 @@ create table video (
   constraint pk_video primary key (id))
 ;
 
-create sequence user_seq;
-
-create sequence video_seq;
-
 
 
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+SET FOREIGN_KEY_CHECKS=0;
 
-drop table if exists user;
+drop table user;
 
-drop table if exists video;
+drop table video;
 
-SET REFERENTIAL_INTEGRITY TRUE;
-
-drop sequence if exists user_seq;
-
-drop sequence if exists video_seq;
+SET FOREIGN_KEY_CHECKS=1;
 

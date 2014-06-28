@@ -1,6 +1,5 @@
 package models.tmdb;
 
-import java.util.Date;
 import java.util.List;
 
 /**

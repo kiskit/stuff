@@ -9,8 +9,8 @@ import java.util.Properties;
 import models.Rental;
 import models.User;
 import models.Video;
+import play.Configuration;
 import play.Logger;
-import play.libs.Json;
 import play.mvc.*;
 import views.html.*;
 import javax.mail.Message;
@@ -49,10 +49,14 @@ public class Rentals extends Controller {
 	 * @param videoId the video about which the user should be reminded
 	 * @return a message indicating whether the email could be sent
 	 * For now this method returns ok. It should probably return some server error instead, but that was easier to catch in the returning ajax
-	 * TODO: change the emails of the admins and admin mailing list
 	 */
 	public static Result sendEmail(Long userId, Long videoId) {
 		Properties props = new Properties();
+		props.put("mail.smtp.starttls.enable", "true");
+		props.put("mail.smtp.host", Configuration.root().getString("videoclub.mailserver"));
+		props.put("mail.smtp.port", "587");
+		Logger.debug("Using this smtp " + Configuration.root().getString("videoclub.mailserver"));
+		
         Session session = Session.getDefaultInstance(props, null);
         Video v = Ebean.find(Video.class, videoId);
         if (v == null) {
@@ -64,7 +68,6 @@ public class Rentals extends Controller {
         	Logger.warn("User " + userId + " was not found in the database");
         	return ok("Abonné non trouvé. Contactez l'admin du site svp");	
         }
-        
         Calendar cal = GregorianCalendar.getInstance();
         cal.setTime(v.getRentalDate());
         String msgBody = "Bonjour M. " + u.getName();
@@ -76,13 +79,13 @@ public class Rentals extends Controller {
 
         try {
             Message msg = new MimeMessage(session);
-            // TODO
-            msg.setFrom(new InternetAddress("admin@example.com", "Example.com Admin"));
+
+            msg.setFrom(new InternetAddress(Configuration.root().getString("videoclub.adminmailinglist"), "Example.com Admin"));
             msg.addRecipient(Message.RecipientType.TO,
                              new InternetAddress(u.getEmail(), "Mr. User"));
             // Mailing list for the admins of the VC
             msg.addRecipient(Message.RecipientType.BCC,
-                    new InternetAddress("admin@videoclub", "Mr. Admin"));
+                    new InternetAddress(Configuration.root().getString("videoclub.adminmailinglist"), "Mr. Admin"));
             msg.setSubject("Vous avez des vidéos en retard");
             msg.setText(msgBody);
             Transport.send(msg); 

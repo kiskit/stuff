@@ -7,6 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
+import play.Configuration;
 import play.Logger;
 
 
@@ -22,12 +23,13 @@ public class TmdbApi {
 	/**
 	 * the TMDB key 
 	 */
-	private static String key = "c589965ca14962d100212f66a6a2b1c5";
+	private static String key = Configuration.root().getString("videoclub.tmdb.api_key");
 
 	/**
 	 * the base for all TMDB URL calls
 	 */
-	private static final String baseURL = "http://api.themoviedb.org/3/";
+	private static final String baseURL = Configuration.root().getString("videoclub.tmdb.baseurl");
+			
 	/**
 	 * the object mapper for Json decoding
 	 */

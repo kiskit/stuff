@@ -3,17 +3,9 @@ package controllers;
 import models.User;
 import play.Logger;
 import play.mvc.*;
-
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.SqlRow;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.H2Platform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
-
 import play.data.Form;
-import play.libs.Yaml;
 import views.html.*;
 
 import java.util.Date;
@@ -28,6 +20,7 @@ public class Users extends Controller {
 	 * @return the web page for the users list
 	 * Note: one must be authentified to access this page
 	 */
+	@SuppressWarnings("unchecked")
 	@Security.Authenticated(Secured.class)
 	public static Result index() {    	
 		return ok(userlist.render(User.find.findList(), User.getByEmail(request().username())));

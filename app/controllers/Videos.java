@@ -3,8 +3,11 @@ package controllers;
 import models.Rental;
 import models.User;
 import models.Video;
-import models.Video.StateType;
+import models.tmdb.Genre;
+import models.tmdb.IdNamePair;
 import models.tmdb.MovieInfo;
+import models.tmdb.ProductionCountry;
+import models.tmdb.TVInfo;
 import models.tmdb.TmdbApi;
 import models.tmdb.BasicVideoInfoSearch;
 import models.tmdb.VideoInfo;
@@ -14,8 +17,6 @@ import play.mvc.*;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.SqlRow;
-
-import controllers.Application.Login;
 
 import play.data.Form;
 import play.libs.Json;
@@ -43,7 +44,7 @@ public class Videos extends Controller {
 	public static Result index() {
 		// Call the video list with all the videos
 		//return ok(index.render(Video.find.all()));
-		Video vid = Ebean.find(Video.class).where().eq("id", 12L).findUnique();
+		/*Video vid = Ebean.find(Video.class).where().eq("id", 12L).findUnique();
 		if (vid == null) {
 			vid = new Video();
 
@@ -231,7 +232,7 @@ public class Videos extends Controller {
 			u.setPassword(u.getFirstName().toLowerCase());
 			Ebean.save(u);
 			
-		}
+		}*/
 		// we should use the method request().username() but we're not sure it works without the @Security pragma
 		return ok(videoclub.render(
 						Video.find.findList().size(), 
@@ -260,7 +261,7 @@ public class Videos extends Controller {
 			v.setCreationDate(new Date());
 			// We implement manually the id increment. It should be a self increment but since we need to display it before actually writing it in the database, we have to do it
 			// It could fail if two admins are creating a user at the exact same time, but the chances are low
-			String sql = "select max(id) from Video";
+			String sql = "select max(id) from video";
 			SqlRow bug = Ebean.createSqlQuery(sql).findUnique();
 			String maxId = bug.getString("max(id)");
 			v.setId(Long.decode(maxId) + 1L);
@@ -298,6 +299,7 @@ public class Videos extends Controller {
 	 * @return the checkout web page
 	 * Note: one must be authenticated to access this page
 	 */
+	@SuppressWarnings("unchecked")
 	@Security.Authenticated(Secured.class)
 	public static Result checkout() {
 		return ok(checkout.render(User.find.findList(), User.getByEmail(request().username())));
@@ -332,6 +334,7 @@ public class Videos extends Controller {
 	 * @return the checkout web page
 	 * Note: one must be authenticated to access this page
 	 */
+	@SuppressWarnings("unchecked")
 	@Security.Authenticated(Secured.class)
 	public static Result checkin() {
 		return ok(checkin.render(User.find.findList(), User.getByEmail(request().username())));
@@ -359,6 +362,97 @@ public class Videos extends Controller {
 			}
 		}
 		return redirect("/");
+	}
+	
+	private static String countries(List<ProductionCountry> l) {
+		String s = "";
+		for (ProductionCountry c: l) {
+			if (s.length() != 0) {
+				s+=", ";
+			}
+			s += c.getName();
+		}
+		return s;
+	}
+	private static String genres(List<Genre> l) {
+		String s = "";
+		for (Genre g: l) {
+			if (s.length() != 0) {
+				s+=", ";
+			}
+			s += g.getName();
+		}
+		return s;
+	}
+	private static String createdBy(List<IdNamePair> l) {
+		String s = "";
+		for (IdNamePair i: l) {
+			if (s.length() != 0) {
+				s+=", ";
+			}
+			s += i.getName();
+		}
+		return s;
+	}
+	public static Result autoPopulate() {
+		List<Video> list = Ebean.find(Video.class).findList();
+		for (Video v: list) {
+			if (v.getMovieId() != null) {
+				Logger.warn("Already populated for: " + v.getId() + "-" + v.getInputTitle());
+				continue;
+			}
+			try {
+			    Thread.sleep(1000);
+			} catch(InterruptedException ex) {
+			    Thread.currentThread().interrupt();
+			}
+			BasicVideoInfoSearch search = TmdbApi.searchByTitle(v.getInputTitle(), v.getContentType() == Video.ContentType.TV?"TV":"MOVIE");
+			if ((search == null) || (search.getResults().size() == 0)) {
+				// Log
+				Logger.warn("Could not find basic info for: " + v.getId() + "-" + v.getInputTitle());
+				continue;
+			}
+			
+			v.setMovieId(""+search.getResults().get(0).getId());
+			if (v.getContentType() == Video.ContentType.MOVIE) {
+				MovieInfo info = (MovieInfo) TmdbApi.searchById(v.getMovieId(), v.getContentType() == Video.ContentType.TV?"TV":"MOVIE");
+				if (info == null) {
+					Logger.warn("Could not find movie info for: " + v.getId() + "-" + v.getInputTitle());
+					continue;
+				}
+				v.setActors(info.getActors());
+				v.setDirectors(info.getDirectors());
+				v.setBackdropPath(info.getBackdrop_path());
+				v.setCountries(countries(info.getProduction_countries()));
+				v.setGenres(genres(info.getGenres()));
+				v.setOriginalTitle(info.getOriginal_title());
+				v.setPosterPath(info.getPoster_path());
+				v.setRating(info.getVote_average());
+				v.setRuntime(info.getRuntime());
+				v.setSummary(info.getOverview());
+				v.setTagline(info.getTagline());
+			} else {
+				TVInfo info = (TVInfo) TmdbApi.searchById(v.getMovieId(), v.getContentType() == Video.ContentType.TV?"TV":"MOVIE");
+				if (info == null) {
+					Logger.warn("Could not find tv info for: " + v.getId() + "-" + v.getInputTitle());
+					continue;
+				}
+				v.setActors(info.getActors());
+				v.setDirectors(createdBy(info.getCreated_by()));
+				v.setBackdropPath(info.getBackdrop_path());
+				v.setCountries(info.getOrigin_country().get(0));
+				v.setGenres(genres(info.getGenres()));
+				v.setOriginalTitle(info.getOriginal_name());
+				v.setPosterPath(info.getPoster_path());
+				v.setRating(info.getVote_average());
+				v.setRuntime(info.getEpisode_run_time().get(0));
+				v.setSummary(info.getOverview());
+				v.setTagline(info.getTagline());
+			}
+			Logger.warn("Saving: " + v.getId() + "-" + v.getInputTitle());
+			Ebean.update(v);
+		}
+		return ok("ok");
 	}
 	
 	
